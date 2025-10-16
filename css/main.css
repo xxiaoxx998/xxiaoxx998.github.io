@@ -1196,7 +1196,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #1c37be;
+  background: #987861;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2595,6 +2595,7 @@ ul.breadcrumb li + li:last-child {
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 body {
   background: url("/images/background.jpg");
@@ -2604,6 +2605,7 @@ body {
   background-position: 50% 50%;
   line-height: 1.7;
   color: #333;
+  transition: background-color 0.3s ease;
 }
 a {
   transition: color 0.3s ease;
@@ -2616,47 +2618,116 @@ a:hover {
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   background: rgba(255,255,255,0.95);
   margin-bottom: 24px;
+  transition: all 0.3s ease;
 }
 .post-title {
   font-size: 1.8em;
   color: #222;
   margin-bottom: 16px;
+  transition: color 0.3s ease;
 }
 .post-title:hover {
   color: #3dd598;
 }
 .post-body p {
   margin-bottom: 16px;
-  opacity: 0.5;
+}
+.post-tags {
+  margin-top: 20px;
+}
+.post-tags a {
+  display: inline-block;
+  background: #f5f5f5;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  font-size: 0.9em;
+  transition: all 0.2s ease;
+}
+.post-tags a:hover {
+  background: #3dd598;
+  color: #fff;
 }
 .sidebar-inner .widget {
   border-radius: 8px;
   background: rgba(255,255,255,0.95);
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  padding: 15px 18px;
+  transition: all 0.3s ease;
 }
 .widget-title {
   color: #222;
   border-bottom: 1px solid #f0f0f0;
   padding-bottom: 8px;
   margin-bottom: 16px;
+  font-size: 1.1em;
+}
+.widget ul li {
+  margin-bottom: 8px;
+  transition: transform 0.2s ease;
+}
+.widget ul li:hover {
+  transform: translateX(3px);
 }
 .avatar img {
   border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+.avatar img:hover {
+  transform: scale(1.03);
 }
 .footer {
   color: #000;
   padding: 24px 0 16px 0;
+  margin-top: 30px;
+  border-top: 1px solid #f0f0f0;
 }
 .powered-by {
   color: #666;
   font-size: 0.9em;
+  margin-top: 8px;
+}
+.footer-icon {
+  animation-duration: 2s;
 }
 .highlight {
   border-radius: 6px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  margin: 16px 0;
+  transition: all 0.3s ease;
 }
 .highlight pre {
   font-size: 0.95em;
+  padding: 15px;
+  line-height: 1.6;
+}
+.code-header {
+  background: #f5f5f5;
+  padding: 8px 15px;
+  border-bottom: 1px solid #eee;
+  border-radius: 6px 6px 0 0;
+  font-size: 0.9em;
+}
+.back-to-top {
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+}
+.read-more {
+  display: inline-block;
+  padding: 5px 12px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  font-size: 0.9em;
+  transition: all 0.2s ease;
+}
+.read-more:hover {
+  background: #3dd598;
+  color: #fff;
 }
 @media (max-width: 768px) {
   .post-title {
@@ -2666,11 +2737,18 @@ a:hover {
     padding: 12px;
   }
   .post-block {
-    margin-bottom: 18pxv;
+    margin-bottom: 18px;
+  }
+  .highlight pre {
+    font-size: 0.9em;
+  }
+  .footer {
+    padding: 18px 0 12px 0;
   }
 }
 html.dark body {
   background-color: #121212;
+  background-blend-mode: overlay;
   color: #e0e0e0;
 }
 html.dark .post-block {
@@ -2680,8 +2758,13 @@ html.dark .post-block {
 html.dark .post-title {
   color: #f5f5f5;
 }
-html.dark .post-title:hover {
-  color: #3dd598;
+html.dark .post-tags a {
+  background: #333;
+  color: #ccc;
+}
+html.dark .post-tags a:hover {
+  background: #3dd598;
+  color: #fff;
 }
 html.dark .sidebar-inner .widget {
   background: rgba(26,26,26,0.9);
@@ -2690,6 +2773,12 @@ html.dark .sidebar-inner .widget {
 html.dark .widget-title {
   color: #f5f5f5;
   border-bottom: 1px solid #333;
+}
+html.dark .widget ul li a {
+  color: #ccc;
+}
+html.dark .widget ul li a:hover {
+  color: #3dd598;
 }
 html.dark .footer {
   color: #b0b0b0;
@@ -2701,13 +2790,13 @@ html.dark .powered-by {
 html.dark a {
   color: #61dafb;
 }
-html.dark a:hover {
-  color: #3dd598;
-}
 html.dark .highlight {
   background: #1e1e1e;
-  border-radius: 6px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+html.dark .code-header {
+  background: #2d2d2d;
+  border-bottom: 1px solid #444;
 }
 html.dark .back-to-top {
   background: rgba(40,40,40,0.8);
@@ -2715,6 +2804,14 @@ html.dark .back-to-top {
 }
 html.dark .back-to-top:hover {
   background: rgba(60,60,60,0.9);
+}
+html.dark .read-more {
+  background: #333;
+  color: #ccc;
+}
+html.dark .read-more:hover {
+  background: #3dd598;
+  color: #fff;
 }
 html.dark .toc-list-item a {
   color: #e0e0e0;
