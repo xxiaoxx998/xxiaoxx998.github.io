@@ -1,62 +1,65 @@
-// 鼠标点击特效：文字 + 粒子扩散
+// 鼠标点击特效：彩色树叶粒子
 document.addEventListener('click', function(e) {
-  // 文字特效（可选，如“富强”“民主”等，可自定义）
-  const texts = ['富强', '民主', '文明', '和谐', '自由', '平等', '公正', '法治', '爱国', '敬业', '诚信', '友善'];
-  const text = texts[Math.floor(Math.random() * texts.length)];
-  const el = document.createElement('span');
-  el.textContent = text;
-  el.style.cssText = `
-    position: fixed;
-    color: #ff6b6b;
-    font-size: 16px;
-    pointer-events: none;
-    z-index: 9999;
-    animation: clickEffect 1s ease-out;
-  `;
-  // 定位到点击位置
-  el.style.left = `${e.clientX - 10}px`;
-  el.style.top = `${e.clientY - 20}px`;
-  document.body.appendChild(el);
-  
-  // 自动移除元素
-  setTimeout(() => {
-    el.remove();
-  }, 1000);
+  // 树叶颜色数组（绿色、黄色、红色系）
+  const colors = [
+    'rgba(76, 175, 80, 0.8)',   // 绿色
+    'rgba(102, 187, 106, 0.8)', // 浅绿色
+    'rgba(255, 193, 7, 0.8)',   // 黄色
+    'rgba(255, 152, 0, 0.8)',   // 橙黄色
+    'rgba(244, 67, 54, 0.8)',   // 红色
+    'rgba(233, 30, 99, 0.8)'    // 粉红色（偏红）
+  ];
 
-  // 粒子特效（可选，围绕点击位置生成小圆点）
+  // 生成5片树叶
   for (let i = 0; i < 5; i++) {
-    const dot = document.createElement('span');
-    dot.style.cssText = `
+    const leaf = document.createElement('div');
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const size = Math.random() * 15 + 10; // 树叶大小：10-25px
+
+    // 树叶样式（通过border-radius和transform模拟树叶形状）
+    leaf.style.cssText = `
       position: fixed;
-      width: ${Math.random() * 10 + 5}px;
-      height: ${Math.random() * 10 + 5}px;
-      background: rgba(255, 107, 107, 0.8);
-      border-radius: 50%;
+      width: ${size}px;
+      height: ${size * 1.2}px; /* 高度略大于宽度，更像树叶 */
+      background: ${color};
+      border-radius: 10% 70% 30% 60% / 60% 30% 70% 40%; /* 不规则圆角模拟树叶轮廓 */
+      transform: rotate(${Math.random() * 360}deg); /* 随机旋转角度 */
       pointer-events: none;
       z-index: 9999;
-      animation: dotEffect ${Math.random() * 0.5 + 0.5}s ease-out;
+      animation: leafFall ${Math.random() * 1.5 + 1.5}s ease-in-out; /* 飘落动画 */
     `;
-    dot.style.left = `${e.clientX}px`;
-    dot.style.top = `${e.clientY}px`;
-    // 随机扩散方向
-    dot.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px)`;
-    document.body.appendChild(dot);
+
+    // 定位到点击位置
+    leaf.style.left = `${e.clientX}px`;
+    leaf.style.top = `${e.clientY}px`;
+
+    // 随机飘落方向（左右+向下）
+    const dirX = (Math.random() - 0.5) * 150; // 左右偏移：-75到75px
+    const dirY = Math.random() * 150 + 50;    // 向下偏移：50到200px
+    leaf.style.setProperty('--dirX', `${dirX}px`);
+    leaf.style.setProperty('--dirY', `${dirY}px`);
+
+    document.body.appendChild(leaf);
+
+    // 动画结束后移除元素
     setTimeout(() => {
-      dot.remove();
-    }, 1000);
+      leaf.remove();
+    }, 3000);
   }
 });
 
-// 定义动画（需添加到CSS中，或直接写在style里）
+// 定义树叶飘落动画
 const style = document.createElement('style');
 style.textContent = `
-  @keyframes clickEffect {
-    0% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-20px); }
-  }
-  @keyframes dotEffect {
-    0% { opacity: 1; transform: scale(1); }
-    100% { opacity: 0; transform: scale(0.1) translate(var(--x), var(--y)); }
+  @keyframes leafFall {
+    0% {
+      opacity: 1;
+      transform: rotate(0deg) translate(0, 0);
+    }
+    100% {
+      opacity: 0;
+      transform: rotate(360deg) translate(var(--dirX), var(--dirY)); /* 旋转+飘落 */
+    }
   }
 `;
 document.head.appendChild(style);
