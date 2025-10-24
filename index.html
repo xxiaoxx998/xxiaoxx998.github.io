@@ -279,6 +279,82 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/10/24/%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E9%94%99%E8%AF%AF%E6%8E%92%E6%9F%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/10/24/%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E9%94%99%E8%AF%AF%E6%8E%92%E6%9F%A5/" class="post-title-link" itemprop="url">程序运行错误排查</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-10-24 20:59:50" itemprop="dateCreated datePublished" datetime="2025-10-24T20:59:50+08:00">2025-10-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>今天打CTF新生赛时候下载WebSocketReflectorX一直打不开，问了学长也不知道咋回事，于是自己琢磨勒半天，最终也是解决了，然后总结了一下程序运行出现问题的解决方式</p>
+<p>在运行对话框里面输入<code>eventvwr.msc</code> 可以打开事件查看器，然后展开 “Windows 日志&gt; 应用程序”，再筛选与程序相关的事件就会看到细节：</p>
+<p><img src="/images/chengxubengkui.png"></p>
+<p>然后根据报错就可以知道哪里出问题了，问一下ai也是得到解决方法：</p>
+<p><img src="/images/chengxubengkui2.png"></p>
+<p>最后把Visual Studio卸载更新就可以正常打开了</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/10/18/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E5%AD%A6%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -766,7 +842,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
