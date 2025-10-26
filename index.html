@@ -306,7 +306,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2025-10-26 00:00:00 / 修改时间：20:39:13" itemprop="dateCreated datePublished" datetime="2025-10-26T00:00:00+08:00">2025-10-26</time>
+              <time title="创建时间：2025-10-26 00:00:00 / 修改时间：20:42:38" itemprop="dateCreated datePublished" datetime="2025-10-26T00:00:00+08:00">2025-10-26</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -330,17 +330,14 @@
 
       
           <h1 id="WHUCTF新生赛"><a href="#WHUCTF新生赛" class="headerlink" title="WHUCTF新生赛"></a>WHUCTF新生赛</h1><p>比上次有进步，但是还是写的很烂，还得加油</p>
-<h2 id="web"><a href="#web" class="headerlink" title="web"></a>web</h2><p>1.User-Agent</p>
-<p>在请求头User-Agent中构造Payload简单绕过一下</p>
+<h2 id="web"><a href="#web" class="headerlink" title="web"></a>web</h2><h3 id="1-User-Agent"><a href="#1-User-Agent" class="headerlink" title="1.User-Agent"></a>1.User-Agent</h3><p>在请求头User-Agent中构造Payload简单绕过一下</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User-Agent: <span class="title function_ invoke__">system</span>(<span class="string">&#x27;tac /fla&#x27;</span> . <span class="string">&#x27;g&#x27;</span>);</span><br></pre></td></tr></table></figure>
 
 <p>在响应体中得到Flag：<strong>WHUCTF{KFc_kr42y_thURsDAy_V_Me_5o_N0w_Pl2Zz2zz}</strong></p>
-<p>2.井字棋小游戏</p>
-<p>发现是一个简单的纯前端小游戏，翻下代码发现棋盘的参数是数组gameBoard，直接在前端控制台修改一下参数gameBoard &#x3D; [‘X’, ‘X’ , ‘X’ , null , null, null, null ,null null],然后再点击一下棋盘直接获胜，弹出flag，在network里面看一下具体响应，再响应体里面发现flag：</p>
+<h3 id="2-井字棋小游戏"><a href="#2-井字棋小游戏" class="headerlink" title="2.井字棋小游戏"></a>2.井字棋小游戏</h3><p>发现是一个简单的纯前端小游戏，翻下代码发现棋盘的参数是数组gameBoard，直接在前端控制台修改一下参数gameBoard &#x3D; [‘X’, ‘X’ , ‘X’ , null , null, null, null ,null null],然后再点击一下棋盘直接获胜，弹出flag，在network里面看一下具体响应，再响应体里面发现flag：</p>
 <p><img src="/images/whuctf20251.png"></p>
 <p><img src="/images/whuctf20252.png"></p>
-<p>3.apacherrr</p>
-<p>一进去发现一大坨文字直接丢给ai解释大致意思是有三个站点uploaderrr.com，whuctf.com和主站点，先分别访问一下（抓包改一下host头）发现whuctf.com访问不了，uploaderrr.com是个文件上传的地方，一开始直接想到文件上传漏洞发现就算绕过了文件名检测也无法执行shell里面的代码，然后卡住了，问了下师傅＋提示，在网上搜了一下，<a target="_blank" rel="noopener" href="https://luokuang1.github.io/2024/07/23/%E6%B5%85%E8%B0%88ctf%E4%B8%AD-htaccess%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%90%E7%94%A8/%E5%AD%A6%E4%B9%A0%E4%BA%86%E4%B8%80%E4%B8%8B%E5%A4%A7%E4%BD%AC%E7%9A%84%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%A4%A7%E6%A6%82%E4%BA%86%E8%A7%A3%E5%88%B0%EF%BC%8C%E5%85%88%E4%B8%8A%E4%BC%A0%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%AE%A9apache%E6%8A%8A.txt%E6%96%87%E4%BB%B6%E5%BD%93%E6%88%90.php%E6%96%87%E4%BB%B6%E6%9D%A5%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E4%B8%BA">https://luokuang1.github.io/2024/07/23/%E6%B5%85%E8%B0%88ctf%E4%B8%AD-htaccess%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%90%E7%94%A8/学习了一下大佬的博客，大概了解到，先上传配置文件让apache把.txt文件当成.php文件来执行文件内容为</a></p>
+<h3 id="3-apacherrr"><a href="#3-apacherrr" class="headerlink" title="3.apacherrr"></a>3.apacherrr</h3><p>一进去发现一大坨文字直接丢给ai解释大致意思是有三个站点uploaderrr.com，whuctf.com和主站点，先分别访问一下（抓包改一下host头）发现whuctf.com访问不了，uploaderrr.com是个文件上传的地方，一开始直接想到文件上传漏洞发现就算绕过了文件名检测也无法执行shell里面的代码，然后卡住了，问了下师傅＋提示，在网上搜了一下，<a target="_blank" rel="noopener" href="https://luokuang1.github.io/2024/07/23/%E6%B5%85%E8%B0%88ctf%E4%B8%AD-htaccess%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%90%E7%94%A8/%E5%AD%A6%E4%B9%A0%E4%BA%86%E4%B8%80%E4%B8%8B%E5%A4%A7%E4%BD%AC%E7%9A%84%E5%8D%9A%E5%AE%A2%EF%BC%8C%E5%A4%A7%E6%A6%82%E4%BA%86%E8%A7%A3%E5%88%B0%EF%BC%8C%E5%85%88%E4%B8%8A%E4%BC%A0%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%AE%A9apache%E6%8A%8A.txt%E6%96%87%E4%BB%B6%E5%BD%93%E6%88%90.php%E6%96%87%E4%BB%B6%E6%9D%A5%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E4%B8%BA">https://luokuang1.github.io/2024/07/23/%E6%B5%85%E8%B0%88ctf%E4%B8%AD-htaccess%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%90%E7%94%A8/学习了一下大佬的博客，大概了解到，先上传配置文件让apache把.txt文件当成.php文件来执行文件内容为</a></p>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AddType application/x-httpd-php .txt</span><br><span class="line"># php_value engine On</span><br></pre></td></tr></table></figure>
 
 <p>然后再上传一个shell.txt文件执行指令，让ai帮写了一下脚本上传文件＋扫目录</p>
@@ -349,14 +346,11 @@
 <p>发现flag在环境变量里面：</p>
 <p><img src="/whuctf20253.png"></p>
 <hr>
-<h2 id="misc"><a href="#misc" class="headerlink" title="misc"></a>misc</h2><p>1.猫咪日记</p>
-<p>emoji表情首先想到base100解密一下得到flag</p>
+<h2 id="misc"><a href="#misc" class="headerlink" title="misc"></a>misc</h2><h3 id="1-猫咪日记"><a href="#1-猫咪日记" class="headerlink" title="1.猫咪日记"></a>1.猫咪日记</h3><p>emoji表情首先想到base100解密一下得到flag</p>
 <p><a target="_blank" rel="noopener" href="https://wnkit.com/tool/base100-encoder-decoder">https://wnkit.com/tool/base100-encoder-decoder</a></p>
-<p>2.梅林午餐肉</p>
-<p>类似Bacon加密，把C换成A再Bacon解密一下得到flag</p>
+<h3 id="2-梅林午餐肉"><a href="#2-梅林午餐肉" class="headerlink" title="2.梅林午餐肉"></a>2.梅林午餐肉</h3><p>类似Bacon加密，把C换成A再Bacon解密一下得到flag</p>
 <p><a target="_blank" rel="noopener" href="https://www.metools.info/code/bacon193.html">https://www.metools.info/code/bacon193.html</a></p>
-<p>3.01AI-Problem（没接触过）</p>
-<p>让ai写一个模型根据modeified_mnist给的数据进行训练简单训练一下给出模型文件mnist_model.pth</p>
+<h3 id="3-01AI-Problem（没接触过）"><a href="#3-01AI-Problem（没接触过）" class="headerlink" title="3.01AI-Problem（没接触过）"></a>3.01AI-Problem（没接触过）</h3><p>让ai写一个模型根据modeified_mnist给的数据进行训练简单训练一下给出模型文件mnist_model.pth</p>
 <p>大致知道流程了，根据给出的训练数据集训练生成一个模型参数然后再根据这个参数识别图案得到密文：<code>20311369131496163448410746113142281526584940390147578688469508297899856840539896843521565163417523789</code> 然后再让读取一下<code>mnist_cnn_weights.pth</code> 里面的的内容得到:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">odict_keys([&#x27;conv1.weight&#x27;, &#x27;conv1.bias&#x27;, &#x27;conv2.weight&#x27;, &#x27;conv2.bias&#x27;, &#x27;XOR_KEY_PART2_998244353ISAPRIME.weight&#x27;, &#x27;XOR_KEY_PART2_998244353ISAPRIME.bias&#x27;, &#x27;XOR_KEY_PART1_CIALLO0d000721.weight&#x27;, &#x27;XOR_KEY_PART1_CIALLO0d000721.bias&#x27;])</span><br></pre></td></tr></table></figure>
 
