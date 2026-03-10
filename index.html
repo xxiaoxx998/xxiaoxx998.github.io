@@ -149,13 +149,13 @@
   <!-- 首页欢迎动画 -->
   <div class="home-welcome-overlay" id="home-welcome-overlay">
     <div class="home-welcome-message">
-      <h1>你好，欢迎来到 Ducklinger</h1>
-      <p>正在加载你的个性化内容…</p>
+      <h1 id="welcome-line">你好，欢迎来到 Ducklinger'B0lg</h1>
+      <p id="welcome-subline">正在游入blog…</p>
     </div>
   </div>
 
   <div class="category-hero">
-    <div class="category-hero-title">选择一个分类，开始探索</div>
+    <div class="category-hero-title" id="category-hero-line">选择一个分类，开始探索</div>
     
   <div class="category-nav">
     <div class="category-nav-header">
@@ -177,6 +177,30 @@
       const overlay = document.getElementById('home-welcome-overlay');
       const nav = document.querySelector('.category-nav');
       const toggle = document.getElementById('category-toggle');
+
+      const poems = [
+        '昨夜西风凋碧树，独上高楼，望尽天涯路。',
+        '长风破浪会有时，直挂云帆济沧海。',
+        '但愿人长久，千里共婵娟。',
+        '海内存知己，天涯若比邻。',
+        '春眠不觉晓，处处闻啼鸟。',
+        '采菊东篱下，悠然见南山。'
+      ];
+
+      const sample = arr => arr[Math.floor(Math.random() * arr.length)];
+
+      const setRandomLine = () => {
+        const welcome = document.getElementById('welcome-line');
+        const sub = document.getElementById('welcome-subline');
+        const hero = document.getElementById('category-hero-line');
+
+        if (welcome) welcome.innerText = sample(poems);
+        if (sub) sub.innerText = sample(poems);
+        if (hero) hero.innerText = sample(poems);
+      };
+
+      // 初始化随机诗句
+      setRandomLine();
 
       // 欢迎提示自动隐藏
       if (overlay) {
