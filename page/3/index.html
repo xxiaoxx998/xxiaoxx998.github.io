@@ -178,7 +178,7 @@
       const nav = document.querySelector('.category-nav');
       const toggle = document.getElementById('category-toggle');
 
-      const poems = [
+      const defaultPoems = [
         '昨夜西风凋碧树，独上高楼，望尽天涯路。',
         '长风破浪会有时，直挂云帆济沧海。',
         '但愿人长久，千里共婵娟。',
@@ -189,18 +189,38 @@
 
       const sample = arr => arr[Math.floor(Math.random() * arr.length)];
 
-      const setRandomLine = () => {
-        const welcome = document.getElementById('welcome-line');
+      const fadeText = (el, text) => {
+        if (!el) return;
+        el.style.transition = 'opacity 0.6s ease';
+        el.style.opacity = '0';
+        setTimeout(() => {
+          el.innerText = text;
+          el.style.opacity = '1';
+        }, 620);
+      };
+
+      const setRandomLine = poems => {
         const sub = document.getElementById('welcome-subline');
         const hero = document.getElementById('category-hero-line');
 
-        if (welcome) welcome.innerText = sample(poems);
-        if (sub) sub.innerText = sample(poems);
-        if (hero) hero.innerText = sample(poems);
+        const one = sample(poems);
+        const two = sample(poems);
+
+        fadeText(sub, one);
+        fadeText(hero, two);
       };
 
-      // 初始化随机诗句
-      setRandomLine();
+      // 加载外部诗句词库（优先），失败则使用默认。
+      fetch('/poems.json')
+        .then(res => res.ok ? res.json() : Promise.reject())
+        .then(poems => {
+          setRandomLine(poems);
+          setInterval(() => setRandomLine(poems), 5000);
+        })
+        .catch(() => {
+          setRandomLine(defaultPoems);
+          setInterval(() => setRandomLine(defaultPoems), 5000);
+        });
 
       // 欢迎提示自动隐藏
       if (overlay) {

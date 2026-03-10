@@ -1203,7 +1203,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #a7ff4d;
+  background: #ff337d;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2801,6 +2801,16 @@ a:hover {
   font-size: 1.05em;
   color: rgba(255,255,255,0.85);
   margin: 0;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+.category-hero-title {
+  margin-bottom: 20px;
+  font-size: 1.6em;
+  color: #222;
+  letter-spacing: 0.05em;
+  opacity: 1;
+  transition: opacity 0.6s ease;
 }
 .category-hero {
   padding: 40px 0 60px;
