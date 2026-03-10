@@ -14,8 +14,16 @@
     'rgba(233, 30, 99, 0.85)'    // 粉红色
   ];
 
-  let pileCount = 0;
-  const maxPile = 40;
+  const columns = 12;
+  const columnHeights = new Array(columns).fill(0);
+  const maxPileHeight = 120; // 最大堆高
+
+  const getColumnIndex = x => {
+    const colW = window.innerWidth / columns;
+    return Math.min(columns - 1, Math.max(0, Math.floor(x / colW)));
+  };
+
+  const getFallDistance = y => Math.max(window.innerHeight - y + 40, 160);
 
   document.addEventListener('click', function (e) {
     // 生成 5 片树叶
@@ -29,6 +37,8 @@
       const sway = (Math.random() - 0.5) * 60; // 左右摆动幅度
 
       leaf.className = 'leaf-particle';
+      const fallDistance = getFallDistance(e.clientY);
+
       leaf.style.cssText = `
         width: ${size}px;
         height: ${size * 1.25}px;
@@ -38,17 +48,18 @@
         left: ${e.clientX}px;
         top: ${e.clientY}px;
         --sway: ${sway}px;
-        --fall-duration: ${Math.random() * 1.2 + 1.4}s;
-        --fall-delay: ${Math.random() * 0.15}s;
+        --fall-distance: ${fallDistance}px;
+        --fall-duration: ${Math.random() * 1.5 + 2.8}s;
+        --fall-delay: ${Math.random() * 0.1}s;
       `;
 
       document.body.appendChild(leaf);
 
       // 结束后落到堆积区
       leaf.addEventListener('animationend', () => {
-        // 计算堆积位置
-        pileCount = Math.min(pileCount + 1, maxPile);
-        const offset = pileCount * 1.8; // 堆高
+        const col = getColumnIndex(e.clientX);
+        const offset = columnHeights[col];
+        columnHeights[col] = Math.min(columnHeights[col] + size * 0.75, maxPileHeight);
 
         leaf.style.position = 'absolute';
         leaf.style.top = 'auto';
@@ -60,25 +71,26 @@
         leaf.style.opacity = '0.95';
         leaf.classList.add('leaf-landed');
 
-        // 保持堆积：当堆叠过高时，逐渐清理最早的叶片
-        if (pileCount >= maxPile) {
-          const oldest = floor.querySelector('.leaf-landed');
-          if (oldest) {
-            oldest.style.transition = 'opacity 1s ease';
-            oldest.style.opacity = '0';
-            setTimeout(() => oldest.remove(), 1000);
-          }
+        // 10s 后渐隐并移除
+        setTimeout(() => {
+          leaf.style.opacity = '0';
+          setTimeout(() => leaf.remove(), 1000);
+        }, 10000);
+
+        // 维护堆高，不超过最大高度（缓慢回落）
+        if (columnHeights[col] >= maxPileHeight) {
+          columnHeights[col] = Math.max(columnHeights[col] - size * 0.4, maxPileHeight * 0.6);
         }
 
         floor.appendChild(leaf);
       });
 
-      // 移除过旧的叶子，避免内存累积
+      // 保护性清理：如果叶子动画未完成但已存在于页面太久，则移除
       setTimeout(() => {
         if (leaf.parentNode && leaf.parentNode !== floor) {
           leaf.remove();
         }
-      }, 7000);
+      }, 15000);
     }
   });
 
@@ -112,15 +124,19 @@
         opacity: 1;
         transform: translate(0, 0) rotate(0deg);
       }
-      40% {
-        transform: translate(var(--sway), 40px) rotate(80deg);
+      30% {
+        transform: translate(calc(var(--sway) * 0.7), 40px) rotate(70deg);
       }
-      70% {
-        transform: translate(calc(var(--sway) * 0.6), 90px) rotate(160deg);
+      60% {
+        transform: translate(calc(var(--sway) * 0.4), 80px) rotate(140deg);
+      }
+      90% {
+        transform: translate(calc(var(--sway) * 0.2), var(--fall-distance)) rotate(220deg);
+        opacity: 0.6;
       }
       100% {
-        opacity: 0.4;
-        transform: translate(calc(var(--sway) * 0.3), 160px) rotate(260deg);
+        opacity: 0.5;
+        transform: translate(calc(var(--sway) * 0.1), var(--fall-distance)) rotate(260deg);
       }
     }
   `;
