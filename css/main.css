@@ -1203,7 +1203,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #960dd2;
+  background: #e412d4;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -3050,7 +3050,7 @@ html.dark ol li::marker {
   max-width: 900px;
   margin: 0 auto 40px;
   padding: 20px 25px;
-  background: #fac7b7;
+  background: rgba(255,255,255,0.95);
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
