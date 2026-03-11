@@ -210,16 +210,38 @@
         fadeText(hero, two);
       };
 
-      // 加载外部诗句词库（优先），失败则使用默认。
-      fetch('/poems.json')
-        .then(res => res.ok ? res.json() : Promise.reject())
+      // 首先尝试从「今日诗词」API获取每日诗句，失败时回退到本地诗句库。
+      const fetchDailyPoem = () =>
+        fetch('https://v2.jinrishici.com/one.json', { headers: { Accept: 'application/json' } })
+          .then(res => (res.ok ? res.json() : Promise.reject()))
+          .then(data => {
+            const content = data?.data?.content || '';
+            const origin = data?.data?.origin?.title || '';
+            const author = data?.data?.origin?.author || '';
+            const lines = content
+              .split(/(?<=。|！|？|；)/)
+              .map(l => l.trim())
+              .filter(Boolean);
+            if (origin) lines.push(`《${origin}》${author ? ` · ${author}` : ''}`);
+            return lines.length ? lines : Promise.reject();
+          });
+
+      fetchDailyPoem()
         .then(poems => {
           setRandomLine(poems);
           setInterval(() => setRandomLine(poems), 5000);
         })
         .catch(() => {
-          setRandomLine(defaultPoems);
-          setInterval(() => setRandomLine(defaultPoems), 5000);
+          fetch('/poems.json')
+            .then(res => (res.ok ? res.json() : Promise.reject()))
+            .then(poems => {
+              setRandomLine(poems);
+              setInterval(() => setRandomLine(poems), 5000);
+            })
+            .catch(() => {
+              setRandomLine(defaultPoems);
+              setInterval(() => setRandomLine(defaultPoems), 5000);
+            });
         });
 
       // 欢迎提示自动隐藏
