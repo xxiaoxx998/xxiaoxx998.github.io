@@ -199,15 +199,17 @@
         }, 620);
       };
 
-      const setRandomLine = poems => {
+      const setRandomLine = ({ lines, suffix }) => {
         const sub = document.getElementById('welcome-subline');
         const hero = document.getElementById('category-hero-line');
 
-        const one = sample(poems);
-        const two = sample(poems);
+        const one = sample(lines);
+        const two = sample(lines);
 
-        fadeText(sub, one);
-        fadeText(hero, two);
+        const format = line => (suffix ? `${line} ${suffix}` : line);
+
+        fadeText(sub, format(one));
+        fadeText(hero, format(two));
       };
 
       // 首先尝试从「今日诗词」API获取每日诗句，失败时回退到本地诗句库。
@@ -222,25 +224,25 @@
               .split(/(?<=。|！|？|；)/)
               .map(l => l.trim())
               .filter(Boolean);
-            if (origin) lines.push(`《${origin}》${author ? ` · ${author}` : ''}`);
-            return lines.length ? lines : Promise.reject();
+            const suffix = origin ? `《${origin}》${author ? ` · ${author}` : ''}` : '';
+            return { lines, suffix };
           });
 
       fetchDailyPoem()
-        .then(poems => {
-          setRandomLine(poems);
-          setInterval(() => setRandomLine(poems), 5000);
+        .then(poemData => {
+          setRandomLine(poemData);
+          setInterval(() => setRandomLine(poemData), 5000);
         })
         .catch(() => {
           fetch('/poems.json')
             .then(res => (res.ok ? res.json() : Promise.reject()))
             .then(poems => {
-              setRandomLine(poems);
-              setInterval(() => setRandomLine(poems), 5000);
+              setRandomLine({ lines: poems, suffix: '' });
+              setInterval(() => setRandomLine({ lines: poems, suffix: '' }), 5000);
             })
             .catch(() => {
-              setRandomLine(defaultPoems);
-              setInterval(() => setRandomLine(defaultPoems), 5000);
+              setRandomLine({ lines: defaultPoems, suffix: '' });
+              setInterval(() => setRandomLine({ lines: defaultPoems, suffix: '' }), 5000);
             });
         });
 
