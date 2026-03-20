@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-50x50.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-50x50.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-center-circle.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="theme-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="汇编语言第二章通用寄存器AX、BX、CX、DX，为了兼容可分为两个八位XH和XLSI、DI、SP、BP、 PSW    汇编指令 描述     mov ax&#x2F;ah, 18 AX &#x3D; 18 mov指令不能用于修改CS和IP的值   add ax, 8 AX &#x3D; AX + 8    jmp 段地址:偏移地址 同时修改CS和IP的值    jmp 某一合法寄存器ax IP &#x3D; ax  仅修改IP的值">
+<meta property="og:type" content="article">
+<meta property="og:title" content="汇编">
+<meta property="og:url" content="http://example.com/2026/03/20/%E6%B1%87%E7%BC%96/index.html">
+<meta property="og:site_name" content="Ducklinger">
+<meta property="og:description" content="汇编语言第二章通用寄存器AX、BX、CX、DX，为了兼容可分为两个八位XH和XLSI、DI、SP、BP、 PSW    汇编指令 描述     mov ax&#x2F;ah, 18 AX &#x3D; 18 mov指令不能用于修改CS和IP的值   add ax, 8 AX &#x3D; AX + 8    jmp 段地址:偏移地址 同时修改CS和IP的值    jmp 某一合法寄存器ax IP &#x3D; ax  仅修改IP的值">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-03-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:43:19.447Z">
+<meta property="article:author" content="Ducklinger">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2026/03/20/%E6%B1%87%E7%BC%96/">
+
+
+<script id="page-configurations">
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>汇编 | Ducklinger</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ducklinger</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/20/%E6%B1%87%E7%BC%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          汇编
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-03-20 00:00:00 / 修改时间：20:43:19" itemprop="dateCreated datePublished" datetime="2026-03-20T00:00:00+08:00">2026-03-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="汇编语言"><a href="#汇编语言" class="headerlink" title="汇编语言"></a>汇编语言</h1><h2 id="第二章"><a href="#第二章" class="headerlink" title="第二章"></a>第二章</h2><p>通用寄存器AX、BX、CX、DX，为了兼容可分为两个八位XH和XL<br>SI、DI、SP、BP、</p>
+<p>PSW</p>
+<table>
+<thead>
+<tr>
+<th>汇编指令</th>
+<th>描述</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>mov ax/ah, 18</code></td>
+<td><code>AX = 18</code></td>
+<td><code>mov指令不能用于修改CS和IP的值</code></td>
+</tr>
+<tr>
+<td><code>add ax, 8</code></td>
+<td><code>AX = AX + 8</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>jmp 段地址:偏移地址</code></td>
+<td><code>同时修改CS和IP的值</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>jmp 某一合法寄存器ax</code></td>
+<td><code>IP = ax </code></td>
+<td><code>仅修改IP的值</code></td>
+</tr>
+<tr>
+<td><code>mov ax,[offset]</code></td>
+<td><code>AX = 地址为DS+offset内存单元中的数据</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="段寄存器"><a href="#段寄存器" class="headerlink" title="段寄存器"></a>段寄存器</h3><p>一个段的的最大长度为64KB：<br><code>段地址1000H左移一位+偏移地址1111H 偏移最大为16位</code></p>
+<p>四个段寄存器SS、 DS、ES、CS<br>指令指针寄存器IP<br>即CPU任意时刻将 <strong><code>CS:IP</code></strong> 指向的内容当做指令来执行<br>8086CPU给出物理地址的方法： <code>段地址 * 16 + 偏移地址</code><br>执行过程：</p>
+<ol>
+<li><p>从CS:IP指向的内存读取指令，取到指令缓冲器</p>
+</li>
+<li><p>IP&#x3D;IP+所读取指令的长度，从而指向下一条指令</p>
+</li>
+<li><p>执行指令跳转到（1）</p>
+<p> <strong>8086CPU在加电启动或复位后<br> CS–&gt;FFFFH<br> IP–&gt;0000H</strong></p>
+</li>
+</ol>
+<h3 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">-r : 查询寄存器状态</span><br><span class="line">-r ax : 查询并且修改ax寄存器</span><br><span class="line">-t : 从CS:IP处开始执行指令</span><br><span class="line">-d 段地址+偏移地址: 查询内存的内容(128bit) </span><br><span class="line">-e 段地址+偏移地址 00 01 02 : 修改内存中的内容</span><br><span class="line">-a 段地址+偏移地址:以汇编的形式写入指令</span><br><span class="line">-g ABCDH: 执行程序到当前代码段的 ABCDH 处</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">-e 1000:0000 1 &#x27;a&#x27; 2 &#x27;b&#x27; 3 &#x27;c&#x27;</span><br><span class="line"><span class="meta prompt_">---&gt; </span><span class="language-bash">1000:0000 01 61 02 62 ...(修改单位为一个字节 8bit)</span></span><br></pre></td></tr></table></figure>
+<hr>
+<p><strong>各类存储芯片</strong></p>
+<pre><code>随机存储器
+装有BIOS是ROM（只读）
+接口卡上的RAM
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>00000~9FFFF</th>
+<th>主储存器地址空间（RAM）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>A000~BFFFF</strong></td>
+<td><strong>显存地址空间</strong></td>
+</tr>
+<tr>
+<td><strong>C0000~FFFFF</strong></td>
+<td><strong>各类ROM地址空间</strong></td>
+</tr>
+<tr>
+<td>[^8086PC机内存地址空间分配1]</td>
+<td></td>
+</tr>
+</tbody></table>
+<ol>
+<li>从地址0~9FFFF读取数据实际就是在读取主随机存储器上的数据</li>
+<li>向地址A0000~BFFFF的内存单元写入数据就是向显存写入数据</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-e b810:0000 01 01 02 02 03 03 04 04</span><br><span class="line">发现屏幕出现色块</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>向C0000~FFFFF的内存单元写入数据是无效的（ROM是只读的）</li>
+</ol>
+<hr>
+<h2 id="第三章-寄存器及内存访问"><a href="#第三章-寄存器及内存访问" class="headerlink" title="第三章 寄存器及内存访问"></a>第三章 寄存器及内存访问</h2><p><strong>字单元：</strong> 存放一个字型数据的内存单元（16位）<br><strong>N地址字单元：</strong> 起始地址为N的字单元<br><strong>DS寄存器：</strong> 存放要访问<strong>数据的段地址</strong>  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mov bx,1000H</span><br><span class="line">mov ds,bx</span><br><span class="line">mov al,[0]</span><br><span class="line"></span><br><span class="line">al 取 (ds)1000H:0000H 内存单元的数据，同理可以将数据存进内存单元</span><br><span class="line">8086CPU不支持将数据直接传入段寄存器 </span><br></pre></td></tr></table></figure>
+
+<h3 id="栈、栈段"><a href="#栈、栈段" class="headerlink" title="栈、栈段"></a>栈、栈段</h3><p>8086CPU提供出站入站的指令且<strong>出站入栈操作都是以字为单位</strong>，<code>SS:SP</code>选择一段以栈的方式访问的内存空间<br><strong>段寄存器SS和寄存器SP，任意时刻SS:SP指向栈顶元素</strong>  SP递减栈由高地址向低地址</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">设置栈</span><br><span class="line">mov ax,1000H</span><br><span class="line">mov ss,ax</span><br><span class="line">mov sp,0010H //设置栈顶偏移地址</span><br><span class="line"></span><br><span class="line">mov ax,0123H </span><br><span class="line">push ax</span><br><span class="line">mov bx,2266H</span><br><span class="line">push bx</span><br><span class="line">mov cx,1122H</span><br><span class="line">push cx</span><br><span class="line">pop ax //取出栈顶元素给ax</span><br><span class="line">pop bx</span><br><span class="line">pop cx</span><br><span class="line"></span><br><span class="line">push : sp = sp - 2 -&gt; push</span><br><span class="line">pop : pop -&gt; sp = sp + 2</span><br></pre></td></tr></table></figure>
+
+<p><strong>Debug的T命令在修改寄存器SS的指令时，下一条指令会紧接着执行</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov ax,1000H</span><br><span class="line">mov ss,ax</span><br><span class="line">mov sp,0010H  //这一步会紧接在第二部进行</span><br></pre></td></tr></table></figure>
+
+<h3 id="实验任务"><a href="#实验任务" class="headerlink" title="实验任务"></a>实验任务</h3><p><strong>单步调试（t指令）导致新建栈区内存发生改变</strong></p>
+<p>你在设置好 <code>SS</code>（栈段）和 <code>SP</code>（栈顶指针）后，就算还没有写任何 <code>push</code> 指令，这块内存也被修改了。</p>
+<p><strong>根本原因在于：</strong> Debug 的 <code>t</code> 指令（单步跟踪）是依赖 CPU 的<strong>单步中断（Interrupt 1）</strong> 来实现的。<strong>CPU 在处理任何中断时，都必须强制把当前的“运行现场”保存到当前有效的栈</strong>中，以便中断处理完后能找回原来的执行位置。这个“强制保存”的动作，悄无声息地向你的栈里压入了 6 个字节的数据。</p>
+<ol>
+<li><p><strong>执行目标指令：</strong> CPU 首先老老实实地执行完你代码里的一条指令（例如 <code>mov bx, 1111</code>）。</p>
+</li>
+<li><p><strong>触发单步中断：</strong> 指令执行完毕的瞬间，CPU 硬件检测到标志寄存器（FLAGS）中的 TF（陷阱标志）位为 1，立即触发单步中断。</p>
+</li>
+<li><p><strong>强制压栈保存现场（内存被修改的发生地）：</strong> 为了能去执行 Debug 程序的代码并在屏幕上显示寄存器状态，CPU 自动将 3 个关键寄存器压入你刚刚设置好的栈 (<code>SS:SP</code>) 中。顺序严格如下：</p>
+<ul>
+<li><p><code>SP = SP - 2</code>，<strong>压入 FLAGS</strong> （保存各种状态标志位）</p>
+</li>
+<li><p><code>SP = SP - 2</code>，<strong>压入 CS</strong> （保存中断发生时的代码段地址）</p>
+</li>
+<li><p><code>SP = SP - 2</code>，<strong>压入 IP</strong> （保存中断发生时，下一条将要执行的指令的偏移地址）</p>
+</li>
+</ul>
+<p> <em>（此时，你的栈空间里就多出了这 6 个字节的数据，内存发生了你所观察到的改变。）</em>
+ </p>
+</li>
+<li><p><strong>移交控制权：</strong> CPU 修改 CS 和 IP 的值，跳转到 Debug 的核心代码去执行，把刚才的寄存器状态打印到你的屏幕上。</p>
+</li>
+<li><p><strong>恢复现场并返回：</strong> Debug 程序执行到最后一条指令 <strong><code>IRET</code></strong>（中断返回）。CPU 再次接管，按照刚才压栈的<strong>逆序</strong>，从你的栈中把数据弹出来：</p>
+<ul>
+<li><p>弹出数据到 <strong>IP</strong>，<code>SP = SP + 2</code></p>
+</li>
+<li><p>弹出数据到 <strong>CS</strong>，<code>SP = SP + 2</code></p>
+</li>
+<li><p>弹出数据到 <strong>FLAGS</strong>，<code>SP = SP + 2</code> <em>(此时，SP 指针完美复位，CPU 回到你的代码中继续待命，等待你输入下一个命令。)</em></p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="第四章"><a href="#第四章" class="headerlink" title="第四章"></a>第四章</h2><p><strong>汇编 -&gt; 编译  -&gt; 链接</strong></p>
+<h3 id="源程序"><a href="#源程序" class="headerlink" title="源程序"></a>源程序</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">assume cs:codesg /* 表示codesg段 与cs寄存器（代码段） 有关系 即为一个代码段 */</span><br><span class="line"></span><br><span class="line">/* cs 代码段、 ss 栈段、 ds 数据段 */</span><br><span class="line"></span><br><span class="line">codesg segment</span><br><span class="line"></span><br><span class="line">		mov ax, 0123H</span><br><span class="line">		mov bx, 2345H</span><br><span class="line">		...</span><br><span class="line">		</span><br><span class="line">		/*  实现程序返回将CPU的控制权交给原来的程序 */</span><br><span class="line">		mov ax, 4c00H</span><br><span class="line">		int 21H</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line">codesg ends</span><br><span class="line"></span><br><span class="line">end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>伪指令</th>
+<th>用法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>end</td>
+<td>汇编结束标记符</td>
+</tr>
+<tr>
+<td>codesg  segment … codesg ends</td>
+<td>定义一个段</td>
+</tr>
+<tr>
+<td>assume</td>
+<td>某寄存器和某段有关</td>
+</tr>
+</tbody></table>
+<h3 id="程序执行的过程跟踪"><a href="#程序执行的过程跟踪" class="headerlink" title="程序执行的过程跟踪"></a>程序执行的过程跟踪</h3><p><strong>编程 -&gt; 1.asm -&gt; 编译 -&gt; 1.obj -&gt; 连接 -&gt; 1.exe -&gt; 加载（command）</strong></p>
+<p>加载过程：</p>
+<ol>
+<li>先找到一段初始SA 地址作为起始地址有足够空间</li>
+<li>在内存区的钱256个字节中创建一个程序前缀（PSP）的数据区</li>
+<li>PSP区：SA：0<br>程序区：SA：SA + 10H:0<br>一般将两个区分成不同段</li>
+<li>DA &#x3D; SA 初始化后 CS:IP &#x3D; SA + 10H:0<br>(程序执行完后可通过DS来查看代码所在地址)</li>
+</ol>
+<h2 id="第五章-BX-和-loop-指令"><a href="#第五章-BX-和-loop-指令" class="headerlink" title="第五章 [ BX ] 和 loop 指令"></a>第五章 [ BX ] 和 loop 指令</h2><ul>
+<li>BX -&gt; EA 存放的数据作为一个偏移地址</li>
+<li>cx（count计数寄存器 用于loop循环的次数）先减一在判 0</li>
+<li><strong>在汇编源程序中，数据不能以字母开头</strong> <strong>A000H -&gt; 0A000H</strong></li>
+</ul>
+<p>Debug 和 汇编编译器 masm 对 [num] 的处理不同：</p>
+<ul>
+<li>debug会认为是ds:num处的数据，而masm会认为是<strong>常数</strong>num</li>
+</ul>
+<p>解决方式：</p>
+<ul>
+<li>在[ num ]前面显式给出段地址所在的段寄存器 例如 ds : [num]<br>**此处ds称作段前缀 **</li>
+</ul>
+<p>DOS和其他合法程序一般不会使用0:200<del>0:2ff(00200h</del>002ffh)的256个字节空间所以这段空间是安全的（在0:0026处写入数据会造成死机）</p>
+<h3 id="实验：向内存0-200-0-23F-依次传入数据-0-63（3FH）"><a href="#实验：向内存0-200-0-23F-依次传入数据-0-63（3FH）" class="headerlink" title="实验：向内存0:200 ~ 0:23F 依次传入数据 0 ~ 63（3FH）"></a>实验：向内存0:200 ~ 0:23F 依次传入数据 0 ~ 63（3FH）</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code</span><br><span class="line">    code segment</span><br><span class="line">            mov ax, 0020H</span><br><span class="line">            mov ds, ax</span><br><span class="line">            mov bx, 0</span><br><span class="line">            mov cx, 64</span><br><span class="line">        s:	mov ds:[bx], bx</span><br><span class="line">        	inc bx</span><br><span class="line">        	loop s</span><br><span class="line">        	</span><br><span class="line">        	mov ax, 4c00H</span><br><span class="line">        	int 21h</span><br><span class="line">        	</span><br><span class="line">      code ends</span><br><span class="line">      end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="第六章包含多个段的程序"><a href="#第六章包含多个段的程序" class="headerlink" title="第六章包含多个段的程序"></a>第六章包含多个段的程序</h2><ul>
+<li>dw(define word)用于定义字形数据，若在段开头定义则数据地址在该段的起始地址（cs:[0]）</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">	dw 0123h, 0456h, 0789h, 0abch, 0defh, 0fedh, 0cbah, 0987h</span><br><span class="line">	start:	mov bx, 0</span><br><span class="line">			mov ax, 0</span><br><span class="line">			</span><br><span class="line">			mov cx, 8</span><br><span class="line">		s:	add ax, cs:[bx]</span><br><span class="line">			add bx, 2</span><br><span class="line">			loop s</span><br><span class="line">			</span><br><span class="line">			mov ax, 4c00h</span><br><span class="line">			int 21h</span><br><span class="line">			</span><br><span class="line">code ends</span><br><span class="line">end start</span><br><span class="line"></span><br><span class="line">// start指明程序的入口，否则会从dw存储的数据区开始执行</span><br></pre></td></tr></table></figure>
+
+<p>可执行文件由<strong>描述信息</strong>和<strong>程序组成</strong>，程序来源于<strong>源程序中的汇编指令和定义的数据</strong>，描述信息主要是<strong>编译和连接程序对源程序中相关伪指令进行的处理</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">;6.3</span><br><span class="line">assume cs:code</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">	dw 0123h, 0456h, 0789h, 0abch, 0defh, 0fedh, 0cbah, 0987h</span><br><span class="line">	dw 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0</span><br><span class="line">	;此处定义16个字形数据开辟栈的空间，可以说用于定义数据，也可以说用来开辟内存空间</span><br></pre></td></tr></table></figure>
+
+<p>定义多个不同段可以直接用段的名称找到该段的地址</p>
+<p>例如定义了 <strong>stack</strong>段，可以使用 <code>mov  ax, stack</code>  可以将栈段的地址传入ax</p>
+
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------到底咯QAQ嘎嘎-------------</div>
+    
+</div>
+      </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="jachinzhang1/jachinzhang1.github.io"
+        data-repo-id="R_kgDONy_q0w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONy_q084Cmo0P"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/03/20/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" rel="prev" title="编译原理">
+      <i class="fa fa-chevron-left"></i> 编译原理
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">汇编语言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0"><span class="nav-number">1.1.</span> <span class="nav-text">第二章</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">1.1.1.</span> <span class="nav-text">段寄存器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.1.2.</span> <span class="nav-text">实验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0-%E5%AF%84%E5%AD%98%E5%99%A8%E5%8F%8A%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE"><span class="nav-number">1.2.</span> <span class="nav-text">第三章 寄存器及内存访问</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%88%E3%80%81%E6%A0%88%E6%AE%B5"><span class="nav-number">1.2.1.</span> <span class="nav-text">栈、栈段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.2.2.</span> <span class="nav-text">实验任务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0"><span class="nav-number">1.3.</span> <span class="nav-text">第四章</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A8%8B%E5%BA%8F"><span class="nav-number">1.3.1.</span> <span class="nav-text">源程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%89%A7%E8%A1%8C%E7%9A%84%E8%BF%87%E7%A8%8B%E8%B7%9F%E8%B8%AA"><span class="nav-number">1.3.2.</span> <span class="nav-text">程序执行的过程跟踪</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0-BX-%E5%92%8C-loop-%E6%8C%87%E4%BB%A4"><span class="nav-number">1.4.</span> <span class="nav-text">第五章 [ BX ] 和 loop 指令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%EF%BC%9A%E5%90%91%E5%86%85%E5%AD%980-200-0-23F-%E4%BE%9D%E6%AC%A1%E4%BC%A0%E5%85%A5%E6%95%B0%E6%8D%AE-0-63%EF%BC%883FH%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">实验：向内存0:200 ~ 0:23F 依次传入数据 0 ~ 63（3FH）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E5%85%AD%E7%AB%A0%E5%8C%85%E5%90%AB%E5%A4%9A%E4%B8%AA%E6%AE%B5%E7%9A%84%E7%A8%8B%E5%BA%8F"><span class="nav-number">1.5.</span> <span class="nav-text">第六章包含多个段的程序</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ducklinger"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Ducklinger</p>
+  <div class="site-description" itemprop="description">分享日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxiaoxx998" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxiaoxx998" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-leaf"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">山河辽阔，人间烟火 | 记录生活与思考的碎片</span>
+</div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  <script defer src="/lib/three/three.min.js"></script>
+    <script defer src="/lib/three/canvas_sphere.min.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  <!-- 鼠标点击特效 -->
+  <script src="/js/click-effect.js"></script>
+</body>
+</html>
