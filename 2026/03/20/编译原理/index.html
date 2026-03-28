@@ -36,7 +36,7 @@
 <meta property="og:image" content="http://example.com/images/byyl6.png">
 <meta property="og:image" content="http://example.com/images/byyl7.png">
 <meta property="article:published_time" content="2026-03-19T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-24T08:26:20.069Z">
+<meta property="article:modified_time" content="2026-03-27T07:33:37.338Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/images/czxt1.png">
@@ -190,7 +190,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-03-24 16:26:20" itemprop="dateModified" datetime="2026-03-24T16:26:20+08:00">2026-03-24</time>
+                <time title="修改时间：2026-03-27 15:33:37" itemprop="dateModified" datetime="2026-03-27T15:33:37+08:00">2026-03-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -330,7 +330,13 @@
 <p><strong>左线性 (Left Linear)</strong>：非终结符在左边。</p>
 <p>S -&gt; S10 | 0</p>
 <p><strong>正规式 (Regular Expression)</strong>：</p>
-<p>0(10)*</p>
+<p>S -&gt; 0A</p>
+<p>A -&gt; 1S | 空串</p>
+<ul>
+<li>正规式一次只能换出一个终结符</li>
+<li>区分文法类型，先看左边如果左边出现了终结符，那么可能为0、1型文法，如果左边<strong>有且仅有一个非终结符</strong>则可能为2、3型文法，再看右边，（满足0、1）如果右边变短为0型，否则为1型，（满足2、3）如果一次产生多个非终结符则为2型否则为3型</li>
+<li><strong>规则规定：</strong> 在同一个文法中，<strong>左线性产生式和右线性产生式不能混用</strong>。一旦混用，它就降级为 <strong>2型文法（上下文无关文法）</strong> 了</li>
+</ul>
 <h5 id="与语法分析相关的几个概念"><a href="#与语法分析相关的几个概念" class="headerlink" title="与语法分析相关的几个概念"></a>与语法分析相关的几个概念</h5><ul>
 <li>最左推导最右推导：在推导的每一步选择句型最左边&#x2F;右边的<strong>非终结符</strong>进行替换</li>
 <li>最左规约最右规约：总是先规约符号串中<strong>最左边&#x2F;最右边</strong>可以被规约的部分</li>
@@ -392,13 +398,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2026/03/09/CTF/JAVA%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/" rel="prev" title="">
-      <i class="fa fa-chevron-left"></i> 
+    <a href="/2026/03/20/%E6%B1%87%E7%BC%96/" rel="prev" title="汇编">
+      <i class="fa fa-chevron-left"></i> 汇编
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2026/03/20/%E6%B1%87%E7%BC%96/" rel="next" title="汇编">
-      汇编 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
