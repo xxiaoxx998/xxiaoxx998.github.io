@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-50x50.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-50x50.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="theme-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="第一章 引论编译和解释 编译方式的特点   目标程序是机器语言-&gt; 编译阶段和运行阶段 目标程序是汇编语言程序-&gt;编译、汇编和运行  故编译程序生成的目标程序不一定是机器语言程序还有可能是汇编语言程序  解释方式   按源程序边翻译边执行，立即执行，直接输出 不生成目标代码，但是也需要进行语法、词法和语义分析  编译程序工作过程position :&#x3D; initial + rate *">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译原理">
+<meta property="og:url" content="http://example.com/2026/03/20/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="Ducklinger">
+<meta property="og:description" content="第一章 引论编译和解释 编译方式的特点   目标程序是机器语言-&gt; 编译阶段和运行阶段 目标程序是汇编语言程序-&gt;编译、汇编和运行  故编译程序生成的目标程序不一定是机器语言程序还有可能是汇编语言程序  解释方式   按源程序边翻译边执行，立即执行，直接输出 不生成目标代码，但是也需要进行语法、词法和语义分析  编译程序工作过程position :&#x3D; initial + rate *">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/czxt1.png">
+<meta property="og:image" content="http://example.com/images/byyl2.png">
+<meta property="og:image" content="http://example.com/images/byyl3.png">
+<meta property="og:image" content="http://example.com/images/byyl4.png">
+<meta property="og:image" content="http://example.com/images/byyl5.png">
+<meta property="og:image" content="http://example.com/images/byyl6.png">
+<meta property="og:image" content="http://example.com/images/byyl7.png">
+<meta property="article:published_time" content="2026-03-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-04-12T02:59:29.792Z">
+<meta property="article:author" content="Ducklinger">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/czxt1.png">
+
+<link rel="canonical" href="http://example.com/2026/03/20/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">
+
+
+<script id="page-configurations">
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>编译原理 | Ducklinger</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ducklinger</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section">分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/20/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          编译原理
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2026-03-20 00:00:00" itemprop="dateCreated datePublished" datetime="2026-03-20T00:00:00+08:00">2026-03-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-04-12 10:59:29" itemprop="dateModified" datetime="2026-04-12T10:59:29+08:00">2026-04-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="第一章-引论"><a href="#第一章-引论" class="headerlink" title="第一章 引论"></a>第一章 引论</h2><h3 id="编译和解释"><a href="#编译和解释" class="headerlink" title="编译和解释"></a><strong>编译和解释</strong></h3><ol>
+<li>编译方式的特点</li>
+</ol>
+<ul>
+<li>目标程序是机器语言-&gt; 编译阶段和运行阶段</li>
+<li>目标程序是汇编语言程序-&gt;编译、汇编和运行</li>
+</ul>
+<p>故编译程序生成的目标程序<strong>不一定是机器语言程序</strong>还有可能是<strong>汇编语言程序</strong></p>
+<ol start="2">
+<li>解释方式</li>
+</ol>
+<ul>
+<li>按源程序边翻译边执行，立即执行，直接输出</li>
+<li>不生成目标代码，但是也需要进行语法、词法和语义分析</li>
+</ul>
+<h3 id="编译程序工作过程"><a href="#编译程序工作过程" class="headerlink" title="编译程序工作过程"></a><strong>编译程序工作过程</strong></h3><p><code>position := initial + rate * 60</code></p>
+<ol>
+<li><p>词法分析</p>
+<p>识别单词（单词表），即：属性字：&lt;类别号， 自身值&gt;</p>
+<p><code>&lt;id,1&gt; &lt;:=&gt; &lt;id,2&gt; &lt;+&gt; &lt;id,3&gt; &lt;*&gt; &lt;number,4&gt;</code></p>
+</li>
+<li><p>语法分析</p>
+<p>涉及到语法描述：</p>
+<p>BNF范式 和 扩充BNF范式：利用递归的方式定义语法</p>
+<p><img src="/../images/czxt1.png"></p>
+<p>通过语法树对于法进行分析</p>
+</li>
+<li><p>语义分析</p>
+<p>简化语法树，优化结构变得更加精简</p>
+<p>用另一种内部形式表述出来或者直接用目标语言表示出来</p>
+<p><strong>确定类型、类型和运算的合法性，识别含义并做静态检查</strong></p>
+<p>例如 int + float 时自动将int 转化为float类型</p>
+</li>
+<li><p>中间代码生成（不一定有）</p>
+<p>把 <strong>树</strong> 变成一条条语法</p>
+</li>
+<li><p>代码优化（不一定有）</p>
+<p>优化的是中间代码&#x2F;目标代码的代码质量</p>
+</li>
+<li><p>目标代码生成</p>
+<p>源程序-&gt;（中间形式）-&gt;目标指令</p>
+<p>目标指令可能是<strong>绝对代码、可重新定位的指令代码或者汇编指令代码</strong></p>
+</li>
+<li><p>表格管理</p>
+<p>登记源程序中出现的每个名字以及其属性</p>
+</li>
+</ol>
+<p>为了优化代码的局部和全局优化，以及构建控制流图，会划分基本块</p>
+<p><strong>划分基本块的原则是</strong>：</p>
+<ol>
+<li><strong>入口语句</strong>：程序的第一条语句；任何跳转语句的目标语句；跳转语句之后紧跟的那条语句。</li>
+<li><strong>基本块范围</strong>：从一个入口语句开始，直到下一个入口语句前或程序结束。</li>
+</ol>
+<h4 id="单遍和多遍-：对源程序和中间产物的扫描次数"><a href="#单遍和多遍-：对源程序和中间产物的扫描次数" class="headerlink" title="单遍和多遍 ：对源程序和中间产物的扫描次数"></a><strong>单遍和多遍</strong> ：对源程序和中间产物的扫描次数</h4><h4 id="编译程序的前后端"><a href="#编译程序的前后端" class="headerlink" title="编译程序的前后端"></a><strong>编译程序的前后端</strong></h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">词法分析-|</span><br><span class="line">语法分析-|</span><br><span class="line">语义分析-|--&gt;前端：与源语言有关部分</span><br><span class="line">中间代码-|</span><br><span class="line">代码优化-|(部分)----|-&gt;后端：与目标及其有关（不依赖源语言）</span><br><span class="line">目标代码-----------|</span><br></pre></td></tr></table></figure>
+
+<h4 id="高级语言具有自编译性"><a href="#高级语言具有自编译性" class="headerlink" title="高级语言具有自编译性"></a>高级语言具有自编译性</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">S_T    	H:宿主语言</span><br><span class="line"> H		s:源程序</span><br><span class="line"> 		T:目标语言</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/byyl2.png"></p>
+<ul>
+<li>理解：可以用Pascal高级语言编写编译程序再用底层的A语言编译成A程序再用来编译Pascal程序，并非多此一举，可以优化代码，例如在编写的Pascal编译程序更加高级优化得更好</li>
+</ul>
+<h4 id="自展"><a href="#自展" class="headerlink" title="自展"></a><strong>自展</strong></h4><p>先有一个a1语言核心部分构造的一个小小的编译程序，再通过类似自编译完成a2语言的编译程序，再用a2编译a3语言，从而可以构造a3的编译程序</p>
+<h4 id="交叉编译器"><a href="#交叉编译器" class="headerlink" title="交叉编译器"></a>交叉编译器</h4><p>L高级语言在A宿主机上实现能在B主机上运行的L语言</p>
+<p><img src="/../images/byyl3.png"></p>
+<h2 id="第二章形式语言概论"><a href="#第二章形式语言概论" class="headerlink" title="第二章形式语言概论"></a>第二章形式语言概论</h2><p><strong>字母表</strong> ：元素的非空有穷集合，元素称为符号</p>
+<p><strong>符号串</strong>的前缀、后缀、子串都可以是空串，长度、连接、方幂、逆</p>
+<p><strong>符号串集合</strong>的乘积，和（+）就是并起来，乘就是连接前部分属于集合A后部分属于集合B，<strong>符号串集合的方幂</strong>就是集合的自乘积（0次方为空串），<strong>符号串集合的正闭包</strong>就是<strong>集合A从一次方幂累加到n次方幂</strong>，闭包就是包含零次幂</p>
+<h4 id="文法"><a href="#文法" class="headerlink" title="文法"></a>文法</h4><ol>
+<li>终结符Vn：语言中不可分割的最小单元，组成句子的基本单元</li>
+<li>非终结符VT：不是最终结果，而是一个占位符，可以继续细分的逻辑概念</li>
+<li>产生式P：定义如何把非终结符转化为终结符或一串非终结符</li>
+</ol>
+<h5 id="1-0-型文法-Type-0-Grammar"><a href="#1-0-型文法-Type-0-Grammar" class="headerlink" title="1.  0 型文法 (Type-0 Grammar)"></a>1.  0 型文法 (Type-0 Grammar)</h5><ul>
+<li><strong>别名</strong>：短语结构文法、无限制文法。</li>
+<li><strong>规则特点</strong>：alpha -&gt; beta。左边必须包含至少一个非终结符。</li>
+<li><strong>通俗理解</strong>：<strong>没有任何限制</strong>。你可以把一堆东西变成另一堆东西。它对应的能力最强，相当于“图灵机”，能计算任何可计算的问题。</li>
+</ul>
+<h5 id="2-1型文法-Type-1-Grammar"><a href="#2-1型文法-Type-1-Grammar" class="headerlink" title="2.  1型文法 (Type-1 Grammar)"></a>2.  1型文法 (Type-1 Grammar)</h5><ul>
+<li><strong>别名</strong>：<strong>上下文有关文法</strong> (Context-Sensitive Grammar)。</li>
+<li><strong>规则特点</strong>：产生的后面部分不能比前面短。</li>
+<li><strong>通俗理解</strong>：<strong>“变出来的东西不能缩水”</strong>。之所以叫“上下文有关”，是因为要把一个符号 A 替换掉，可能需要看它前后的邻居是谁。<ul>
+<li>例如：只有当 a 在 b 旁边时，A 才能变成 c。</li>
+</ul>
+</li>
+</ul>
+<h5 id="3-2-型文法-Type-2-Grammar-——-最核心"><a href="#3-2-型文法-Type-2-Grammar-——-最核心" class="headerlink" title="3.  2 型文法 (Type-2 Grammar) —— 最核心"></a>3.  2 型文法 (Type-2 Grammar) —— <strong>最核心</strong></h5><ul>
+<li><strong>别名</strong>：<strong>上下文无关文法</strong> (Context-Free Grammar, CFG)。</li>
+<li><strong>规则特点</strong>：A-&gt;beta。<strong>左边必须且只能是一个非终结符</strong>。</li>
+<li><strong>通俗理解</strong>：<strong>“不管你在哪，你就是你”</strong>。无论这个 $A$ 出现在句子的什么位置，它都可以直接按照规则替换，不需要看左右邻居（上下文）。</li>
+<li><strong>应用</strong>：绝大多数<strong>编程语言的语法</strong>（比如 C++、Python 的 <code>if</code> 语句、循环语句）都是用 2 型文法描述的。</li>
+</ul>
+<h5 id="4-3-型文法-Type-3-Grammar"><a href="#4-3-型文法-Type-3-Grammar" class="headerlink" title="4. 3 型文法 (Type-3 Grammar)"></a>4. 3 型文法 (Type-3 Grammar)</h5><ul>
+<li><strong>别名</strong>：<strong>正规文法</strong> (Regular Grammar) 或线性文法。</li>
+<li><strong>规则特点</strong>：A-&gt;a 或 A -&gt; aB。</li>
+<li><strong>通俗理解</strong>：<strong>“排队生成”</strong>。每次替换只能产生一个终结符，或者一个终结符带一个非终结符。它非常有规律，像一串糖葫芦。</li>
+<li><strong>应用</strong>：<strong>正则表达式</strong>。主要用于识别“单词”（词法分析），比如判断一个字符串是不是合法的变量名或数字。</li>
+</ul>
+<p>实例：<br><img src="/../images/byyl4.png" alt="0型文法 Type-0 Grammar"></p>
+<h4 id="语言和语法树"><a href="#语言和语法树" class="headerlink" title="语言和语法树"></a>语言和语法树</h4><p><img src="/../images/byyl5.png"></p>
+<p>【例1】 S -&gt; aSb | ab</p>
+<p>【例2】 S -&gt; aSb | 空串</p>
+<p>【例3】 S -&gt; AB、 A -&gt; aA | 空串、 B -&gt; bB | b</p>
+<p>【例4】 S -&gt; AB、A -&gt; aA | a、B -&gt; bbB | b</p>
+<p>【例5】 S -&gt; aSbb | ab</p>
+<p>【例6】</p>
+<p><strong>右线性 (Right Linear)</strong>：非终结符在右边。</p>
+<p>S -&gt; 0A 、 A -&gt; 10A | 空串</p>
+<p><strong>左线性 (Left Linear)</strong>：非终结符在左边。</p>
+<p>S -&gt; S10 | 0</p>
+<p><strong>正规式 (Regular Expression)</strong>：</p>
+<p>S -&gt; 0A</p>
+<p>A -&gt; 1S | 空串</p>
+<ul>
+<li>正规式一次只能换出一个终结符</li>
+<li>区分文法类型，先看左边如果左边出现了终结符，那么可能为0、1型文法，如果左边<strong>有且仅有一个非终结符</strong>则可能为2、3型文法，再看右边，（满足0、1）如果右边变短为0型，否则为1型，（满足2、3）如果一次产生多个非终结符则为2型否则为3型</li>
+<li><strong>规则规定：</strong> 在同一个文法中，<strong>左线性产生式和右线性产生式不能混用</strong>。一旦混用，它就降级为 <strong>2型文法（上下文无关文法）</strong> 了</li>
+</ul>
+<h5 id="与语法分析相关的几个概念"><a href="#与语法分析相关的几个概念" class="headerlink" title="与语法分析相关的几个概念"></a>与语法分析相关的几个概念</h5><ul>
+<li>最左推导最右推导：在推导的每一步选择句型最左边&#x2F;右边的<strong>非终结符</strong>进行替换</li>
+<li>最左规约最右规约：总是先规约符号串中<strong>最左边&#x2F;最右边</strong>可以被规约的部分</li>
+</ul>
+<h5 id="文法的使用限制"><a href="#文法的使用限制" class="headerlink" title="文法的使用限制"></a>文法的使用限制</h5><ul>
+<li><strong>二义性</strong>：某个句子存在两颗及以上不同的语法树（存在两个或以上的最左或最右推导），消除二义性，语义加上限制或者重构</li>
+<li><strong>文法压缩</strong>：消除多余的产生式，产生式生成的是无法化简的，没用上的产生式，及有害产生式 S-&gt;S（<strong>避免二义性</strong>）</li>
+<li><strong>删除单规则</strong>：A -&gt; B（把B替换）<strong>降低语法树的深度</strong></li>
+<li><strong>删除空产生式</strong> （<strong>也会导致二义性</strong>） A -&gt; 空串</li>
+</ul>
+<p><img src="/../images/byyl6.png"></p>
+<p>D可能为空，把D为空的情况带入 <strong>B</strong>有<strong>B -&gt; 空串</strong>，同样要删除，B取值DD和D，对于A，原本BD都有可能为空，及可能有<strong>abD、aBb、ab</strong>，再把不为空正常情况带入及<strong>aBbD</strong></p>
+<ul>
+<li><strong>消除直接左递归</strong>（采用EBNF(){0&#x2F;n}[0&#x2F;1]方式）<strong>U-&gt;Uy</strong></li>
+</ul>
+<p><img src="/../images/byyl7.png"></p>
+<p><strong>匹配待检查串</strong>：</p>
+<ul>
+<li>自上而下：从S出发构造语法树，带回溯的方式，或者设计的时候限制文法，使其唯一确定，也就是线性的。</li>
+<li>自下而上：从待检查串出发构造语法树，正常推导找最左规约</li>
+</ul>
+<p><strong>关于优先级的文法（加减乘除、交并补反）</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">【N】 实现交并括号取反优先级的文法且为左结合</span><br><span class="line">S  ::= S∨A | A</span><br><span class="line">A  ::= A∧B | B</span><br><span class="line">B  ::= ¬B | (S) | a</span><br></pre></td></tr></table></figure>
+
+<h4 id="为什么这么看？"><a href="#为什么这么看？" class="headerlink" title="为什么这么看？"></a>为什么这么看？</h4><p>你可以想象一下推导树（语法树）的生长方向：</p>
+<ul>
+<li><strong>左递归</strong>：为了匹配更多的输入，语法树会不断向<strong>左下方</strong>延伸。在最终生成的树中，最左边的运算节点处于树的最底层，因此会被最先计算。</li>
+<li><strong>右递归</strong>：语法树向<strong>右下方</strong>延伸，最右边的运算处于底层，最先计算。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------到底咯QAQ嘎嘎-------------</div>
+    
+</div>
+      </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="jachinzhang1/jachinzhang1.github.io"
+        data-repo-id="R_kgDONy_q0w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONy_q084Cmo0P"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/03/09/CTF/JAVA%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2026/03/20/%E6%B1%87%E7%BC%96/" rel="next" title="汇编">
+      汇编 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0-%E5%BC%95%E8%AE%BA"><span class="nav-number">1.</span> <span class="nav-text">第一章 引论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%92%8C%E8%A7%A3%E9%87%8A"><span class="nav-number">1.1.</span> <span class="nav-text">编译和解释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E7%A8%8B%E5%BA%8F%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">编译程序工作过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E9%81%8D%E5%92%8C%E5%A4%9A%E9%81%8D-%EF%BC%9A%E5%AF%B9%E6%BA%90%E7%A8%8B%E5%BA%8F%E5%92%8C%E4%B8%AD%E9%97%B4%E4%BA%A7%E7%89%A9%E7%9A%84%E6%89%AB%E6%8F%8F%E6%AC%A1%E6%95%B0"><span class="nav-number">1.2.1.</span> <span class="nav-text">单遍和多遍 ：对源程序和中间产物的扫描次数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%89%8D%E5%90%8E%E7%AB%AF"><span class="nav-number">1.2.2.</span> <span class="nav-text">编译程序的前后端</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80%E5%85%B7%E6%9C%89%E8%87%AA%E7%BC%96%E8%AF%91%E6%80%A7"><span class="nav-number">1.2.3.</span> <span class="nav-text">高级语言具有自编译性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%B1%95"><span class="nav-number">1.2.4.</span> <span class="nav-text">自展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%99%A8"><span class="nav-number">1.2.5.</span> <span class="nav-text">交叉编译器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%E5%BD%A2%E5%BC%8F%E8%AF%AD%E8%A8%80%E6%A6%82%E8%AE%BA"><span class="nav-number">2.</span> <span class="nav-text">第二章形式语言概论</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%87%E6%B3%95"><span class="nav-number">2.0.1.</span> <span class="nav-text">文法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-0-%E5%9E%8B%E6%96%87%E6%B3%95-Type-0-Grammar"><span class="nav-number">2.0.1.1.</span> <span class="nav-text">1.  0 型文法 (Type-0 Grammar)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1%E5%9E%8B%E6%96%87%E6%B3%95-Type-1-Grammar"><span class="nav-number">2.0.1.2.</span> <span class="nav-text">2.  1型文法 (Type-1 Grammar)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-%E5%9E%8B%E6%96%87%E6%B3%95-Type-2-Grammar-%E2%80%94%E2%80%94-%E6%9C%80%E6%A0%B8%E5%BF%83"><span class="nav-number">2.0.1.3.</span> <span class="nav-text">3.  2 型文法 (Type-2 Grammar) —— 最核心</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-3-%E5%9E%8B%E6%96%87%E6%B3%95-Type-3-Grammar"><span class="nav-number">2.0.1.4.</span> <span class="nav-text">4. 3 型文法 (Type-3 Grammar)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%AD%E8%A8%80%E5%92%8C%E8%AF%AD%E6%B3%95%E6%A0%91"><span class="nav-number">2.0.2.</span> <span class="nav-text">语言和语法树</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%8E%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E7%9B%B8%E5%85%B3%E7%9A%84%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5"><span class="nav-number">2.0.2.1.</span> <span class="nav-text">与语法分析相关的几个概念</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%87%E6%B3%95%E7%9A%84%E4%BD%BF%E7%94%A8%E9%99%90%E5%88%B6"><span class="nav-number">2.0.2.2.</span> <span class="nav-text">文法的使用限制</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%B9%88%E7%9C%8B%EF%BC%9F"><span class="nav-number">2.0.3.</span> <span class="nav-text">为什么这么看？</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ducklinger"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Ducklinger</p>
+  <div class="site-description" itemprop="description">分享日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxiaoxx998" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxiaoxx998" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-circle"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">山河辽阔，人间烟火 | 记录生活与思考的碎片</span>
+</div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/js/site-interactions.js"></script>
+
+</body>
+</html>

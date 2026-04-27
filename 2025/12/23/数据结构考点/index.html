@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-50x50.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-50x50.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="theme-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="由于数据结构考试是半开卷，结合往年试卷整理部分知识点，用于应对网安数据结构考试  第一部分：STL 容器与基础数据结构 (必得分)考点： 熟练使用 STL 代替手写底层结构，节省时间解决复杂问题。|容器|头文件|声明|核心操作 (必背)|常见应用场景||Vector (动态数组)|&lt;vector&gt;|vector&lt;int&gt; v;|push_back(x), pop_back">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构考点">
+<meta property="og:url" content="http://example.com/2025/12/23/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%80%83%E7%82%B9/index.html">
+<meta property="og:site_name" content="Ducklinger">
+<meta property="og:description" content="由于数据结构考试是半开卷，结合往年试卷整理部分知识点，用于应对网安数据结构考试  第一部分：STL 容器与基础数据结构 (必得分)考点： 熟练使用 STL 代替手写底层结构，节省时间解决复杂问题。|容器|头文件|声明|核心操作 (必背)|常见应用场景||Vector (动态数组)|&lt;vector&gt;|vector&lt;int&gt; v;|push_back(x), pop_back">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-12-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-01-11T02:02:05.268Z">
+<meta property="article:author" content="Ducklinger">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2025/12/23/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%80%83%E7%82%B9/">
+
+
+<script id="page-configurations">
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>数据结构考点 | Ducklinger</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ducklinger</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section">分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/12/23/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%80%83%E7%82%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构考点
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-12-23 00:00:00" itemprop="dateCreated datePublished" datetime="2025-12-23T00:00:00+08:00">2025-12-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-01-11 10:02:05" itemprop="dateModified" datetime="2026-01-11T10:02:05+08:00">2026-01-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ul>
+<li>由于数据结构考试是半开卷，结合往年试卷整理部分知识点，用于应对网安数据结构考试</li>
+</ul>
+<h2 id="第一部分：STL-容器与基础数据结构-必得分"><a href="#第一部分：STL-容器与基础数据结构-必得分" class="headerlink" title="第一部分：STL 容器与基础数据结构 (必得分)"></a>第一部分：STL 容器与基础数据结构 (必得分)</h2><p><strong>考点：</strong> 熟练使用 STL 代替手写底层结构，节省时间解决复杂问题。<br>|<strong>容器</strong>|<strong>头文件</strong>|<strong>声明</strong>|<strong>核心操作 (必背)</strong>|<strong>常见应用场景</strong>|<br>|<strong>Vector</strong> (动态数组)|<code>&lt;vector&gt;</code>|<code>vector&lt;int&gt; v;</code>|<code>push_back(x)</code>, <code>pop_back()</code>, <code>size()</code>, <code>v[i]</code>|替代普通数组，邻接表存储|<br>|<strong>Stack</strong> (栈)|<code>&lt;stack&gt;</code>|<code>stack&lt;int&gt; s;</code>|<code>push(x)</code>, <code>pop()</code> (无返回), <code>top()</code>, <code>empty()</code>|DFS，表达式求值，括号匹配|<br>|<strong>Queue</strong> (队列)|<code>&lt;queue&gt;</code>|<code>queue&lt;int&gt; q;</code>|<code>push(x)</code>, <code>pop()</code>, <code>front()</code>, <code>back()</code>|BFS，层序遍历|<br>|<strong>Priority Queue</strong> (优先队列)|<code>&lt;queue&gt;</code>|<code>priority_queue&lt;int&gt; pq;</code>|<code>push(x)</code>, <code>pop()</code>, <code>top()</code>, <code>empty()</code>|Dijkstra，Huffman树，贪心算法|<br>|<strong>Map</strong> (映射)|<code>&lt;map&gt;</code>|<code>map&lt;string, int&gt; mp;</code>|<code>mp[&quot;key&quot;]=val</code>, <code>mp.count(&quot;key&quot;)</code>, <code>mp.erase()</code>|统计频率，离散化，哈希替代品|</p>
+<h3 id="2-优先队列-Priority-Queue-特别说明"><a href="#2-优先队列-Priority-Queue-特别说明" class="headerlink" title="2. 优先队列 (Priority Queue) 特别说明"></a>2. 优先队列 (Priority Queue) 特别说明</h3><ul>
+<li><p><strong>默认是大顶堆</strong> (最大的元素在 <code>top</code>): <code>priority_queue&lt;int&gt; pq;</code></p>
+</li>
+<li><p><strong>定义小顶堆</strong> (最小的元素在 <code>top</code>): <code>priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; pq;</code></p>
+</li>
+<li><p><strong>自定义结构体排序</strong> (例如 Dijkstra 中存 <code>{距离, 节点}</code>):</p>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">    <span class="type">int</span> id, dist;</span><br><span class="line">    <span class="comment">// 重载 &lt; 运算符。注意：优先队列默认是大顶堆，想让 dist 小的排前面，符号要反着写 (&gt;)</span></span><br><span class="line">    <span class="type">bool</span> <span class="keyword">operator</span>&lt;(<span class="type">const</span> Node&amp; other) <span class="type">const</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> dist &gt; other.dist; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">priority_queue&lt;Node&gt; pq;</span><br></pre></td></tr></table></figure>
+
+<h2 id="第二部分：堆-Heap-的底层实现与改造-重难点"><a href="#第二部分：堆-Heap-的底层实现与改造-重难点" class="headerlink" title="第二部分：堆 (Heap) 的底层实现与改造 (重难点)"></a>第二部分：堆 (Heap) 的底层实现与改造 (重难点)</h2><p><strong>考点：</strong> 题目可能不让你用 STL，而是让你“实现入队出队”或“建堆”，或者问你“修改某个值的优先级后如何调整”。</p>
+<p><strong>核心公式 (数组下标从 0 开始):</strong></p>
+<ul>
+<li><p>父节点: <code>parent = (i - 1) / 2</code></p>
+</li>
+<li><p>左孩子: <code>left = 2 * i + 1</code></p>
+</li>
+<li><p>右孩子: <code>right = 2 * i + 2</code></p>
+</li>
+</ul>
+<h3 id="1-下沉-Sift-Down-用于出队-建堆"><a href="#1-下沉-Sift-Down-用于出队-建堆" class="headerlink" title="1. 下沉 (Sift-Down) - 用于出队&#x2F;建堆"></a>1. 下沉 (Sift-Down) - 用于出队&#x2F;建堆</h3><p><em>逻辑：</em> 节点变小了（小顶堆中变大了），沉下去。和左右孩子中较小（小顶堆）的那个交换。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 维护大顶堆的下沉操作 (n是堆大小)</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">siftDown</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; heap, <span class="type">int</span> i, <span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> parent = i;</span><br><span class="line">    <span class="type">int</span> child = <span class="number">2</span> * parent + <span class="number">1</span>; <span class="comment">// 左孩子</span></span><br><span class="line">    <span class="keyword">while</span> (child &lt; n) &#123;</span><br><span class="line">        <span class="comment">// 如果右孩子存在且比左孩子大，选右孩子</span></span><br><span class="line">        <span class="keyword">if</span> (child + <span class="number">1</span> &lt; n &amp;&amp; heap[child + <span class="number">1</span>] &gt; heap[child]) &#123;</span><br><span class="line">            child++; </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果父节点已经比最大的孩子大，满足堆性质，停止</span></span><br><span class="line">        <span class="keyword">if</span> (heap[parent] &gt;= heap[child]) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">swap</span>(heap[parent], heap[child]); <span class="comment">// 交换</span></span><br><span class="line">        parent = child; <span class="comment">// 继续向下</span></span><br><span class="line">        child = <span class="number">2</span> * parent + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-上浮-Sift-Up-用于入队"><a href="#2-上浮-Sift-Up-用于入队" class="headerlink" title="2. 上浮 (Sift-Up) - 用于入队"></a>2. 上浮 (Sift-Up) - 用于入队</h3><p><em>逻辑：</em> 节点变大了（小顶堆中变小了），浮上来。和父节点比。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">siftUp</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; heap, <span class="type">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> child = i;</span><br><span class="line">    <span class="type">int</span> parent = (child - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">while</span> (child &gt; <span class="number">0</span>) &#123; <span class="comment">// 只要没到根节点</span></span><br><span class="line">        <span class="keyword">if</span> (heap[parent] &gt;= heap[child]) <span class="keyword">break</span>; <span class="comment">// 满足堆性质</span></span><br><span class="line">        <span class="built_in">swap</span>(heap[parent], heap[child]);</span><br><span class="line">        child = parent;</span><br><span class="line">        parent = (child - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-建堆-Build-Heap"><a href="#3-建堆-Build-Heap" class="headerlink" title="3. 建堆 (Build Heap)"></a>3. 建堆 (Build Heap)</h3><ul>
+<li><p><strong>方法：</strong> 从<strong>最后一个非叶子节点</strong> <code>(n/2 - 1)</code> 开始，依次向前做 <code>siftDown</code>。</p>
+</li>
+<li><p><strong>复杂度：</strong> $O(n)$ (不是 $O(n \log n)$)</p>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">buildHeap</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; v)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = v.<span class="built_in">size</span>() / <span class="number">2</span> - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="built_in">siftDown</span>(v, i, v.<span class="built_in">size</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="第三部分：图算法模版与“魔改”指南-必考大题"><a href="#第三部分：图算法模版与“魔改”指南-必考大题" class="headerlink" title="第三部分：图算法模版与“魔改”指南 (必考大题)"></a>第三部分：图算法模版与“魔改”指南 (必考大题)</h2><h3 id="1-存储结构"><a href="#1-存储结构" class="headerlink" title="1. 存储结构"></a>1. 存储结构</h3><ul>
+<li><p><strong>邻接矩阵 (Adjacency Matrix):</strong> <code>int g[N][N];</code> (适合稠密图&#x2F;Floyd)</p>
+</li>
+<li><p><strong>邻接表 (Adjacency List):</strong> <code>vector&lt;pair&lt;int, int&gt;&gt; adj[N];</code> (适合稀疏图&#x2F;Dijkstra)</p>
+</li>
+<li><p><strong>孩子兄弟链 (Child-Sibling):</strong> 用于树&#x2F;森林的存储。</p>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">TreeNode</span> &#123;</span><br><span class="line">    <span class="type">int</span> val;</span><br><span class="line">    TreeNode *firstChild; <span class="comment">// 指向第一个孩子</span></span><br><span class="line">    TreeNode *nextSibling; <span class="comment">// 指向下一个兄弟</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="2-Dijkstra-算法-最短路径"><a href="#2-Dijkstra-算法-最短路径" class="headerlink" title="2. Dijkstra 算法 (最短路径)"></a>2. Dijkstra 算法 (最短路径)</h3><p><strong>适用：</strong> 正权图，单源最短路。 <strong>模版 (堆优化版):</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">int</span> INF = <span class="number">0x3f3f3f3f</span>;</span><br><span class="line"><span class="type">int</span> dist[N]; <span class="comment">// 存储起点到各点的最短距离</span></span><br><span class="line"><span class="type">bool</span> visited[N]; <span class="comment">// 标记是否已确定最短路</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dijkstra</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 小顶堆：pair&lt;距离, 节点ID&gt;</span></span><br><span class="line">    priority_queue&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;, vector&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&gt;, greater&lt;&gt;&gt; pq;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">memset</span>(dist, <span class="number">0x3f</span>, <span class="built_in">sizeof</span>(dist)); <span class="comment">// 初始化为无穷大</span></span><br><span class="line">    <span class="built_in">memset</span>(visited, <span class="number">0</span>, <span class="built_in">sizeof</span>(visited));</span><br><span class="line">    </span><br><span class="line">    dist[start] = <span class="number">0</span>;</span><br><span class="line">    pq.<span class="built_in">push</span>(&#123;<span class="number">0</span>, start&#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (!pq.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        <span class="type">int</span> u = pq.<span class="built_in">top</span>().second;</span><br><span class="line">        pq.<span class="built_in">pop</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (visited[u]) <span class="keyword">continue</span>; <span class="comment">// 懒删除关键：避免重复处理</span></span><br><span class="line">        visited[u] = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; edge : adj[u]) &#123;</span><br><span class="line">            <span class="type">int</span> v = edge.first; <span class="comment">// 目标点</span></span><br><span class="line">            <span class="type">int</span> w = edge.second; <span class="comment">// 边权</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// --- 改造点：如果有特殊约束，修改这里的 if 条件 ---</span></span><br><span class="line">            <span class="keyword">if</span> (!visited[v] &amp;&amp; dist[u] + w &lt; dist[v]) &#123;</span><br><span class="line">                dist[v] = dist[u] + w;</span><br><span class="line">                pq.<span class="built_in">push</span>(&#123;dist[v], v&#125;);</span><br><span class="line">                <span class="comment">// --- 改造点：如果需要记录路径，这里加 path[v] = u; ---</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>🚧 常见考试“改造”思路：</strong></p>
+<ul>
+<li><p><strong>点权：</strong> 如果经过每个城市需要交费 <code>cost[v]</code>。</p>
+<ul>
+<li>修改松弛条件：<code>if (dist[u] + w + cost[v] &lt; dist[v])</code></li>
+</ul>
+</li>
+<li><p><strong>最少换乘&#x2F;最少节点数：</strong> 路径长度相同时，选节点少的。</p>
+<ul>
+<li><p>增加一个数组 <code>numNodes[N]</code>。</p>
+</li>
+<li><p><code>if (dist[u] + w == dist[v] &amp;&amp; numNodes[u] + 1 &lt; numNodes[v]) { ... }</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-Floyd-算法-多源最短路"><a href="#3-Floyd-算法-多源最短路" class="headerlink" title="3. Floyd 算法 (多源最短路)"></a>3. Floyd 算法 (多源最短路)</h3><p><strong>适用：</strong> 任意两点间最短路，允许负边（不允许负环）。 <strong>模版：</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始化：d[i][j] = 边权; d[i][i] = 0; 无边 = INF</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> k = <span class="number">1</span>; k &lt;= n; k++) &#123;          <span class="comment">// 第一层必须是中间点 k</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;      <span class="comment">// 起点</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; j++) &#123;  <span class="comment">// 终点</span></span><br><span class="line">            <span class="comment">// --- 改造点：最小环检测或连通性判断 ---</span></span><br><span class="line">            <span class="keyword">if</span> (d[i][k] != INF &amp;&amp; d[k][j] != INF) &#123;</span><br><span class="line">                 d[i][j] = <span class="built_in">min</span>(d[i][j], d[i][k] + d[k][j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-最小生成树-Prim-vs-Kruskal"><a href="#4-最小生成树-Prim-vs-Kruskal" class="headerlink" title="4. 最小生成树 (Prim vs Kruskal)"></a>4. 最小生成树 (Prim vs Kruskal)</h3><ul>
+<li><p><strong>Prim (普里姆):</strong> 类似 Dijkstra，适合稠密图。维护 <code>min_dist</code> 数组（表示节点到<strong>生成树集合</strong>的最小距离）。</p>
+</li>
+<li><p><strong>Kruskal (克鲁斯卡尔):</strong> 适合稀疏图。<strong>必考并查集</strong>。</p>
+</li>
+</ul>
+<h3 id="1-堆优化版-推荐"><a href="#1-堆优化版-推荐" class="headerlink" title="1. 堆优化版 (推荐)"></a>1. 堆优化版 (推荐)</h3><p>这是最通用的版本，适合大多数算法题（如 LeetCode, PAT, CSP 等），使用 <code>priority_queue</code> 实现。</p>
+<p><strong>适用场景</strong>：点多边少，或者 $N \le 10^5$ 级别。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> INF = <span class="number">0x3f3f3f3f</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> MAXN = <span class="number">100005</span>; <span class="comment">// 根据题目修改最大点数</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Edge</span> &#123;</span><br><span class="line">    <span class="type">int</span> to;</span><br><span class="line">    <span class="type">int</span> weight;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 邻接表存图</span></span><br><span class="line">vector&lt;Edge&gt; adj[MAXN];</span><br><span class="line"><span class="type">int</span> dis[MAXN];      <span class="comment">// 存储节点到“当前生成树集合”的最小距离</span></span><br><span class="line"><span class="type">bool</span> vis[MAXN];     <span class="comment">// 标记节点是否加入生成树</span></span><br><span class="line"><span class="type">int</span> n, m;           <span class="comment">// n个点，m条边</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 返回最小生成树的权值和，如果无法连通返回 -1</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">prim</span><span class="params">(<span class="type">int</span> start)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 小根堆，存储 &#123;距离, 节点ID&#125;，距离小的优先</span></span><br><span class="line">    priority_queue&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;, vector&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&gt;, greater&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&gt;&gt; pq;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">memset</span>(dis, <span class="number">0x3f</span>, <span class="built_in">sizeof</span>(dis));</span><br><span class="line">    <span class="built_in">memset</span>(vis, <span class="literal">false</span>, <span class="built_in">sizeof</span>(vis));</span><br><span class="line"></span><br><span class="line">    dis[start] = <span class="number">0</span>;</span><br><span class="line">    pq.<span class="built_in">push</span>(&#123;<span class="number">0</span>, start&#125;);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> res = <span class="number">0</span>;    <span class="comment">// 最小生成树权值和</span></span><br><span class="line">    <span class="type">int</span> cnt = <span class="number">0</span>;    <span class="comment">// 已加入生成树的点数量</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (!pq.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        <span class="keyword">auto</span> t = pq.<span class="built_in">top</span>();</span><br><span class="line">        pq.<span class="built_in">pop</span>();</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> d = t.first;</span><br><span class="line">        <span class="type">int</span> u = t.second;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果该点已经在生成树中，跳过</span></span><br><span class="line">        <span class="keyword">if</span> (vis[u]) <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将该点加入生成树</span></span><br><span class="line">        vis[u] = <span class="literal">true</span>;</span><br><span class="line">        res += d;</span><br><span class="line">        cnt++;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 遍历 u 的所有邻边</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; edge : adj[u]) &#123;</span><br><span class="line">            <span class="type">int</span> v = edge.to;</span><br><span class="line">            <span class="type">int</span> w = edge.weight;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 核心逻辑：如果 v 不在生成树中，且通过 u 到 v 的距离更短</span></span><br><span class="line">            <span class="keyword">if</span> (!vis[v] &amp;&amp; w &lt; dis[v]) &#123;</span><br><span class="line">                dis[v] = w; <span class="comment">// 更新 v 到生成树集合的距离</span></span><br><span class="line">                pq.<span class="built_in">push</span>(&#123;dis[v], v&#125;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果加入的点数量少于 n，说明图不连通</span></span><br><span class="line">    <span class="keyword">if</span> (cnt &lt; n) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    cin &gt;&gt; n &gt;&gt; m;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i) &#123;</span><br><span class="line">        <span class="type">int</span> u, v, w;</span><br><span class="line">        cin &gt;&gt; u &gt;&gt; v &gt;&gt; w;</span><br><span class="line">        <span class="comment">// 无向图建立双向边</span></span><br><span class="line">        adj[u].<span class="built_in">push_back</span>(&#123;v, w&#125;);</span><br><span class="line">        adj[v].<span class="built_in">push_back</span>(&#123;u, w&#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> ans = <span class="built_in">prim</span>(<span class="number">1</span>); <span class="comment">// 假设从 1 号点开始</span></span><br><span class="line">    <span class="keyword">if</span> (ans == <span class="number">-1</span>) cout &lt;&lt; <span class="string">&quot;orz&quot;</span> &lt;&lt; endl; <span class="comment">// 不能生成树</span></span><br><span class="line">    <span class="keyword">else</span> cout &lt;&lt; ans &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Kruskal 模版 (配合并查集):</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Edge</span> &#123; <span class="type">int</span> u, v, w; &#125;;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">cmp</span><span class="params">(Edge a, Edge b)</span> </span>&#123; <span class="keyword">return</span> a.w &lt; b.w; &#125; <span class="comment">// 按边权排序</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> parent[N]; <span class="comment">// 并查集数组</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">find</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123; <span class="keyword">return</span> parent[x] == x ? x : parent[x] = <span class="built_in">find</span>(parent[x]); &#125; <span class="comment">// 路径压缩</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">kruskal</span><span class="params">(<span class="type">int</span> n, vector&lt;Edge&gt;&amp; edges)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">sort</span>(edges.<span class="built_in">begin</span>(), edges.<span class="built_in">end</span>(), cmp); <span class="comment">// 1. 排序</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>; i&lt;=n; i++) parent[i] = i; <span class="comment">// 2. 初始化并查集</span></span><br><span class="line">    </span><br><span class="line">    <span class="type">int</span> mst_weight = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> edges_count = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; e : edges) &#123;</span><br><span class="line">        <span class="type">int</span> rootU = <span class="built_in">find</span>(e.u);</span><br><span class="line">        <span class="type">int</span> rootV = <span class="built_in">find</span>(e.v);</span><br><span class="line">        <span class="keyword">if</span> (rootU != rootV) &#123; <span class="comment">// 3. 不构成环，则加入</span></span><br><span class="line">            parent[rootU] = rootV;</span><br><span class="line">            mst_weight += e.w;</span><br><span class="line">            edges_count++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> (edges_count == n - <span class="number">1</span>) ? mst_weight : <span class="number">-1</span>; <span class="comment">// 判断是否连通</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第四部分：搜索与排序"><a href="#第四部分：搜索与排序" class="headerlink" title="第四部分：搜索与排序"></a>第四部分：搜索与排序</h2><h3 id="1-二分搜索-Binary-Search-改造"><a href="#1-二分搜索-Binary-Search-改造" class="headerlink" title="1. 二分搜索 (Binary Search) 改造"></a>1. 二分搜索 (Binary Search) 改造</h3><p><strong>标准模版：</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">binarySearch</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> target)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> left = <span class="number">0</span>, right = nums.<span class="built_in">size</span>() - <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> (left &lt;= right) &#123; <span class="comment">// 注意是 &lt;=</span></span><br><span class="line">        <span class="type">int</span> mid = left + (right - left) / <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">if</span> (nums[mid] == target) <span class="keyword">return</span> mid; </span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (nums[mid] &lt; target) left = mid + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">else</span> right = mid - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>🚧 常见考试“改造”思路：</strong></p>
+<ul>
+<li><p><strong>查找第一个 &gt;&#x3D; target 的位置 (Lower Bound):</strong></p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> left = <span class="number">0</span>, right = n; <span class="comment">// 注意 right 可以取到 n</span></span><br><span class="line"><span class="keyword">while</span> (left &lt; right) &#123;   <span class="comment">// 注意是 &lt;</span></span><br><span class="line">    <span class="type">int</span> mid = left + (right - left) / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">if</span> (nums[mid] &gt;= target) right = mid; <span class="comment">// 尝试往左找</span></span><br><span class="line">    <span class="keyword">else</span> left = mid + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> left; <span class="comment">// 此时 left 就是答案</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2-排序-Sort"><a href="#2-排序-Sort" class="headerlink" title="2. 排序 (Sort)"></a>2. 排序 (Sort)</h3><ul>
+<li><p><strong>使用 STL:</strong> <code>sort(v.begin(), v.end(), cmp);</code></p>
+</li>
+<li><p><strong>自定义比较器 cmp:</strong></p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 例如：先按分数降序，分数相同按学号升序</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">cmp</span><span class="params">(Student a, Student b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (a.score != b.score) <span class="keyword">return</span> a.score &gt; b.score; </span><br><span class="line">    <span class="keyword">return</span> a.id &lt; b.id;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h2 id="第五部分：递归-vs-迭代-程序设计技巧"><a href="#第五部分：递归-vs-迭代-程序设计技巧" class="headerlink" title="第五部分：递归 vs 迭代 (程序设计技巧)"></a>第五部分：递归 vs 迭代 (程序设计技巧)</h2><p><strong>考点：</strong> 可能会让你把递归代码改成非递归（迭代），或者反之。</p>
+<ul>
+<li><p><strong>递归 (Recursion):</strong> 核心是<strong>基准情况 (Base Case)</strong> 和 <strong>递归步骤</strong>。</p>
+</li>
+<li><p><strong>迭代 (Iteration):</strong> 核心是<strong>使用栈 (Stack)</strong> 模拟系统调用栈。</p>
+</li>
+</ul>
+<p><strong>示例：二叉树前序遍历 (Pre-order)</strong></p>
+<ul>
+<li><p><strong>递归版:</strong></p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(Node* root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root) <span class="keyword">return</span>;</span><br><span class="line">    <span class="built_in">visit</span>(root);       <span class="comment">// 中</span></span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;left);   <span class="comment">// 左</span></span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;right);  <span class="comment">// 右</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>非递归版 (使用 Stack):</strong></p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfsIterative</span><span class="params">(Node* root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root) <span class="keyword">return</span>;</span><br><span class="line">    stack&lt;Node*&gt; s;</span><br><span class="line">    s.<span class="built_in">push</span>(root);</span><br><span class="line">    <span class="keyword">while</span> (!s.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        Node* cur = s.<span class="built_in">top</span>(); s.<span class="built_in">pop</span>();</span><br><span class="line">        <span class="built_in">visit</span>(cur);</span><br><span class="line">        <span class="comment">// 关键：栈是后进先出，所以先压右孩子，再压左孩子</span></span><br><span class="line">        <span class="keyword">if</span> (cur-&gt;right) s.<span class="built_in">push</span>(cur-&gt;right);</span><br><span class="line">        <span class="keyword">if</span> (cur-&gt;left) s.<span class="built_in">push</span>(cur-&gt;left);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h3 id="💡-考场复习小贴士"><a href="#💡-考场复习小贴士" class="headerlink" title="💡 考场复习小贴士"></a>💡 考场复习小贴士</h3><ol>
+<li><p><strong>抄写一遍模版:</strong> 尤其是 Dijkstra 和 Kruskal，考前手写一遍，考试时如果卡壳可以凭肌肉记忆写出来。</p>
+</li>
+<li><p><strong>看清题目下标:</strong> 是从 0 开始还是从 1 开始？这对堆的父子节点计算、图的初始化都有影响。</p>
+</li>
+<li><p><strong>注意 <code>long long</code>:</strong> 如果题目涉及权值累加，可能会超过 <code>int</code> 范围，记得开 <code>long long</code>。</p>
+</li>
+<li><p><strong>万能头文件:</strong> <code>#include &lt;bits/stdc++.h&gt;</code> (如果允许使用)。如果不允许，记得 <code>#include &lt;vector&gt;</code>, <code>&lt;queue&gt;</code>, <code>&lt;algorithm&gt;</code>, <code>&lt;stack&gt;</code>.</p>
+</li>
+</ol>
+<p><code>std::unordered_map</code>（键值对）或 <code>std::unordered_set</code>（只存键）。</p>
+<p>以下是为你整理的<strong>哈希表用法速查与复习要点</strong>：</p>
+<hr>
+<h3 id="一、-C-STL-常用模版-必背"><a href="#一、-C-STL-常用模版-必背" class="headerlink" title="一、 C++ STL 常用模版 (必背)"></a>一、 C++ STL 常用模版 (必背)</h3><h4 id="1-引入头文件"><a href="#1-引入头文件" class="headerlink" title="1. 引入头文件"></a>1. 引入头文件</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unordered_map&gt;</span> <span class="comment">// 类似于 Python 的 dict</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unordered_set&gt;</span> <span class="comment">// 类似于 Python 的 set</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-unordered-map-键值对-Key-Value"><a href="#2-unordered-map-键值对-Key-Value" class="headerlink" title="2. unordered_map (键值对 Key-Value)"></a>2. <code>unordered_map</code> (键值对 Key-Value)</h4><p>适用于：统计频率、建立映射关系（如：名字-&gt;分数）。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">mapUsage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 声明：&lt;Key类型, Value类型&gt;</span></span><br><span class="line">    unordered_map&lt;string, <span class="type">int</span>&gt; scores;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1. 插入/更新 (最常用)</span></span><br><span class="line">    scores[<span class="string">&quot;Alice&quot;</span>] = <span class="number">90</span>; </span><br><span class="line">    scores[<span class="string">&quot;Bob&quot;</span>] = <span class="number">85</span>;</span><br><span class="line">    scores[<span class="string">&quot;Alice&quot;</span>] = <span class="number">95</span>; <span class="comment">// 更新 Alice 的值为 95</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 查找 (关键)</span></span><br><span class="line">    <span class="comment">// count() 返回 1 (存在) 或 0 (不存在)，速度 O(1)</span></span><br><span class="line">    <span class="keyword">if</span> (scores.<span class="built_in">count</span>(<span class="string">&quot;Alice&quot;</span>)) &#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Alice&#x27;s score: &quot;</span> &lt;&lt; scores[<span class="string">&quot;Alice&quot;</span>] &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 或者使用 find() 迭代器</span></span><br><span class="line">    <span class="keyword">auto</span> it = scores.<span class="built_in">find</span>(<span class="string">&quot;Bob&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (it != scores.<span class="built_in">end</span>()) &#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Bob: &quot;</span> &lt;&lt; it-&gt;first &lt;&lt; <span class="string">&quot;, Score: &quot;</span> &lt;&lt; it-&gt;second &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. 遍历</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; pair : scores) &#123;</span><br><span class="line">        <span class="comment">// pair.first 是 Key, pair.second 是 Value</span></span><br><span class="line">        cout &lt;&lt; pair.first &lt;&lt; <span class="string">&quot;: &quot;</span> &lt;&lt; pair.second &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4. 删除</span></span><br><span class="line">    scores.<span class="built_in">erase</span>(<span class="string">&quot;Bob&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-unordered-set-集合-Key"><a href="#3-unordered-set-集合-Key" class="headerlink" title="3. unordered_set (集合 Key)"></a>3. <code>unordered_set</code> (集合 Key)</h4><p>适用于：去重、快速判断某个元素是否存在。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">setUsage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    unordered_set&lt;<span class="type">int</span>&gt; visited;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1. 插入</span></span><br><span class="line">    visited.<span class="built_in">insert</span>(<span class="number">10</span>);</span><br><span class="line">    visited.<span class="built_in">insert</span>(<span class="number">20</span>);</span><br><span class="line">    visited.<span class="built_in">insert</span>(<span class="number">10</span>); <span class="comment">// 重复插入无效</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 判断是否存在</span></span><br><span class="line">    <span class="keyword">if</span> (visited.<span class="built_in">count</span>(<span class="number">10</span>)) &#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;10 is visited&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="二、-考试常考算法场景-代码模版"><a href="#二、-考试常考算法场景-代码模版" class="headerlink" title="二、 考试常考算法场景 (代码模版)"></a>二、 考试常考算法场景 (代码模版)</h3><h4 id="场景-1：统计元素出现的频率-Frequency-Count"><a href="#场景-1：统计元素出现的频率-Frequency-Count" class="headerlink" title="场景 1：统计元素出现的频率 (Frequency Count)"></a>场景 1：统计元素出现的频率 (Frequency Count)</h4><p><em>题目示例：给定一个字符串，统计每个字符出现的次数。</em></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">countFreq</span><span class="params">(string s)</span> </span>&#123;</span><br><span class="line">    unordered_map&lt;<span class="type">char</span>, <span class="type">int</span>&gt; freq;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">char</span> c : s) &#123;</span><br><span class="line">        freq[c]++; <span class="comment">// 默认初始化为0，直接++即可</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 输出出现次数</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; p : freq) &#123;</span><br><span class="line">        cout &lt;&lt; p.first &lt;&lt; <span class="string">&quot; appears &quot;</span> &lt;&lt; p.second &lt;&lt; <span class="string">&quot; times&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="场景-2：两数之和-Two-Sum-经典必考"><a href="#场景-2：两数之和-Two-Sum-经典必考" class="headerlink" title="场景 2：两数之和 (Two Sum) - 经典必考"></a>场景 2：两数之和 (Two Sum) - 经典必考</h4><p><em>题目示例：在数组中找到两个数，使它们之和等于 Target。</em></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">twoSum</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> target)</span> </span>&#123;</span><br><span class="line">    unordered_map&lt;<span class="type">int</span>, <span class="type">int</span>&gt; mp; <span class="comment">// 存 &#123;数值, 下标&#125;</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); i++) &#123;</span><br><span class="line">        <span class="type">int</span> need = target - nums[i];</span><br><span class="line">        <span class="keyword">if</span> (mp.<span class="built_in">count</span>(need)) &#123;</span><br><span class="line">            <span class="keyword">return</span> &#123;mp[need], i&#125;; <span class="comment">// 找到了</span></span><br><span class="line">        &#125;</span><br><span class="line">        mp[nums[i]] = i; <span class="comment">// 没找到，把当前数存进去</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="一、-堆与优先队列-必考：Heap-Hash-映射"><a href="#一、-堆与优先队列-必考：Heap-Hash-映射" class="headerlink" title="一、 堆与优先队列 (必考：Heap + Hash 映射)"></a>一、 堆与优先队列 (必考：Heap + Hash 映射)</h2><p><strong>考点来源</strong>：22-23年“定时任务队列”、18-19年“哈夫曼树” <strong>难点</strong>：普通堆只支持删堆顶。试卷常考**“支持随机删除&#x2F;修改”**的堆，这必须配合哈希表（数组或 HashMap）。</p>
+<h3 id="模板-1：带索引映射的堆-Heap-with-Hash-Map"><a href="#模板-1：带索引映射的堆-Heap-with-Hash-Map" class="headerlink" title="模板 1：带索引映射的堆 (Heap with Hash Map)"></a>模板 1：带索引映射的堆 (Heap with Hash Map)</h3><p><em>这是解决 22-23 年第一题的核心，必须背下来 <code>swap</code> 的逻辑。</em></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> MAXN = <span class="number">10005</span>; <span class="comment">// 根据题目调整</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Task</span> &#123;</span><br><span class="line">    <span class="type">int</span> id;      <span class="comment">// 任务ID</span></span><br><span class="line">    <span class="type">int</span> weight;  <span class="comment">// 排序关键字（如时间 t）</span></span><br><span class="line">    <span class="comment">// 其他数据...</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Task heap[MAXN];      <span class="comment">// 堆数组，从下标 1 开始</span></span><br><span class="line"><span class="type">int</span> pos[MAXN];        <span class="comment">// 哈希表：pos[id] = heap中的下标</span></span><br><span class="line"><span class="type">int</span> sz = <span class="number">0</span>;           <span class="comment">// 堆当前大小</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 【核心】交换堆中两个元素，必须同步更新映射表</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">swapNode</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">swap</span>(heap[i], heap[j]);</span><br><span class="line">    pos[heap[i].id] = i; <span class="comment">// 更新 id 指向的新下标</span></span><br><span class="line">    pos[heap[j].id] = j;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 向上调整 (插入或修改值变小)</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">up</span><span class="params">(<span class="type">int</span> p)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (p &gt; <span class="number">1</span> &amp;&amp; heap[p].weight &lt; heap[p/<span class="number">2</span>].weight) &#123; <span class="comment">// 最小堆 &lt;</span></span><br><span class="line">        <span class="built_in">swapNode</span>(p, p/<span class="number">2</span>);</span><br><span class="line">        p /= <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 向下调整 (删除堆顶或修改值变大)</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">down</span><span class="params">(<span class="type">int</span> p)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (p * <span class="number">2</span> &lt;= sz) &#123;</span><br><span class="line">        <span class="type">int</span> s = p * <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">if</span> (s &lt; sz &amp;&amp; heap[s<span class="number">+1</span>].weight &lt; heap[s].weight) s++; <span class="comment">// 取较小的孩子</span></span><br><span class="line">        <span class="keyword">if</span> (heap[p].weight &lt;= heap[s].weight) <span class="keyword">break</span>;</span><br><span class="line">        <span class="built_in">swapNode</span>(p, s);</span><br><span class="line">        p = s;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 删除任意 ID 的任务</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">removeById</span><span class="params">(<span class="type">int</span> id)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> idx = pos[id];   <span class="comment">// 1. 找到该任务在堆中的位置</span></span><br><span class="line">    <span class="keyword">if</span> (idx == <span class="number">0</span>) <span class="keyword">return</span>; <span class="comment">// 不存在</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 将其与堆尾元素交换</span></span><br><span class="line">    <span class="built_in">swapNode</span>(idx, sz);</span><br><span class="line">    sz--; <span class="comment">// 逻辑删除</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. 对换过来的元素进行调整 (向上或向下必走其一)</span></span><br><span class="line">    <span class="built_in">up</span>(idx);</span><br><span class="line">    <span class="built_in">down</span>(idx);</span><br><span class="line">    pos[id] = <span class="number">0</span>; <span class="comment">// 清除映射</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、-图论算法-重灾区：生成树、拓扑、最短路"><a href="#二、-图论算法-重灾区：生成树、拓扑、最短路" class="headerlink" title="二、 图论算法 (重灾区：生成树、拓扑、最短路)"></a>二、 图论算法 (重灾区：生成树、拓扑、最短路)</h2><h3 id="模板-2：Kruskal-最小生成树-结合并查集"><a href="#模板-2：Kruskal-最小生成树-结合并查集" class="headerlink" title="模板 2：Kruskal 最小生成树 (结合并查集)"></a>模板 2：Kruskal 最小生成树 (结合并查集)</h3><p><strong>考点来源</strong>：20-21年 第一题 <strong>注意</strong>：考试常要求手写并查集，而不是直接调库。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Edge</span> &#123;</span><br><span class="line">    <span class="type">int</span> u, v, w;</span><br><span class="line">    <span class="comment">// 运算符重载，方便排序</span></span><br><span class="line">    <span class="type">bool</span> <span class="keyword">operator</span>&lt;(<span class="type">const</span> Edge&amp; other) <span class="type">const</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> w &lt; other.w;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> parent[MAXN]; <span class="comment">// 并查集数组</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 查：带路径压缩</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">find</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x == parent[x] ? x : parent[x] = <span class="built_in">find</span>(parent[x]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 并</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">unite</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> rootX = <span class="built_in">find</span>(x);</span><br><span class="line">    <span class="type">int</span> rootY = <span class="built_in">find</span>(y);</span><br><span class="line">    <span class="keyword">if</span> (rootX != rootY) parent[rootX] = rootY;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 主逻辑</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Kruskal</span><span class="params">(<span class="type">int</span> n, vector&lt;Edge&gt;&amp; edges)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>; i&lt;=n; i++) parent[i] = i; <span class="comment">// 初始化</span></span><br><span class="line">    <span class="built_in">sort</span>(edges.<span class="built_in">begin</span>(), edges.<span class="built_in">end</span>());      <span class="comment">// 边按权值排序</span></span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> cost = <span class="number">0</span>, count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; e : edges) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">find</span>(e.u) != <span class="built_in">find</span>(e.v)) &#123;</span><br><span class="line">            <span class="built_in">unite</span>(e.u, e.v);</span><br><span class="line">            cost += e.w;</span><br><span class="line">            count++; <span class="comment">// 记录加入的边数</span></span><br><span class="line">            <span class="comment">// cout &lt;&lt; e.u &lt;&lt; &quot;--&quot; &lt;&lt; e.v &lt;&lt; endl; // 输出选中边</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (count &lt; n - <span class="number">1</span>) <span class="keyword">return</span> <span class="number">-1</span>; <span class="comment">// 不连通</span></span><br><span class="line">    <span class="keyword">return</span> cost;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="模板-3：拓扑排序-BFS法-输出所有序列-判环"><a href="#模板-3：拓扑排序-BFS法-输出所有序列-判环" class="headerlink" title="模板 3：拓扑排序 (BFS法 - 输出所有序列&#x2F;判环)"></a>模板 3：拓扑排序 (BFS法 - 输出所有序列&#x2F;判环)</h3><p><strong>考点来源</strong>：21-22年 第一题、20-21年 第二题 <strong>技巧</strong>：如果要求“输出所有拓扑序列”，需要结合<strong>回溯法</strong>（BFS变体）。如果只是判环，用标准的队列。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> inDegree[MAXN]; <span class="comment">// 入度数组</span></span><br><span class="line">vector&lt;<span class="type">int</span>&gt; adj[MAXN]; <span class="comment">// 邻接表</span></span><br><span class="line"><span class="type">int</span> result[MAXN]; <span class="comment">// 存储结果</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 标准 BFS 拓扑排序 (判环用)</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">TopoSort</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">    queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) </span><br><span class="line">        <span class="keyword">if</span> (inDegree[i] == <span class="number">0</span>) q.<span class="built_in">push</span>(i);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (!q.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        <span class="type">int</span> u = q.<span class="built_in">front</span>(); q.<span class="built_in">pop</span>();</span><br><span class="line">        result[cnt++] = u;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> v : adj[u]) &#123;</span><br><span class="line">            inDegree[v]--;</span><br><span class="line">            <span class="keyword">if</span> (inDegree[v] == <span class="number">0</span>) q.<span class="built_in">push</span>(v);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> cnt == n; <span class="comment">// 如果 cnt &lt; n，说明有环</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 进阶：DFS 回溯输出【所有】拓扑序列 (21-22年考点)</span></span><br><span class="line"><span class="type">bool</span> vis[MAXN];</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">AllTopoSequences</span><span class="params">(<span class="type">int</span> n, vector&lt;<span class="type">int</span>&gt;&amp; path)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (path.<span class="built_in">size</span>() == n) &#123;</span><br><span class="line">        <span class="comment">// 输出 path</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 尝试所有入度为0且未访问的点</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!vis[i] &amp;&amp; inDegree[i] == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// 1. 选中 i</span></span><br><span class="line">            vis[i] = <span class="literal">true</span>;</span><br><span class="line">            path.<span class="built_in">push_back</span>(i);</span><br><span class="line">            <span class="comment">// 模拟删除 i 的出边</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> v : adj[i]) inDegree[v]--; </span><br><span class="line"></span><br><span class="line">            <span class="comment">// 2. 递归</span></span><br><span class="line">            <span class="built_in">AllTopoSequences</span>(n, path);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 3. 回溯 (恢复状态)</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> v : adj[i]) inDegree[v]++;</span><br><span class="line">            path.<span class="built_in">pop_back</span>();</span><br><span class="line">            vis[i] = <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、-树与二叉树-必考：非递归遍历"><a href="#三、-树与二叉树-必考：非递归遍历" class="headerlink" title="三、 树与二叉树 (必考：非递归遍历)"></a>三、 树与二叉树 (必考：非递归遍历)</h2><h3 id="模板-4：非递归后序遍历-H-遍历"><a href="#模板-4：非递归后序遍历-H-遍历" class="headerlink" title="模板 4：非递归后序遍历 &#x2F; H-遍历"></a>模板 4：非递归后序遍历 &#x2F; H-遍历</h3><p><strong>考点来源</strong>：23-24年 第一题 (H遍历本质是后序逻辑)、20-21年 树的转换 <strong>难点</strong>：这是二叉树非递归中最难的，需要记录 <code>last_visited</code> 指针。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">TreeNode</span> &#123; <span class="type">int</span> val; TreeNode *left, *right; &#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">PostOrderIterative</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root) <span class="keyword">return</span>;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    TreeNode* cur = root;</span><br><span class="line">    TreeNode* lastVisited = <span class="literal">nullptr</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (cur || !s.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        <span class="comment">// 1. 走到最左边</span></span><br><span class="line">        <span class="keyword">while</span> (cur) &#123;</span><br><span class="line">            s.<span class="built_in">push</span>(cur);</span><br><span class="line">            cur = cur-&gt;left;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 2. 查看栈顶</span></span><br><span class="line">        TreeNode* top = s.<span class="built_in">top</span>();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 3. 如果右子树存在，且还没被访问过 -&gt; 转向右子树</span></span><br><span class="line">        <span class="keyword">if</span> (top-&gt;right &amp;&amp; top-&gt;right != lastVisited) &#123;</span><br><span class="line">            cur = top-&gt;right;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="comment">// 4. 否则（无右子树 或 右子树已访问） -&gt; 访问当前节点（出栈）</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            cout &lt;&lt; top-&gt;val &lt;&lt; <span class="string">&quot; &quot;</span>; <span class="comment">// 访问操作</span></span><br><span class="line">            lastVisited = top;       <span class="comment">// 标记为已访问</span></span><br><span class="line">            s.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="模板-5：非递归求树的宽度-BFS"><a href="#模板-5：非递归求树的宽度-BFS" class="headerlink" title="模板 5：非递归求树的宽度 (BFS)"></a>模板 5：非递归求树的宽度 (BFS)</h3><p><strong>考点来源</strong>：21-22年 第三题</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">GetWidth</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    queue&lt;TreeNode*&gt; q;</span><br><span class="line">    q.<span class="built_in">push</span>(root);</span><br><span class="line">    <span class="type">int</span> maxWidth = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (!q.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        <span class="type">int</span> count = q.<span class="built_in">size</span>(); <span class="comment">// 当前层的节点数</span></span><br><span class="line">        maxWidth = <span class="built_in">max</span>(maxWidth, count);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 处理完当前层的所有节点</span></span><br><span class="line">        <span class="keyword">while</span> (count--) &#123;</span><br><span class="line">            TreeNode* cur = q.<span class="built_in">front</span>(); q.<span class="built_in">pop</span>();</span><br><span class="line">            <span class="keyword">if</span> (cur-&gt;left) q.<span class="built_in">push</span>(cur-&gt;left);</span><br><span class="line">            <span class="keyword">if</span> (cur-&gt;right) q.<span class="built_in">push</span>(cur-&gt;right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> maxWidth;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、-线性结构与高阶技巧-区分度题目"><a href="#四、-线性结构与高阶技巧-区分度题目" class="headerlink" title="四、 线性结构与高阶技巧 (区分度题目)"></a>四、 线性结构与高阶技巧 (区分度题目)</h2><h3 id="模板-6：单调栈-求直方图最大矩形"><a href="#模板-6：单调栈-求直方图最大矩形" class="headerlink" title="模板 6：单调栈 (求直方图最大矩形)"></a>模板 6：单调栈 (求直方图最大矩形)</h3><p><strong>考点来源</strong>：22-23年 第三题 <strong>逻辑</strong>：维护一个<strong>高度递增</strong>的栈。一旦当前柱子高度 <code>&lt;</code> 栈顶，说明栈顶柱子的右边界确定了，可以结算面积。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">LargestRectangleArea</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; heights)</span> </span>&#123;</span><br><span class="line">    stack&lt;<span class="type">int</span>&gt; s; <span class="comment">// 存下标</span></span><br><span class="line">    heights.<span class="built_in">push_back</span>(<span class="number">0</span>); <span class="comment">// 哨兵：保证最后所有元素都能出栈</span></span><br><span class="line">    <span class="type">int</span> maxArea = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; heights.<span class="built_in">size</span>(); i++) &#123;</span><br><span class="line">        <span class="comment">// 当当前高度 &lt; 栈顶高度时，开始结算</span></span><br><span class="line">        <span class="keyword">while</span> (!s.<span class="built_in">empty</span>() &amp;&amp; heights[i] &lt; heights[s.<span class="built_in">top</span>()]) &#123;</span><br><span class="line">            <span class="type">int</span> h = heights[s.<span class="built_in">top</span>()]; s.<span class="built_in">pop</span>();</span><br><span class="line">            <span class="comment">// 宽度 = 当前索引 i - 新栈顶索引 - 1</span></span><br><span class="line">            <span class="comment">// 如果栈空，宽度为 i</span></span><br><span class="line">            <span class="type">int</span> w = s.<span class="built_in">empty</span>() ? i : (i - s.<span class="built_in">top</span>() - <span class="number">1</span>);</span><br><span class="line">            maxArea = <span class="built_in">max</span>(maxArea, h * w);</span><br><span class="line">        &#125;</span><br><span class="line">        s.<span class="built_in">push</span>(i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> maxArea;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="模板-7：链表归并排序-断链与合并"><a href="#模板-7：链表归并排序-断链与合并" class="headerlink" title="模板 7：链表归并排序 (断链与合并)"></a>模板 7：链表归并排序 (断链与合并)</h3><p><strong>考点来源</strong>：19-20年 第三题 <strong>要求</strong>：不能用 <code>v.sort()</code>，必须在链表上操作指针。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">ListNode</span> &#123; <span class="type">int</span> val; ListNode* next; &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 合并两个有序链表</span></span><br><span class="line"><span class="function">ListNode* <span class="title">merge</span><span class="params">(ListNode* l1, ListNode* l2)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!l1) <span class="keyword">return</span> l2;</span><br><span class="line">    <span class="keyword">if</span> (!l2) <span class="keyword">return</span> l1;</span><br><span class="line">    <span class="keyword">if</span> (l1-&gt;val &lt; l2-&gt;val) &#123;</span><br><span class="line">        l1-&gt;next = <span class="built_in">merge</span>(l1-&gt;next, l2);</span><br><span class="line">        <span class="keyword">return</span> l1;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        l2-&gt;next = <span class="built_in">merge</span>(l1, l2-&gt;next);</span><br><span class="line">        <span class="keyword">return</span> l2;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 归并排序主函数</span></span><br><span class="line"><span class="function">ListNode* <span class="title">sortList</span><span class="params">(ListNode* head)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!head || !head-&gt;next) <span class="keyword">return</span> head;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1. 快慢指针找中点</span></span><br><span class="line">    ListNode *slow = head, *fast = head-&gt;next;</span><br><span class="line">    <span class="keyword">while</span> (fast &amp;&amp; fast-&gt;next) &#123;</span><br><span class="line">        slow = slow-&gt;next;</span><br><span class="line">        fast = fast-&gt;next-&gt;next;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 2. 断链</span></span><br><span class="line">    ListNode* mid = slow-&gt;next;</span><br><span class="line">    slow-&gt;next = <span class="literal">nullptr</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. 递归与合并</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">merge</span>(<span class="built_in">sortList</span>(head), <span class="built_in">sortList</span>(mid));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、-考场特别提示-基于-2024-趋势"><a href="#五、-考场特别提示-基于-2024-趋势" class="headerlink" title="五、 考场特别提示 (基于 2024 趋势)"></a>五、 考场特别提示 (基于 2024 趋势)</h2><ol>
+<li><p><strong>内存管理红线</strong>：</p>
+<ul>
+<li><p>题目中多次出现 <code>malloc/new</code> 和 <code>free/delete</code> 的要求。</p>
+</li>
+<li><p><strong>必写习惯</strong>：只要写了 <code>createTree()</code>，最后务必写一个 <code>destroyTree()</code>（后序遍历释放节点），哪怕题目没明确说，这也是加分项。</p>
+</li>
+<li><p><code>delete node; node = nullptr;</code> 养成好习惯。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>输入输出</strong>：</p>
+<ul>
+<li>如果是字符串处理（如中缀转后缀），注意 C++ <code>string</code> 和 C <code>char*</code> 的区别。既然允许 C++，优先用 <code>string</code> 和 <code>cin/cout</code>。</li>
+</ul>
+</li>
+<li><p><strong>辅助结构</strong>：</p>
+<ul>
+<li><p>如果题目禁止递归，<strong>Stack (栈)</strong> 是你的第一反应。</p>
+</li>
+<li><p>如果题目涉及“最大&#x2F;最小”且动态变化，<strong>Priority Queue (优先队列)</strong> 是第一反应。</p>
+</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------到底咯QAQ嘎嘎-------------</div>
+    
+</div>
+      </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="jachinzhang1/jachinzhang1.github.io"
+        data-repo-id="R_kgDONy_q0w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONy_q084Cmo0P"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/12/12/%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0/" rel="prev" title="算法">
+      <i class="fa fa-chevron-left"></i> 算法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2026/03/06/CTF/%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84/" rel="next" title="CTF项目结构">
+      CTF项目结构 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9ASTL-%E5%AE%B9%E5%99%A8%E4%B8%8E%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%BF%85%E5%BE%97%E5%88%86"><span class="nav-number">1.</span> <span class="nav-text">第一部分：STL 容器与基础数据结构 (必得分)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97-Priority-Queue-%E7%89%B9%E5%88%AB%E8%AF%B4%E6%98%8E"><span class="nav-number">1.1.</span> <span class="nav-text">2. 优先队列 (Priority Queue) 特别说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E5%A0%86-Heap-%E7%9A%84%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0%E4%B8%8E%E6%94%B9%E9%80%A0-%E9%87%8D%E9%9A%BE%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">第二部分：堆 (Heap) 的底层实现与改造 (重难点)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%8B%E6%B2%89-Sift-Down-%E7%94%A8%E4%BA%8E%E5%87%BA%E9%98%9F-%E5%BB%BA%E5%A0%86"><span class="nav-number">2.1.</span> <span class="nav-text">1. 下沉 (Sift-Down) - 用于出队&#x2F;建堆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%B8%8A%E6%B5%AE-Sift-Up-%E7%94%A8%E4%BA%8E%E5%85%A5%E9%98%9F"><span class="nav-number">2.2.</span> <span class="nav-text">2. 上浮 (Sift-Up) - 用于入队</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%BB%BA%E5%A0%86-Build-Heap"><span class="nav-number">2.3.</span> <span class="nav-text">3. 建堆 (Build Heap)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E5%9B%BE%E7%AE%97%E6%B3%95%E6%A8%A1%E7%89%88%E4%B8%8E%E2%80%9C%E9%AD%94%E6%94%B9%E2%80%9D%E6%8C%87%E5%8D%97-%E5%BF%85%E8%80%83%E5%A4%A7%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">第三部分：图算法模版与“魔改”指南 (必考大题)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="nav-number">3.1.</span> <span class="nav-text">1. 存储结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Dijkstra-%E7%AE%97%E6%B3%95-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84"><span class="nav-number">3.2.</span> <span class="nav-text">2. Dijkstra 算法 (最短路径)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Floyd-%E7%AE%97%E6%B3%95-%E5%A4%9A%E6%BA%90%E6%9C%80%E7%9F%AD%E8%B7%AF"><span class="nav-number">3.3.</span> <span class="nav-text">3. Floyd 算法 (多源最短路)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91-Prim-vs-Kruskal"><span class="nav-number">3.4.</span> <span class="nav-text">4. 最小生成树 (Prim vs Kruskal)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%A0%86%E4%BC%98%E5%8C%96%E7%89%88-%E6%8E%A8%E8%8D%90"><span class="nav-number">3.5.</span> <span class="nav-text">1. 堆优化版 (推荐)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%EF%BC%9A%E6%90%9C%E7%B4%A2%E4%B8%8E%E6%8E%92%E5%BA%8F"><span class="nav-number">4.</span> <span class="nav-text">第四部分：搜索与排序</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BA%8C%E5%88%86%E6%90%9C%E7%B4%A2-Binary-Search-%E6%94%B9%E9%80%A0"><span class="nav-number">4.1.</span> <span class="nav-text">1. 二分搜索 (Binary Search) 改造</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%8E%92%E5%BA%8F-Sort"><span class="nav-number">4.2.</span> <span class="nav-text">2. 排序 (Sort)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E9%83%A8%E5%88%86%EF%BC%9A%E9%80%92%E5%BD%92-vs-%E8%BF%AD%E4%BB%A3-%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E6%8A%80%E5%B7%A7"><span class="nav-number">5.</span> <span class="nav-text">第五部分：递归 vs 迭代 (程序设计技巧)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%92%A1-%E8%80%83%E5%9C%BA%E5%A4%8D%E4%B9%A0%E5%B0%8F%E8%B4%B4%E5%A3%AB"><span class="nav-number">5.1.</span> <span class="nav-text">💡 考场复习小贴士</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81-C-STL-%E5%B8%B8%E7%94%A8%E6%A8%A1%E7%89%88-%E5%BF%85%E8%83%8C"><span class="nav-number">5.2.</span> <span class="nav-text">一、 C++ STL 常用模版 (必背)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%BC%95%E5%85%A5%E5%A4%B4%E6%96%87%E4%BB%B6"><span class="nav-number">5.2.1.</span> <span class="nav-text">1. 引入头文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-unordered-map-%E9%94%AE%E5%80%BC%E5%AF%B9-Key-Value"><span class="nav-number">5.2.2.</span> <span class="nav-text">2. unordered_map (键值对 Key-Value)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-unordered-set-%E9%9B%86%E5%90%88-Key"><span class="nav-number">5.2.3.</span> <span class="nav-text">3. unordered_set (集合 Key)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81-%E8%80%83%E8%AF%95%E5%B8%B8%E8%80%83%E7%AE%97%E6%B3%95%E5%9C%BA%E6%99%AF-%E4%BB%A3%E7%A0%81%E6%A8%A1%E7%89%88"><span class="nav-number">5.3.</span> <span class="nav-text">二、 考试常考算法场景 (代码模版)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF-1%EF%BC%9A%E7%BB%9F%E8%AE%A1%E5%85%83%E7%B4%A0%E5%87%BA%E7%8E%B0%E7%9A%84%E9%A2%91%E7%8E%87-Frequency-Count"><span class="nav-number">5.3.1.</span> <span class="nav-text">场景 1：统计元素出现的频率 (Frequency Count)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF-2%EF%BC%9A%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C-Two-Sum-%E7%BB%8F%E5%85%B8%E5%BF%85%E8%80%83"><span class="nav-number">5.3.2.</span> <span class="nav-text">场景 2：两数之和 (Two Sum) - 经典必考</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81-%E5%A0%86%E4%B8%8E%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97-%E5%BF%85%E8%80%83%EF%BC%9AHeap-Hash-%E6%98%A0%E5%B0%84"><span class="nav-number">6.</span> <span class="nav-text">一、 堆与优先队列 (必考：Heap + Hash 映射)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF-1%EF%BC%9A%E5%B8%A6%E7%B4%A2%E5%BC%95%E6%98%A0%E5%B0%84%E7%9A%84%E5%A0%86-Heap-with-Hash-Map"><span class="nav-number">6.1.</span> <span class="nav-text">模板 1：带索引映射的堆 (Heap with Hash Map)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81-%E5%9B%BE%E8%AE%BA%E7%AE%97%E6%B3%95-%E9%87%8D%E7%81%BE%E5%8C%BA%EF%BC%9A%E7%94%9F%E6%88%90%E6%A0%91%E3%80%81%E6%8B%93%E6%89%91%E3%80%81%E6%9C%80%E7%9F%AD%E8%B7%AF"><span class="nav-number">7.</span> <span class="nav-text">二、 图论算法 (重灾区：生成树、拓扑、最短路)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF-2%EF%BC%9AKruskal-%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91-%E7%BB%93%E5%90%88%E5%B9%B6%E6%9F%A5%E9%9B%86"><span class="nav-number">7.1.</span> <span class="nav-text">模板 2：Kruskal 最小生成树 (结合并查集)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF-3%EF%BC%9A%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F-BFS%E6%B3%95-%E8%BE%93%E5%87%BA%E6%89%80%E6%9C%89%E5%BA%8F%E5%88%97-%E5%88%A4%E7%8E%AF"><span class="nav-number">7.2.</span> <span class="nav-text">模板 3：拓扑排序 (BFS法 - 输出所有序列&#x2F;判环)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81-%E6%A0%91%E4%B8%8E%E4%BA%8C%E5%8F%89%E6%A0%91-%E5%BF%85%E8%80%83%EF%BC%9A%E9%9D%9E%E9%80%92%E5%BD%92%E9%81%8D%E5%8E%86"><span class="nav-number">8.</span> <span class="nav-text">三、 树与二叉树 (必考：非递归遍历)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF-4%EF%BC%9A%E9%9D%9E%E9%80%92%E5%BD%92%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86-H-%E9%81%8D%E5%8E%86"><span class="nav-number">8.1.</span> <span class="nav-text">模板 4：非递归后序遍历 &#x2F; H-遍历</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF-5%EF%BC%9A%E9%9D%9E%E9%80%92%E5%BD%92%E6%B1%82%E6%A0%91%E7%9A%84%E5%AE%BD%E5%BA%A6-BFS"><span class="nav-number">8.2.</span> <span class="nav-text">模板 5：非递归求树的宽度 (BFS)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81-%E7%BA%BF%E6%80%A7%E7%BB%93%E6%9E%84%E4%B8%8E%E9%AB%98%E9%98%B6%E6%8A%80%E5%B7%A7-%E5%8C%BA%E5%88%86%E5%BA%A6%E9%A2%98%E7%9B%AE"><span class="nav-number">9.</span> <span class="nav-text">四、 线性结构与高阶技巧 (区分度题目)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF-6%EF%BC%9A%E5%8D%95%E8%B0%83%E6%A0%88-%E6%B1%82%E7%9B%B4%E6%96%B9%E5%9B%BE%E6%9C%80%E5%A4%A7%E7%9F%A9%E5%BD%A2"><span class="nav-number">9.1.</span> <span class="nav-text">模板 6：单调栈 (求直方图最大矩形)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF-7%EF%BC%9A%E9%93%BE%E8%A1%A8%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F-%E6%96%AD%E9%93%BE%E4%B8%8E%E5%90%88%E5%B9%B6"><span class="nav-number">9.2.</span> <span class="nav-text">模板 7：链表归并排序 (断链与合并)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81-%E8%80%83%E5%9C%BA%E7%89%B9%E5%88%AB%E6%8F%90%E7%A4%BA-%E5%9F%BA%E4%BA%8E-2024-%E8%B6%8B%E5%8A%BF"><span class="nav-number">10.</span> <span class="nav-text">五、 考场特别提示 (基于 2024 趋势)</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ducklinger"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Ducklinger</p>
+  <div class="site-description" itemprop="description">分享日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xxiaoxx998" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xxiaoxx998" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-circle"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">山河辽阔，人间烟火 | 记录生活与思考的碎片</span>
+</div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/js/site-interactions.js"></script>
+
+</body>
+</html>
