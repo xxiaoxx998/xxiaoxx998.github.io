@@ -32,6 +32,70 @@
     });
   }
 
+  function initHeaderSearch() {
+    const target = document.querySelector('.site-nav-right') || document.querySelector('.site-brand-container');
+    if (!target || document.querySelector('.quick-search-trigger')) return;
+
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'quick-search-trigger';
+    trigger.setAttribute('aria-label', 'Search articles');
+    trigger.innerHTML = '<i class="fa fa-search" aria-hidden="true"></i>';
+    target.appendChild(trigger);
+
+    const panel = document.createElement('div');
+    panel.className = 'quick-search-panel';
+    panel.innerHTML = `
+      <input type="search" placeholder="Search articles" aria-label="Search articles">
+      <div class="quick-search-count"></div>
+    `;
+    document.body.appendChild(panel);
+
+    const input = panel.querySelector('input');
+    const count = panel.querySelector('.quick-search-count');
+    const cards = [...document.querySelectorAll('.article-card')];
+
+    const setCount = value => {
+      if (!cards.length) {
+        count.textContent = 'Open the home page to search the latest articles.';
+        return;
+      }
+      const visible = cards.filter(card => !card.classList.contains('is-hidden')).length;
+      count.textContent = value ? `${visible} result${visible === 1 ? '' : 's'}` : 'Type to filter the latest articles.';
+    };
+
+    const filter = () => {
+      const value = input.value.trim().toLowerCase();
+      cards.forEach(card => {
+        const haystack = card.textContent.toLowerCase();
+        card.classList.toggle('is-hidden', Boolean(value) && !haystack.includes(value));
+      });
+      setCount(value);
+    };
+
+    trigger.addEventListener('click', () => {
+      panel.classList.toggle('is-open');
+      if (panel.classList.contains('is-open')) {
+        setCount(input.value.trim());
+        input.focus();
+      }
+    });
+
+    input.addEventListener('input', filter);
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        panel.classList.remove('is-open');
+        trigger.focus();
+      }
+    });
+
+    document.addEventListener('click', event => {
+      if (panel.contains(event.target) || trigger.contains(event.target)) return;
+      panel.classList.remove('is-open');
+    });
+  }
+
   function initArticleCards() {
     const cards = [...document.querySelectorAll('.article-card')];
     if (!cards.length) return;
@@ -103,6 +167,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     initProgress();
     initCategoryToggle();
+    initHeaderSearch();
     initArticleCards();
     initCodeCopy();
     initHeaderState();

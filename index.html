@@ -152,21 +152,29 @@
           <div class="content index minimal-home">
             
   <section class="home-hero" aria-labelledby="home-title">
-    <p class="home-kicker">Personal Notes</p>
     <h1 id="home-title">Ducklinger</h1>
       <p class="home-description">分享日常</p>
     <div class="home-stats" aria-label="Site overview">
-      <a href="/archives/">
-        <strong>23</strong>
-        <span>Articles</span>
+      <a class="home-stat-card" href="/archives/">
+        <span class="home-stat-content">
+          <strong>23</strong>
+          <span>Articles</span>
+        </span>
+        <span class="home-stat-icon"><i class="far fa-file-alt"></i></span>
       </a>
-        <a href="/categories/">
-          <strong>4</strong>
-          <span>Categories</span>
+        <a class="home-stat-card is-active" href="/categories/">
+          <span class="home-stat-content">
+            <strong>4</strong>
+            <span>Categories</span>
+          </span>
+          <span class="home-stat-icon"><i class="fa fa-th-large"></i></span>
         </a>
-        <a href="/tags/">
-          <strong>2</strong>
-          <span>Tags</span>
+        <a class="home-stat-card" href="/tags/">
+          <span class="home-stat-content">
+            <strong>2</strong>
+            <span>Tags</span>
+          </span>
+          <span class="home-stat-icon"><i class="fa fa-tag"></i></span>
         </a>
     </div>
   </section>
@@ -175,11 +183,9 @@
   <section class="category-nav" aria-labelledby="category-nav-title">
     <div class="category-nav-header">
       <h2 id="category-nav-title">Categories</h2>
-      <button type="button" id="category-toggle" class="category-nav-toggle" aria-expanded="true">
-        Hide
-      </button>
+      <a class="category-nav-link" href="/categories/">View all</a>
     </div>
-    <div class="category-all-page" id="category-list-panel">
+    <div class="category-all-page">
       <div class="category-all">
         <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CTF/">CTF</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ai%E7%9B%B8%E5%85%B3/">ai相关</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B8%BB%E9%A1%B5/">主页</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><span class="category-list-count">11</span></li></ul>
       </div>
@@ -196,138 +202,148 @@
       <article class="article-card" itemscope itemtype="http://schema.org/Article">
         <a class="article-card-link" href="/2025/10/16/test1/" itemprop="url">
           <time class="article-date" datetime="2025-10-16T00:00:00+08:00" itemprop="dateCreated">
+            <i class="far fa-calendar-alt"></i>
             2025.10.16
           </time>
-          <h3 itemprop="name headline">嘎！！嘎！嘎！！！</h3>
-          <div class="article-meta">
-              <span>
-                  主页
-              </span>
-            <span class="article-arrow" aria-hidden="true">Read</span>
+          <div class="article-main">
+            <h3 itemprop="name headline">嘎！！嘎！嘎！！！</h3>
+              <div class="article-categories">
+                  <span>主页</span>
+              </div>
           </div>
+          <span class="article-arrow" aria-hidden="true">→</span>
         </a>
       </article>
       <article class="article-card" itemscope itemtype="http://schema.org/Article">
         <a class="article-card-link" href="/2026/04/20/%E8%AE%A1%E7%BB%84%E5%AE%9E%E9%AA%8C/" itemprop="url">
           <time class="article-date" datetime="2026-04-20T00:00:00+08:00" itemprop="dateCreated">
+            <i class="far fa-calendar-alt"></i>
             2026.04.20
           </time>
-          <h3 itemprop="name headline">计组实验</h3>
-          <div class="article-meta">
-              <span>
-                  学习笔记
-              </span>
-            <span class="article-arrow" aria-hidden="true">Read</span>
+          <div class="article-main">
+            <h3 itemprop="name headline">计组实验</h3>
+              <div class="article-categories">
+                  <span>学习笔记</span>
+              </div>
           </div>
+          <span class="article-arrow" aria-hidden="true">→</span>
         </a>
       </article>
       <article class="article-card" itemscope itemtype="http://schema.org/Article">
         <a class="article-card-link" href="/2026/04/12/AI%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/RAG%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B/" itemprop="url">
           <time class="article-date" datetime="2026-04-12T00:00:00+08:00" itemprop="dateCreated">
+            <i class="far fa-calendar-alt"></i>
             2026.04.12
           </time>
-          <h3 itemprop="name headline">RAG</h3>
-          <div class="article-meta">
-              <span>
-                  ai相关
-              </span>
-            <span class="article-arrow" aria-hidden="true">Read</span>
+          <div class="article-main">
+            <h3 itemprop="name headline">RAG</h3>
+              <div class="article-categories">
+                  <span>ai相关</span>
+              </div>
           </div>
+          <span class="article-arrow" aria-hidden="true">→</span>
         </a>
       </article>
       <article class="article-card" itemscope itemtype="http://schema.org/Article">
         <a class="article-card-link" href="/2026/04/07/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url">
           <time class="article-date" datetime="2026-04-07T00:00:00+08:00" itemprop="dateCreated">
+            <i class="far fa-calendar-alt"></i>
             2026.04.07
           </time>
-          <h3 itemprop="name headline">操作系统</h3>
-          <div class="article-meta">
-              <span>
-                  学习笔记
-              </span>
-            <span class="article-arrow" aria-hidden="true">Read</span>
+          <div class="article-main">
+            <h3 itemprop="name headline">操作系统</h3>
+              <div class="article-categories">
+                  <span>学习笔记</span>
+              </div>
           </div>
+          <span class="article-arrow" aria-hidden="true">→</span>
         </a>
       </article>
       <article class="article-card" itemscope itemtype="http://schema.org/Article">
         <a class="article-card-link" href="/2026/03/29/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url">
           <time class="article-date" datetime="2026-03-29T00:00:00+08:00" itemprop="dateCreated">
+            <i class="far fa-calendar-alt"></i>
             2026.03.29
           </time>
-          <h3 itemprop="name headline">数据库</h3>
-          <div class="article-meta">
-              <span>
-                  学习笔记
-              </span>
-            <span class="article-arrow" aria-hidden="true">Read</span>
+          <div class="article-main">
+            <h3 itemprop="name headline">数据库</h3>
+              <div class="article-categories">
+                  <span>学习笔记</span>
+              </div>
           </div>
-        </a>
-      </article>
-      <article class="article-card" itemscope itemtype="http://schema.org/Article">
-        <a class="article-card-link" href="/2026/03/20/%E6%B1%87%E7%BC%96/" itemprop="url">
-          <time class="article-date" datetime="2026-03-20T00:00:00+08:00" itemprop="dateCreated">
-            2026.03.20
-          </time>
-          <h3 itemprop="name headline">汇编</h3>
-          <div class="article-meta">
-              <span>
-                  学习笔记
-              </span>
-            <span class="article-arrow" aria-hidden="true">Read</span>
-          </div>
+          <span class="article-arrow" aria-hidden="true">→</span>
         </a>
       </article>
       <article class="article-card" itemscope itemtype="http://schema.org/Article">
         <a class="article-card-link" href="/2026/03/20/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" itemprop="url">
           <time class="article-date" datetime="2026-03-20T00:00:00+08:00" itemprop="dateCreated">
+            <i class="far fa-calendar-alt"></i>
             2026.03.20
           </time>
-          <h3 itemprop="name headline">编译原理</h3>
-          <div class="article-meta">
-              <span>
-                  学习笔记
-              </span>
-            <span class="article-arrow" aria-hidden="true">Read</span>
+          <div class="article-main">
+            <h3 itemprop="name headline">编译原理</h3>
+              <div class="article-categories">
+                  <span>学习笔记</span>
+              </div>
           </div>
+          <span class="article-arrow" aria-hidden="true">→</span>
+        </a>
+      </article>
+      <article class="article-card" itemscope itemtype="http://schema.org/Article">
+        <a class="article-card-link" href="/2026/03/20/%E6%B1%87%E7%BC%96/" itemprop="url">
+          <time class="article-date" datetime="2026-03-20T00:00:00+08:00" itemprop="dateCreated">
+            <i class="far fa-calendar-alt"></i>
+            2026.03.20
+          </time>
+          <div class="article-main">
+            <h3 itemprop="name headline">汇编</h3>
+              <div class="article-categories">
+                  <span>学习笔记</span>
+              </div>
+          </div>
+          <span class="article-arrow" aria-hidden="true">→</span>
         </a>
       </article>
       <article class="article-card" itemscope itemtype="http://schema.org/Article">
         <a class="article-card-link" href="/2026/03/09/CTF/JAVA%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/" itemprop="url">
           <time class="article-date" datetime="2026-03-09T17:57:38+08:00" itemprop="dateCreated">
+            <i class="far fa-calendar-alt"></i>
             2026.03.09
           </time>
-          <h3 itemprop="name headline">未命名</h3>
-          <div class="article-meta">
-            <span class="article-arrow" aria-hidden="true">Read</span>
+          <div class="article-main">
+            <h3 itemprop="name headline">未命名</h3>
           </div>
+          <span class="article-arrow" aria-hidden="true">→</span>
         </a>
       </article>
       <article class="article-card" itemscope itemtype="http://schema.org/Article">
         <a class="article-card-link" href="/2026/03/06/CTF/GDK%E7%BC%96%E7%A0%81%E7%9A%84%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/" itemprop="url">
           <time class="article-date" datetime="2026-03-06T00:00:00+08:00" itemprop="dateCreated">
+            <i class="far fa-calendar-alt"></i>
             2026.03.06
           </time>
-          <h3 itemprop="name headline">CTFGDK编码注入</h3>
-          <div class="article-meta">
-              <span>
-                  CTF
-              </span>
-            <span class="article-arrow" aria-hidden="true">Read</span>
+          <div class="article-main">
+            <h3 itemprop="name headline">CTFGDK编码注入</h3>
+              <div class="article-categories">
+                  <span>CTF</span>
+              </div>
           </div>
+          <span class="article-arrow" aria-hidden="true">→</span>
         </a>
       </article>
       <article class="article-card" itemscope itemtype="http://schema.org/Article">
         <a class="article-card-link" href="/2026/03/06/CTF/SSTI/" itemprop="url">
           <time class="article-date" datetime="2026-03-06T00:00:00+08:00" itemprop="dateCreated">
+            <i class="far fa-calendar-alt"></i>
             2026.03.06
           </time>
-          <h3 itemprop="name headline">CTFSSTI注入</h3>
-          <div class="article-meta">
-              <span>
-                  CTF
-              </span>
-            <span class="article-arrow" aria-hidden="true">Read</span>
+          <div class="article-main">
+            <h3 itemprop="name headline">CTFSSTI注入</h3>
+              <div class="article-categories">
+                  <span>CTF</span>
+              </div>
           </div>
+          <span class="article-arrow" aria-hidden="true">→</span>
         </a>
       </article>
   </section>
