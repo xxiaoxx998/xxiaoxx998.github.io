@@ -16,30 +16,30 @@
 
 <script id="theme-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"ducklinger.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="第一章 引论编译和解释 编译方式的特点   目标程序是机器语言-&gt; 编译阶段和运行阶段 目标程序是汇编语言程序-&gt;编译、汇编和运行  故编译程序生成的目标程序不一定是机器语言程序还有可能是汇编语言程序  解释方式   按源程序边翻译边执行，立即执行，直接输出 不生成目标代码，但是也需要进行语法、词法和语义分析  编译程序工作过程position :&#x3D; initial + rate *">
 <meta property="og:type" content="article">
 <meta property="og:title" content="编译原理">
-<meta property="og:url" content="http://example.com/2026/03/20/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:url" content="https://ducklinger.top/2026/03/20/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="Ducklinger">
 <meta property="og:description" content="第一章 引论编译和解释 编译方式的特点   目标程序是机器语言-&gt; 编译阶段和运行阶段 目标程序是汇编语言程序-&gt;编译、汇编和运行  故编译程序生成的目标程序不一定是机器语言程序还有可能是汇编语言程序  解释方式   按源程序边翻译边执行，立即执行，直接输出 不生成目标代码，但是也需要进行语法、词法和语义分析  编译程序工作过程position :&#x3D; initial + rate *">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/images/czxt1.png">
-<meta property="og:image" content="http://example.com/images/byyl2.png">
-<meta property="og:image" content="http://example.com/images/byyl3.png">
-<meta property="og:image" content="http://example.com/images/byyl4.png">
-<meta property="og:image" content="http://example.com/images/byyl5.png">
-<meta property="og:image" content="http://example.com/images/byyl6.png">
-<meta property="og:image" content="http://example.com/images/byyl7.png">
+<meta property="og:image" content="https://ducklinger.top/images/czxt1.png">
+<meta property="og:image" content="https://ducklinger.top/images/byyl2.png">
+<meta property="og:image" content="https://ducklinger.top/images/byyl3.png">
+<meta property="og:image" content="https://ducklinger.top/images/byyl4.png">
+<meta property="og:image" content="https://ducklinger.top/images/byyl5.png">
+<meta property="og:image" content="https://ducklinger.top/images/byyl6.png">
+<meta property="og:image" content="https://ducklinger.top/images/byyl7.png">
 <meta property="article:published_time" content="2026-03-19T16:00:00.000Z">
 <meta property="article:modified_time" content="2026-04-12T02:59:29.792Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/images/czxt1.png">
+<meta name="twitter:image" content="https://ducklinger.top/images/czxt1.png">
 
-<link rel="canonical" href="http://example.com/2026/03/20/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">
+<link rel="canonical" href="https://ducklinger.top/2026/03/20/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">
 
 
 <script id="page-configurations">
@@ -166,7 +166,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/20/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="https://ducklinger.top/2026/03/20/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
