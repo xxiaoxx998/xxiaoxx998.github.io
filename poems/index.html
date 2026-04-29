@@ -115,6 +115,11 @@
     <a href="/" rel="section">首页</a>
 
   </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
         <li class="menu-item menu-item-categories">
 
     <a href="/categories/" rel="section">分类</a>
@@ -175,6 +180,7 @@
       <button class="is-active" type="button" data-poem-filter="all">全部</button>
         <button type="button" data-poem-filter="古诗词">古诗词</button>
       <button type="button" data-poem-filter="favorite">收藏</button>
+      <button type="button" data-poem-random>随机一首</button>
     </div>
 
     <div class="poem-view-toggle" aria-label="视图切换">
@@ -192,6 +198,7 @@
   <div class="poems-layout">
     <section class="poem-grid" aria-live="polite">
         <article class="poem-card is-liked"
+          data-poem-id="李白《登金陵凤凰台》"
           data-category="古诗词"
           data-favorite="true"
           data-search="《登金陵凤凰台》 李白 古诗词 唐诗 李白 怀古 写景 抒情 凤凰台上凤凰游，凤去台空江自流。

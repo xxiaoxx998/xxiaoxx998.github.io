@@ -4,6 +4,26 @@
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  function readStorage(key, fallback) {
+    try {
+      return JSON.parse(localStorage.getItem(key)) || fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  function writeStorage(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      // localStorage can be unavailable in private or restricted contexts.
+    }
+  }
+
+  function normalize(value) {
+    return (value || '').toString().trim().toLowerCase();
+  }
+
   function initProgress() {
     const bar = document.createElement('div');
     bar.className = 'site-progress-bar';
@@ -39,49 +59,85 @@
     const trigger = document.createElement('button');
     trigger.type = 'button';
     trigger.className = 'quick-search-trigger';
-    trigger.setAttribute('aria-label', 'Search articles');
+    trigger.setAttribute('aria-label', '搜索文章');
+    trigger.title = '搜索文章';
     trigger.innerHTML = '<i class="fa fa-search" aria-hidden="true"></i>';
     target.appendChild(trigger);
 
     const panel = document.createElement('div');
     panel.className = 'quick-search-panel';
     panel.innerHTML = `
-      <input type="search" placeholder="Search articles" aria-label="Search articles">
+      <input type="search" placeholder="搜索文章、分类或标签" aria-label="搜索文章">
       <div class="quick-search-count"></div>
+      <div class="quick-search-results"></div>
     `;
     document.body.appendChild(panel);
 
     const input = panel.querySelector('input');
     const count = panel.querySelector('.quick-search-count');
-    const cards = [...document.querySelectorAll('.article-card')];
+    const results = panel.querySelector('.quick-search-results');
+    let searchData = null;
 
-    const setCount = value => {
-      if (!cards.length) {
-        count.textContent = 'Open the home page to search the latest articles.';
-        return;
+    const fallbackCards = [...document.querySelectorAll('.article-card')].map(card => {
+      const link = card.querySelector('.article-card-link');
+      const title = card.querySelector('h3');
+      const date = card.querySelector('.article-date');
+      return {
+        title: title ? title.textContent.trim() : '未命名',
+        path: link ? link.getAttribute('href') : '#',
+        date: date ? date.textContent.trim() : '',
+        categories: [...card.querySelectorAll('.article-categories span')].map(item => item.textContent.trim()),
+        tags: [],
+        excerpt: ''
+      };
+    });
+
+    const loadSearchData = async () => {
+      if (searchData) return searchData;
+      try {
+        const response = await fetch('/search.json', { cache: 'no-store' });
+        if (!response.ok) throw new Error('search json not available');
+        searchData = await response.json();
+      } catch {
+        searchData = fallbackCards;
       }
-      const visible = cards.filter(card => !card.classList.contains('is-hidden')).length;
-      count.textContent = value ? `${visible} result${visible === 1 ? '' : 's'}` : 'Type to filter the latest articles.';
+      return searchData;
     };
 
-    const filter = () => {
-      const value = input.value.trim().toLowerCase();
-      cards.forEach(card => {
-        const haystack = card.textContent.toLowerCase();
-        card.classList.toggle('is-hidden', Boolean(value) && !haystack.includes(value));
-      });
-      setCount(value);
+    const render = async () => {
+      const value = normalize(input.value);
+      const data = await loadSearchData();
+      const matches = value
+        ? data.filter(item => normalize([
+          item.title,
+          item.date,
+          (item.categories || []).join(' '),
+          (item.tags || []).join(' '),
+          item.excerpt
+        ].join(' ')).includes(value)).slice(0, 8)
+        : data.slice(0, 6);
+
+      count.textContent = value ? `找到 ${matches.length} 条结果` : '输入关键词，快速跳到文章';
+      results.innerHTML = matches.length
+        ? matches.map(item => `
+          <a class="quick-search-result" href="${item.path}">
+            <strong>${item.title}</strong>
+            <span>${[item.date, ...(item.categories || [])].filter(Boolean).join(' · ')}</span>
+            ${item.excerpt ? `<em>${item.excerpt}</em>` : ''}
+          </a>
+        `).join('')
+        : '<div class="quick-search-empty">没有找到匹配内容</div>';
     };
 
-    trigger.addEventListener('click', () => {
+    trigger.addEventListener('click', async () => {
       panel.classList.toggle('is-open');
       if (panel.classList.contains('is-open')) {
-        setCount(input.value.trim());
         input.focus();
+        await render();
       }
     });
 
-    input.addEventListener('input', filter);
+    input.addEventListener('input', render);
 
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape') {
@@ -164,6 +220,40 @@
     window.addEventListener('scroll', update, { passive: true });
   }
 
+  function initPostTools() {
+    const body = document.querySelector('.main-post .post-body');
+    const header = document.querySelector('.main-post .post-header');
+    if (!body || !header || document.querySelector('.post-reading-tools')) return;
+
+    const tools = document.createElement('div');
+    tools.className = 'post-reading-tools';
+    tools.innerHTML = `
+      <button type="button" data-post-font="smaller" aria-label="减小字号" title="减小字号"><i class="fa fa-minus"></i></button>
+      <button type="button" data-post-font="larger" aria-label="增大字号" title="增大字号"><i class="fa fa-plus"></i></button>
+      <button type="button" data-post-copy aria-label="复制链接" title="复制链接"><i class="fa fa-link"></i></button>
+    `;
+    header.after(tools);
+
+    tools.querySelector('[data-post-font="larger"]').addEventListener('click', () => {
+      body.classList.add('is-large-text');
+    });
+
+    tools.querySelector('[data-post-font="smaller"]').addEventListener('click', () => {
+      body.classList.remove('is-large-text');
+    });
+
+    tools.querySelector('[data-post-copy]').addEventListener('click', async event => {
+      const button = event.currentTarget;
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        button.classList.add('is-copied');
+        setTimeout(() => button.classList.remove('is-copied'), 1200);
+      } catch {
+        button.classList.remove('is-copied');
+      }
+    });
+  }
+
   function initPoemsPage() {
     const page = document.querySelector('.poems-page');
     if (!page) return;
@@ -173,10 +263,20 @@
     const filterButtons = [...page.querySelectorAll('[data-poem-filter]')];
     const tagButtons = [...page.querySelectorAll('[data-poem-tag]')];
     const viewButtons = [...page.querySelectorAll('[data-poem-view]')];
+    const randomButton = page.querySelector('[data-poem-random]');
     const empty = page.querySelector('.poem-empty');
+    const storedFavorites = readStorage('duck-poem-favorites', {});
     let activeFilter = 'all';
 
-    const normalize = value => (value || '').toString().trim().toLowerCase();
+    const syncFavoriteUI = card => {
+      const id = card.dataset.poemId;
+      const active = storedFavorites[id] ?? (card.dataset.favorite === 'true');
+      card.dataset.favorite = active ? 'true' : 'false';
+      card.classList.toggle('is-liked', active);
+      card.querySelectorAll('.poem-like, .poem-bookmark').forEach(button => {
+        button.classList.toggle('is-active', active);
+      });
+    };
 
     const applyFilter = () => {
       const query = normalize(search && search.value);
@@ -185,7 +285,7 @@
       cards.forEach(card => {
         const haystack = normalize(card.dataset.search);
         const category = card.dataset.category;
-        const favorite = card.dataset.favorite === 'true' || card.classList.contains('is-liked');
+        const favorite = card.dataset.favorite === 'true';
         const matchesQuery = !query || haystack.includes(query);
         const matchesFilter = activeFilter === 'all' || category === activeFilter || (activeFilter === 'favorite' && favorite) || haystack.includes(normalize(activeFilter));
         const show = matchesQuery && matchesFilter;
@@ -195,6 +295,8 @@
 
       if (empty) empty.classList.toggle('is-visible', visible === 0);
     };
+
+    cards.forEach(syncFavoriteUI);
 
     if (search) search.addEventListener('input', applyFilter);
 
@@ -224,6 +326,18 @@
       });
     });
 
+    if (randomButton) {
+      randomButton.addEventListener('click', () => {
+        const visibleCards = cards.filter(card => !card.classList.contains('is-hidden'));
+        const pool = visibleCards.length ? visibleCards : cards;
+        const card = pool[Math.floor(Math.random() * pool.length)];
+        if (!card) return;
+        card.classList.add('is-featured-now');
+        card.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' });
+        setTimeout(() => card.classList.remove('is-featured-now'), 1600);
+      });
+    }
+
     cards.forEach(card => {
       const expand = card.querySelector('.poem-expand');
       const like = card.querySelector('.poem-like');
@@ -235,15 +349,17 @@
       if (expand) {
         expand.addEventListener('click', () => {
           const expanded = card.classList.toggle('is-expanded');
-          expand.querySelector('span').textContent = expanded ? '收起全文' : '展开全文';
+          const label = expand.querySelector('span');
+          if (label) label.textContent = expanded ? '收起全文' : '展开全文';
         });
       }
 
       const toggleLike = () => {
-        const active = card.classList.toggle('is-liked');
-        card.dataset.favorite = active ? 'true' : 'false';
-        if (like) like.classList.toggle('is-active', active);
-        if (bookmark) bookmark.classList.toggle('is-active', active);
+        const id = card.dataset.poemId;
+        const active = !(card.dataset.favorite === 'true');
+        storedFavorites[id] = active;
+        writeStorage('duck-poem-favorites', storedFavorites);
+        syncFavoriteUI(card);
         applyFilter();
       };
 
@@ -271,6 +387,7 @@
     initArticleCards();
     initCodeCopy();
     initHeaderState();
+    initPostTools();
     initPoemsPage();
   });
 })();
