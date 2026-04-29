@@ -1175,7 +1175,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #081341;
+  background: #912bc8;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -4439,6 +4439,202 @@ figure.highlight table {
   .poem-expand {
     grid-column: 1/-1;
     justify-self: start;
+  }
+}
+.main {
+  animation: page-enter 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.article-card,
+.post-block,
+.poem-card,
+.category-list-item,
+.tag-cloud-item {
+  animation: card-rise 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.article-card:nth-child(1),
+.poem-card:nth-child(1) {
+  animation-delay: 0.06s;
+}
+.article-card:nth-child(2),
+.poem-card:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.article-card:nth-child(3),
+.poem-card:nth-child(3) {
+  animation-delay: 0.18s;
+}
+.article-card:nth-child(4),
+.poem-card:nth-child(4) {
+  animation-delay: 0.24s;
+}
+.article-card:nth-child(5),
+.poem-card:nth-child(5) {
+  animation-delay: 0.3s;
+}
+.article-card:nth-child(6),
+.poem-card:nth-child(6) {
+  animation-delay: 0.36s;
+}
+.article-card:nth-child(7),
+.poem-card:nth-child(7) {
+  animation-delay: 0.42s;
+}
+.article-card:nth-child(8),
+.poem-card:nth-child(8) {
+  animation-delay: 0.48s;
+}
+.article-card:nth-child(9),
+.poem-card:nth-child(9) {
+  animation-delay: 0.54s;
+}
+.article-card:nth-child(10),
+.poem-card:nth-child(10) {
+  animation-delay: 0.6s;
+}
+.article-card:nth-child(11),
+.poem-card:nth-child(11) {
+  animation-delay: 0.66s;
+}
+.article-card:nth-child(12),
+.poem-card:nth-child(12) {
+  animation-delay: 0.72s;
+}
+.article-card:nth-child(13),
+.poem-card:nth-child(13) {
+  animation-delay: 0.78s;
+}
+.article-card:nth-child(14),
+.poem-card:nth-child(14) {
+  animation-delay: 0.84s;
+}
+.article-card:nth-child(15),
+.poem-card:nth-child(15) {
+  animation-delay: 0.9s;
+}
+.article-card:nth-child(16),
+.poem-card:nth-child(16) {
+  animation-delay: 0.96s;
+}
+.article-card:nth-child(17),
+.poem-card:nth-child(17) {
+  animation-delay: 1.02s;
+}
+.article-card:nth-child(18),
+.poem-card:nth-child(18) {
+  animation-delay: 1.08s;
+}
+.article-card:nth-child(19),
+.poem-card:nth-child(19) {
+  animation-delay: 1.14s;
+}
+.article-card:nth-child(20),
+.poem-card:nth-child(20) {
+  animation-delay: 1.2s;
+}
+.page-transition-overlay {
+  background: rgba(255,250,242,0.92);
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 0.28s ease;
+  z-index: 10001;
+}
+.page-exiting .page-transition-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .main,
+  .article-card,
+  .post-block,
+  .poem-card,
+  .category-list-item,
+  .tag-cloud-item {
+    animation: none;
+  }
+  .page-transition-overlay {
+    transition: none;
+  }
+}
+@-moz-keyframes page-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@-webkit-keyframes page-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@-o-keyframes page-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes page-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@-moz-keyframes card-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@-webkit-keyframes card-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@-o-keyframes card-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes card-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 html.dark body,
