@@ -173,6 +173,7 @@
 
     <div class="poem-filters" aria-label="诗歌分类">
       <button class="is-active" type="button" data-poem-filter="all">全部</button>
+        <button type="button" data-poem-filter="古诗词">古诗词</button>
       <button type="button" data-poem-filter="favorite">收藏</button>
     </div>
 
@@ -190,10 +191,69 @@
 
   <div class="poems-layout">
     <section class="poem-grid" aria-live="polite">
+        <article class="poem-card is-liked"
+          data-category="古诗词"
+          data-favorite="true"
+          data-search="《登金陵凤凰台》 李白 古诗词  凤凰台上凤凰游，凤去台空江自流。
+吴宫花草埋幽径，晋代衣冠成古丘。
+三山半落青天外，二水中分白鹭洲。
+总为浮云能蔽日，长安不见使人愁。">
+          <div class="poem-card-head">
+            <span class="poem-badge">古诗词</span>
+            <button class="poem-bookmark is-active" type="button" aria-label="收藏 《登金陵凤凰台》">
+              <i class="fa fa-bookmark" aria-hidden="true"></i>
+            </button>
+          </div>
+          <h2>《登金陵凤凰台》</h2>
+          <p class="poem-author">李白</p>
+          <div class="poem-quote" aria-hidden="true">“</div>
+          <div class="poem-excerpt">
+              <p>凤凰台上凤凰游，凤去台空江自流。</p>
+              <p>吴宫花草埋幽径，晋代衣冠成古丘。</p>
+              <p>三山半落青天外，二水中分白鹭洲。</p>
+              <p>总为浮云能蔽日，长安不见使人愁。</p>
+          </div>
+          <div class="poem-full">
+              <p>凤凰台上凤凰游，凤去台空江自流。</p>
+              <p>吴宫花草埋幽径，晋代衣冠成古丘。</p>
+              <p>三山半落青天外，二水中分白鹭洲。</p>
+              <p>总为浮云能蔽日，长安不见使人愁。</p>
+          </div>
+          <div class="poem-card-actions">
+            <button class="poem-like is-active" type="button">
+              <i class="far fa-heart" aria-hidden="true"></i>
+              <span>收藏</span>
+            </button>
+            <button class="poem-read" type="button">
+              <i class="fa fa-volume-up" aria-hidden="true"></i>
+              <span>朗读</span>
+            </button>
+            <button class="poem-expand" type="button">
+              <span>展开全文</span>
+              <i class="fa fa-arrow-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </article>
       <p class="poem-empty">没有找到匹配的诗歌。</p>
     </section>
 
     <aside class="poem-side">
+        <section class="poem-side-card poem-featured">
+          <div class="poem-side-title">
+            <h2>今日推荐</h2>
+          </div>
+          <article>
+            <span>古诗词</span>
+            <h3>《登金陵凤凰台》</h3>
+            <p class="poem-author">李白</p>
+            <div>
+                <p>凤凰台上凤凰游，凤去台空江自流。</p>
+                <p>吴宫花草埋幽径，晋代衣冠成古丘。</p>
+                <p>三山半落青天外，二水中分白鹭洲。</p>
+                <p>总为浮云能蔽日，长安不见使人愁。</p>
+            </div>
+          </article>
+        </section>
 
       <section class="poem-side-card">
         <div class="poem-side-title">
@@ -204,8 +264,8 @@
       </section>
 
       <section class="poem-side-card poem-stats">
-        <p><i class="far fa-book-open"></i><span>收录诗歌</span><strong>0</strong></p>
-        <p><i class="far fa-heart"></i><span>收藏</span><strong>0</strong></p>
+        <p><i class="far fa-book-open"></i><span>收录诗歌</span><strong>1</strong></p>
+        <p><i class="far fa-heart"></i><span>收藏</span><strong>1</strong></p>
         <p><i class="far fa-feather"></i><span>本周新作</span><strong>0</strong></p>
       </section>
     </aside>
