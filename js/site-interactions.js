@@ -164,6 +164,106 @@
     window.addEventListener('scroll', update, { passive: true });
   }
 
+  function initPoemsPage() {
+    const page = document.querySelector('.poems-page');
+    if (!page) return;
+
+    const cards = [...page.querySelectorAll('.poem-card')];
+    const search = page.querySelector('#poem-search');
+    const filterButtons = [...page.querySelectorAll('[data-poem-filter]')];
+    const tagButtons = [...page.querySelectorAll('[data-poem-tag]')];
+    const viewButtons = [...page.querySelectorAll('[data-poem-view]')];
+    const empty = page.querySelector('.poem-empty');
+    let activeFilter = 'all';
+
+    const normalize = value => (value || '').toString().trim().toLowerCase();
+
+    const applyFilter = () => {
+      const query = normalize(search && search.value);
+      let visible = 0;
+
+      cards.forEach(card => {
+        const haystack = normalize(card.dataset.search);
+        const category = card.dataset.category;
+        const favorite = card.dataset.favorite === 'true' || card.classList.contains('is-liked');
+        const matchesQuery = !query || haystack.includes(query);
+        const matchesFilter = activeFilter === 'all' || category === activeFilter || (activeFilter === 'favorite' && favorite) || haystack.includes(normalize(activeFilter));
+        const show = matchesQuery && matchesFilter;
+        card.classList.toggle('is-hidden', !show);
+        if (show) visible += 1;
+      });
+
+      if (empty) empty.classList.toggle('is-visible', visible === 0);
+    };
+
+    if (search) search.addEventListener('input', applyFilter);
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        activeFilter = button.dataset.poemFilter;
+        filterButtons.forEach(item => item.classList.toggle('is-active', item === button));
+        tagButtons.forEach(item => item.classList.remove('is-active'));
+        applyFilter();
+      });
+    });
+
+    tagButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        activeFilter = button.dataset.poemTag;
+        tagButtons.forEach(item => item.classList.toggle('is-active', item === button));
+        filterButtons.forEach(item => item.classList.remove('is-active'));
+        applyFilter();
+      });
+    });
+
+    viewButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const immersive = button.dataset.poemView === 'immersive';
+        page.classList.toggle('is-immersive', immersive);
+        viewButtons.forEach(item => item.classList.toggle('is-active', item === button));
+      });
+    });
+
+    cards.forEach(card => {
+      const expand = card.querySelector('.poem-expand');
+      const like = card.querySelector('.poem-like');
+      const bookmark = card.querySelector('.poem-bookmark');
+      const read = card.querySelector('.poem-read');
+      const title = card.querySelector('h2');
+      const full = card.querySelector('.poem-full') || card.querySelector('.poem-excerpt');
+
+      if (expand) {
+        expand.addEventListener('click', () => {
+          const expanded = card.classList.toggle('is-expanded');
+          expand.querySelector('span').textContent = expanded ? '收起全文' : '展开全文';
+        });
+      }
+
+      const toggleLike = () => {
+        const active = card.classList.toggle('is-liked');
+        card.dataset.favorite = active ? 'true' : 'false';
+        if (like) like.classList.toggle('is-active', active);
+        if (bookmark) bookmark.classList.toggle('is-active', active);
+        applyFilter();
+      };
+
+      if (like) like.addEventListener('click', toggleLike);
+      if (bookmark) bookmark.addEventListener('click', toggleLike);
+
+      if (read) {
+        read.addEventListener('click', () => {
+          if (!('speechSynthesis' in window)) return;
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(`${title ? title.textContent : ''}。${full ? full.textContent : ''}`);
+          utterance.lang = 'zh-CN';
+          window.speechSynthesis.speak(utterance);
+        });
+      }
+    });
+
+    applyFilter();
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     initProgress();
     initCategoryToggle();
@@ -171,5 +271,6 @@
     initArticleCards();
     initCodeCopy();
     initHeaderState();
+    initPoemsPage();
   });
 })();
