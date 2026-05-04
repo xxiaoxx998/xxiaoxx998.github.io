@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-50x50.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-50x50.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="theme-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ducklinger.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Agent基础ReAct模式（Reasoning And Action） 基本步骤：Thought、Action、Observation、Final Answer 实现原理给出系统提示词让模型按照上述规则给出answer，根据规则化的answer决定是否调用工具、调用什么工具、是否结束对话给出Final answer等（个人理解），感觉其实就是给大模型的返回包装一下，量化的意思  实验系统提示词模">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Agent基础">
+<meta property="og:url" content="https://ducklinger.top/2026/05/04/AI%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/Agent%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Ducklinger">
+<meta property="og:description" content="Agent基础ReAct模式（Reasoning And Action） 基本步骤：Thought、Action、Observation、Final Answer 实现原理给出系统提示词让模型按照上述规则给出answer，根据规则化的answer决定是否调用工具、调用什么工具、是否结束对话给出Final answer等（个人理解），感觉其实就是给大模型的返回包装一下，量化的意思  实验系统提示词模">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ducklinger.top/images/agent1.png">
+<meta property="og:image" content="https://ducklinger.top/images/agent2.png">
+<meta property="og:image" content="https://ducklinger.top/images/agent3.png">
+<meta property="og:image" content="https://ducklinger.top/images/agent4.png">
+<meta property="og:image" content="https://ducklinger.top/images/agent5.png">
+<meta property="article:published_time" content="2026-05-04T03:22:51.864Z">
+<meta property="article:modified_time" content="2026-05-04T13:59:58.709Z">
+<meta property="article:author" content="Ducklinger">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ducklinger.top/images/agent1.png">
+
+<link rel="canonical" href="https://ducklinger.top/2026/05/04/AI%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/Agent%E5%9F%BA%E7%A1%80/">
+
+
+<script id="page-configurations">
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Agent基础 | Ducklinger</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ducklinger</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section">分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-poems">
+
+    <a href="/poems/" rel="section">诗歌</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main main-post">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ducklinger.top/2026/05/04/AI%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/Agent%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Agent基础
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-05-04 11:22:51 / 修改时间：21:59:58" itemprop="dateCreated datePublished" datetime="2026-05-04T11:22:51+08:00">2026-05-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Agent基础"><a href="#Agent基础" class="headerlink" title="Agent基础"></a>Agent基础</h1><h2 id="ReAct模式（Reasoning-And-Action）"><a href="#ReAct模式（Reasoning-And-Action）" class="headerlink" title="ReAct模式（Reasoning And Action）"></a>ReAct模式（Reasoning And Action）</h2><p><img src="/../../images/agent1.png"></p>
+<p>基本步骤：Thought、Action、Observation、Final Answer</p>
+<h3 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h3><p>给出系统提示词让模型按照上述规则给出answer，根据规则化的answer决定是否调用工具、调用什么工具、是否结束对话给出Final answer等（个人理解），感觉其实就是给大模型的返回包装一下，量化的意思</p>
+<p><img src="/../../images/agent2.png"></p>
+<h3 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h3><h4 id="系统提示词模板"><a href="#系统提示词模板" class="headerlink" title="系统提示词模板"></a>系统提示词模板</h4><p>自定义一个系统提示词模板，让模型能够规则化返回</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">你是一个具备强大逻辑推理能力的 AI 助手。为了回答用户的问题，你可以且仅可以从下列提供的工具中选择使用。</span><br><span class="line"></span><br><span class="line">【可用工具】</span><br><span class="line">你可以使用以下工具，每个工具都有具体的名称、功能描述和参数要求：</span><br><span class="line">&#123;tools<span class="emphasis">_description&#125;</span></span><br><span class="line"><span class="emphasis"></span></span><br><span class="line"><span class="emphasis">【执行规则】</span></span><br><span class="line"><span class="emphasis">1. 严格遵守格式：你必须严格按照下面【输出格式】定义的步骤和前缀进行输出，绝对不能遗漏任何一个前缀。</span></span><br><span class="line"><span class="emphasis">2. 动作单一性：每次输出只能包含一次工具调用（即一个 Thought + Action + Action Input 组合）。</span></span><br><span class="line"><span class="emphasis">3. 禁止伪造结果：你绝对不能自己生成 `Observation:` 及其内容，那是系统执行工具后返回给你的。你需要停在 `Action Input:` 结束的地方，等待系统输入。</span></span><br><span class="line"><span class="emphasis">4. JSON 传参：`Action Input` 必须是合法的、可解析的 JSON 格式。</span></span><br><span class="line"><span class="emphasis"></span></span><br><span class="line"><span class="emphasis">【输出格式】</span></span><br><span class="line"><span class="emphasis">请严格循环使用以下格式：</span></span><br><span class="line"><span class="emphasis"></span></span><br><span class="line"><span class="emphasis">Question: 用户提出的需要你解决的问题或任务</span></span><br><span class="line"><span class="emphasis">Thought: 思考为了解决当前问题，我下一步需要做什么</span></span><br><span class="line"><span class="emphasis">Action: 决定使用的工具名称，必须是 [&#123;tool_</span>names&#125;] 中的一个。如果不使用任何工具，请输出 &quot;None&quot;</span><br><span class="line">Action Input: 传递给工具的参数，必须是纯 JSON 格式（例如：&#123;&#123;&quot;keyword&quot;: &quot;Vue 3&quot;, &quot;limit&quot;: 5&#125;&#125;）</span><br><span class="line">Observation: 工具执行后的返回结果（注：此项由系统填充，你不要生成）</span><br><span class="line">... (上述 Thought/Action/Action Input/Observation 可能会重复执行多次，直到你获得了足够的信息)</span><br><span class="line">Thought: 我现在已经收集了足够的信息，可以给出最终答案了。</span><br><span class="line">Final Answer: 针对用户最初的问题，提供详细的最终回答。</span><br><span class="line"></span><br><span class="line">【交互示例】</span><br><span class="line">以下是一个正确的执行流程示例，请仔细学习它的推理过程和格式：</span><br><span class="line"></span><br><span class="line">Question: 帮我查询一下数据库里 users 表中 admin 用户的密码。</span><br><span class="line">Thought: 我需要查询 users 表中 admin 的密码。为了构造正确的 SQL 语句，我首先应该看看 users 表里有哪些字段，避免猜错列名导致报错。我可以先执行一个简单的查询来获取一条数据看看表结构。</span><br><span class="line">Action: RunSQLQuery</span><br><span class="line">Action Input: &#123;&quot;query<span class="emphasis">_string&quot;: &quot;SELECT * FROM users LIMIT 1&quot;&#125;</span></span><br><span class="line"><span class="emphasis">Observation: [&#123;&quot;id&quot;: 1, &quot;username&quot;: &quot;guest&quot;, &quot;secret_</span>hash&quot;: &quot;guest123&quot;&#125;]</span><br><span class="line">Thought: 很好，通过观察返回结果，我知道了用户的账号名列叫 <span class="code">`username`</span>，而存储密码的列叫 <span class="code">`secret_hash`</span>。现在我可以构建精确的 SQL 语句来专门查询 admin 的密码了。</span><br><span class="line">Action: RunSQLQuery</span><br><span class="line">Action Input: &#123;&quot;query<span class="emphasis">_string&quot;: &quot;SELECT secret_</span>hash FROM users WHERE username = &#x27;admin&#x27;&quot;&#125;</span><br><span class="line">Observation: [&#123;&quot;secret<span class="emphasis">_hash&quot;: &quot;flag&#123;react_</span>sql<span class="emphasis">_agent_</span>rocks&#125;&quot;&#125;]</span><br><span class="line">Thought: 我已经成功拿到了 admin 的密码，现在可以回答用户了。</span><br><span class="line">Final Answer: 经过查询，<span class="code">`users`</span> 表中 <span class="code">`admin`</span> 用户的密码（secret<span class="emphasis">_hash 字段）是 `flag&#123;react_</span>sql<span class="emphasis">_agent_</span>rocks&#125;`。</span><br><span class="line"></span><br><span class="line">【开始】</span><br><span class="line">Question: &#123;user<span class="emphasis">_input&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Agent主程序编写"><a href="#Agent主程序编写" class="headerlink" title="Agent主程序编写"></a>Agent主程序编写</h4><p><code>agent</code>主循环流程</p>
+<ol>
+<li><code>llm_response = self._call_llm(prompt)</code> 把提示词发给大模型</li>
+<li><code>parsed_result = self._parse_response(llm_response)</code> 解析大模型回答的内容</li>
+<li>判断是否有<code>final_answer</code> 如果有则输出结果结束，如果没有再检查<code>action</code> 看看要调用什么工具</li>
+<li>执行工具调用函数并将工具输出的格式化结果拼接到<code>prompt</code>里面</li>
+<li>重复 1 过程</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ReActAgent</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, system_prompt_template, tools</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        初始化 Agent</span></span><br><span class="line"><span class="string">        :param system_prompt_template: 我们前面写好的系统提示词模版</span></span><br><span class="line"><span class="string">        :param tools: 工具列表或字典，包含工具的描述和实际的可执行函数</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.system_prompt_template = system_prompt_template</span><br><span class="line">        <span class="variable language_">self</span>.tools = tools</span><br><span class="line">        <span class="variable language_">self</span>.max_steps = <span class="number">10</span>  <span class="comment"># 设置最大迭代次数，防止 Agent 陷入死循环</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self, user_query</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        Agent 的主运行循环</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;🚀 开始执行任务: <span class="subst">&#123;user_query&#125;</span>\n&quot;</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 1. 构造初始 Prompt</span></span><br><span class="line">        <span class="comment"># 这里需要把你准备好的 &#123;tools_description&#125;, &#123;tool_names&#125; 和 &#123;user_input&#125; 填入模板</span></span><br><span class="line">        prompt = <span class="variable language_">self</span>._build_initial_prompt(user_query)</span><br><span class="line">        </span><br><span class="line">        step_count = <span class="number">0</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 2. 进入 ReAct 主循环</span></span><br><span class="line">        <span class="keyword">while</span> step_count &lt; <span class="variable language_">self</span>.max_steps:</span><br><span class="line">            step_count += <span class="number">1</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;\n--- 第 <span class="subst">&#123;step_count&#125;</span> 轮思考 ---&quot;</span>)</span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 3. 调用大模型获取当前轮次的输出 (Thought + Action + Action Input 或者 Final Answer)</span></span><br><span class="line">            <span class="comment"># 注意：调用 API 时，一定要将 &quot;Observation:&quot; 设置为 stop word</span></span><br><span class="line">            llm_response = <span class="variable language_">self</span>._call_llm(prompt)</span><br><span class="line">            <span class="built_in">print</span>(llm_response) <span class="comment"># 打印模型的思考过程</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 4. 解析模型的输出</span></span><br><span class="line">            parsed_result = <span class="variable language_">self</span>._parse_response(llm_response)</span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 5. 检查是否已经得出最终答案</span></span><br><span class="line">            <span class="keyword">if</span> parsed_result[<span class="string">&quot;type&quot;</span>] == <span class="string">&quot;final_answer&quot;</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;\n✅ 任务完成！&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span> parsed_result[<span class="string">&quot;content&quot;</span>]</span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 6. 如果需要调用工具，则执行工具</span></span><br><span class="line">            <span class="keyword">elif</span> parsed_result[<span class="string">&quot;type&quot;</span>] == <span class="string">&quot;tool_call&quot;</span>:</span><br><span class="line">                action_name = parsed_result[<span class="string">&quot;action&quot;</span>]</span><br><span class="line">                action_input = parsed_result[<span class="string">&quot;action_input&quot;</span>]</span><br><span class="line">                </span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;🔧 调用工具: [<span class="subst">&#123;action_name&#125;</span>] | 参数: <span class="subst">&#123;action_input&#125;</span>&quot;</span>)</span><br><span class="line">                observation = <span class="variable language_">self</span>._execute_tool(action_name, action_input)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;👀 观察结果: <span class="subst">&#123;observation&#125;</span>&quot;</span>)</span><br><span class="line">                </span><br><span class="line">                <span class="comment"># 7. 将本轮的思考、动作和观察结果拼接到 Prompt 中，供下一轮使用</span></span><br><span class="line">                prompt += <span class="string">f&quot;\n<span class="subst">&#123;llm_response&#125;</span>\nObservation: <span class="subst">&#123;observation&#125;</span>\n&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="comment"># 处理解析失败的情况，强行纠错</span></span><br><span class="line">                error_msg = <span class="string">&quot;Error: 无法解析你的输出，请严格按照要求的格式返回。&quot;</span></span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;⚠️ 格式错误: <span class="subst">&#123;error_msg&#125;</span>&quot;</span>)</span><br><span class="line">                prompt += <span class="string">f&quot;\n<span class="subst">&#123;llm_response&#125;</span>\nObservation: <span class="subst">&#123;error_msg&#125;</span>\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n❌ 达到最大迭代次数，任务失败。&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;很抱歉，我尝试了多次仍未能解决该问题。&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># ================= 以下是需要逐步完善的子函数 =================</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_build_initial_prompt</span>(<span class="params">self, user_query</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;组装带有工具描述和用户问题的 System Prompt&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_call_llm</span>(<span class="params">self, prompt</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;封装调用大模型 API 的逻辑 (处理鉴权、请求、Stop Word)&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_parse_response</span>(<span class="params">self, text</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        用正则表达式解析 LLM 的文本输出</span></span><br><span class="line"><span class="string">        需要提取 Thought, Action, Action Input，或者判断是否有 Final Answer</span></span><br><span class="line"><span class="string">        返回一个字典，比如：&#123;&quot;type&quot;: &quot;tool_call&quot;, &quot;action&quot;: &quot;xxx&quot;, &quot;action_input&quot;: &quot;&#123;...&#125;&quot;&#125;</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_execute_tool</span>(<span class="params">self, action_name, action_input_json</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        解析 JSON 参数，根据 action_name 路由到对应的 Python 函数，并返回字符串形式的结果</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<p>完整代码见<a target="_blank" rel="noopener" href="https://github.com/xxiaoxx998/simple-Agent">https://github.com/xxiaoxx998/simple-Agent</a></p>
+<p><strong>_parse_response(self, text)</strong></p>
+<p>使用正则匹配寻找规格化回复内容里面的Final answer、 Action、 Action Input</p>
+<ol>
+<li><code>re.search(r&quot;Final Answer:\s*(.*)&quot;, text, re.DOTALL)</code></li>
+<li><code>re.search(r&quot;Action:\s*(.*?)\n&quot;, text)</code></li>
+<li><code>re.search(r&quot;Action Input:\s*(.*)&quot;, text, re.DOTALL)</code></li>
+</ol>
+<p>有时候格式不对，要把错误信息塞进prompt里面，让大模型自己修正</p>
+<p><strong>_execute_tool</strong></p>
+<p>解析action_name 在工具字典里面寻找tool 找到 tool_fuction 并执行 </p>
+<p>有错误都直接写到prompt里面</p>
+<h4 id="入口函数main-py"><a href="#入口函数main-py" class="headerlink" title="入口函数main.py"></a>入口函数main.py</h4><p>由于这只是简单编写一个agent我只准备写三个工具，打开文件、写入文件和调用计算器，都可以直接写在main函数前面，分两部分，一部分是工具具体实现函数，一部分是把所有工具格式化json便于模型读取</p>
+<p>格式化工具</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">TOOLS_CONFIG = &#123;</span><br><span class="line">    <span class="string">&quot;descriptions&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;name&quot;</span>: <span class="string">&quot;ReadFile&quot;</span>,</span><br><span class="line">            <span class="string">&quot;description&quot;</span>: <span class="string">&quot;读取指定路径的文件内容。&quot;</span>,</span><br><span class="line">            <span class="string">&quot;parameters&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;type&quot;</span>: <span class="string">&quot;object&quot;</span>,</span><br><span class="line">                <span class="string">&quot;properties&quot;</span>: &#123;<span class="string">&quot;file_path&quot;</span>: &#123;<span class="string">&quot;type&quot;</span>: <span class="string">&quot;string&quot;</span>&#125;&#125;,</span><br><span class="line">                <span class="string">&quot;required&quot;</span>: [<span class="string">&quot;file_path&quot;</span>]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;name&quot;</span>: <span class="string">&quot;WriteFile&quot;</span>,</span><br><span class="line">            <span class="string">&quot;description&quot;</span>: <span class="string">&quot;将文本内容写入到指定路径的文件中。&quot;</span>,</span><br><span class="line">            <span class="string">&quot;parameters&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;type&quot;</span>: <span class="string">&quot;object&quot;</span>,</span><br><span class="line">                <span class="string">&quot;properties&quot;</span>: &#123;<span class="string">&quot;file_path&quot;</span>: &#123;<span class="string">&quot;type&quot;</span>: <span class="string">&quot;string&quot;</span>&#125;, <span class="string">&quot;content&quot;</span>: &#123;<span class="string">&quot;type&quot;</span>: <span class="string">&quot;string&quot;</span>&#125;&#125;,</span><br><span class="line">                <span class="string">&quot;required&quot;</span>: [<span class="string">&quot;file_path&quot;</span>, <span class="string">&quot;content&quot;</span>]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;name&quot;</span>: <span class="string">&quot;Calculate&quot;</span>,</span><br><span class="line">            <span class="string">&quot;description&quot;</span>: <span class="string">&quot;计算数学表达式的结果。例如传入 &#x27;123+321&#x27;。&quot;</span>,</span><br><span class="line">            <span class="string">&quot;parameters&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;type&quot;</span>: <span class="string">&quot;object&quot;</span>,</span><br><span class="line">                <span class="string">&quot;properties&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;expression&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;type&quot;</span>: <span class="string">&quot;string&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;description&quot;</span>: <span class="string">&quot;要计算的数学表达式&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">&quot;required&quot;</span>: [<span class="string">&quot;expression&quot;</span>]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;functions&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;ReadFile&quot;</span>: read_file,</span><br><span class="line">        <span class="string">&quot;WriteFile&quot;</span>: write_file,</span><br><span class="line">        <span class="string">&quot;Calculate&quot;</span>: calculate_math </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>基本流程感觉还是很简单，目前只学到这里</p>
+<p><img src="/../../images/agent3.png"></p>
+<p><img src="/../../images/agent4.png"></p>
+<p><img src="/../../images/agent5.png"></p>
+
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------到底咯QAQ嘎嘎-------------</div>
+    
+</div>
+      </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="jachinzhang1/jachinzhang1.github.io"
+        data-repo-id="R_kgDONy_q0w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONy_q084Cmo0P"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/04/29/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E9%94%99%E8%AF%AF%E6%8E%92%E6%9F%A5/" rel="prev" title="程序运行错误排查">
+      <i class="fa fa-chevron-left"></i> 程序运行错误排查
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-circle"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">山河辽阔，人间烟火 | 记录生活与思考的碎片</span>
+</div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/js/site-interactions.js"></script>
+<script>
+  (function() {
+    var overlay = document.createElement('div');
+    overlay.className = 'page-transition-overlay';
+    document.body.appendChild(overlay);
+
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a');
+      if (!link || !link.href) return;
+      if (link.target === '_blank') return;
+      if (link.host !== window.location.host) return;
+      if (link.getAttribute('download') != null) return;
+      if (link.hash && link.pathname === window.location.pathname) return;
+      if (e.metaKey || e.ctrlKey) return;
+
+      e.preventDefault();
+      document.body.classList.add('page-exiting');
+      setTimeout(function() {
+        window.location = link.href;
+      }, 260);
+    });
+
+    // Keep overlay hidden when navigating back via bfcache.
+    window.addEventListener('pageshow', function(e) {
+      document.body.classList.remove('page-exiting');
+    });
+  })();
+</script>
+
+</body>
+</html>
