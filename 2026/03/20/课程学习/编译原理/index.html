@@ -36,8 +36,9 @@
 <meta property="og:image" content="https://ducklinger.top/images/byyl8.png">
 <meta property="og:image" content="https://ducklinger.top/images/byyl9.png">
 <meta property="og:image" content="https://ducklinger.top/images/byyl10.png">
+<meta property="og:image" content="https://ducklinger.top/images/byyl11.png">
 <meta property="article:published_time" content="2026-03-19T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-04-29T09:44:57.617Z">
+<meta property="article:modified_time" content="2026-05-13T10:09:42.051Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://ducklinger.top/images/czxt1.png">
@@ -211,7 +212,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-04-29 17:44:57" itemprop="dateModified" datetime="2026-04-29T17:44:57+08:00">2026-04-29</time>
+                <time title="修改时间：2026-05-13 18:09:42" itemprop="dateModified" datetime="2026-05-13T18:09:42+08:00">2026-05-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -298,13 +299,13 @@
 
 <h4 id="高级语言具有自编译性"><a href="#高级语言具有自编译性" class="headerlink" title="高级语言具有自编译性"></a>高级语言具有自编译性</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">S_T    	H:宿主语言</span><br><span class="line"> H		s:源程序</span><br><span class="line"> 		T:目标语言</span><br></pre></td></tr></table></figure>
 
-<p><img src="/../images/byyl2.png"></p>
+<p><img src="/../../images/byyl2.png"></p>
 <ul>
 <li>理解：可以用Pascal高级语言编写编译程序再用底层的A语言编译成A程序再用来编译Pascal程序，并非多此一举，可以优化代码，例如在编写的Pascal编译程序更加高级优化得更好</li>
 </ul>
 <h4 id="自展"><a href="#自展" class="headerlink" title="自展"></a><strong>自展</strong></h4><p>先有一个a1语言核心部分构造的一个小小的编译程序，再通过类似自编译完成a2语言的编译程序，再用a2编译a3语言，从而可以构造a3的编译程序</p>
 <h4 id="交叉编译器"><a href="#交叉编译器" class="headerlink" title="交叉编译器"></a>交叉编译器</h4><p>L高级语言在A宿主机上实现能在B主机上运行的L语言</p>
-<p><img src="/../images/byyl3.png"></p>
+<p><img src="/../../images/byyl3.png"></p>
 <h2 id="第二章形式语言概论"><a href="#第二章形式语言概论" class="headerlink" title="第二章形式语言概论"></a>第二章形式语言概论</h2><p><strong>字母表</strong> ：元素的非空有穷集合，元素称为符号</p>
 <p><strong>符号串</strong>的前缀、后缀、子串都可以是空串，长度、连接、方幂、逆</p>
 <p><strong>符号串集合</strong>的乘积，和（+）就是并起来，乘就是连接前部分属于集合A后部分属于集合B，<strong>符号串集合的方幂</strong>就是集合的自乘积（0次方为空串），<strong>符号串集合的正闭包</strong>就是<strong>集合A从一次方幂累加到n次方幂</strong>，闭包就是包含零次幂</p>
@@ -338,8 +339,8 @@
 <li><strong>通俗理解</strong>：<strong>“排队生成”</strong>。每次替换只能产生一个终结符，或者一个终结符带一个非终结符。它非常有规律，像一串糖葫芦。</li>
 <li><strong>应用</strong>：<strong>正则表达式</strong>。主要用于识别“单词”（词法分析），比如判断一个字符串是不是合法的变量名或数字。</li>
 </ul>
-<p>实例：<br><img src="/../images/byyl4.png" alt="0型文法 Type-0 Grammar"></p>
-<h4 id="语言和语法树"><a href="#语言和语法树" class="headerlink" title="语言和语法树"></a>语言和语法树</h4><p><img src="/../images/byyl5.png"></p>
+<p>实例：<br><img src="/../../images/byyl4.png" alt="0型文法 Type-0 Grammar"></p>
+<h4 id="语言和语法树"><a href="#语言和语法树" class="headerlink" title="语言和语法树"></a>语言和语法树</h4><p><img src="/../../images/byyl5.png"></p>
 <p>【例1】 S -&gt; aSb | ab</p>
 <p>【例2】 S -&gt; aSb | 空串</p>
 <p>【例3】 S -&gt; AB、 A -&gt; aA | 空串、 B -&gt; bB | b</p>
@@ -368,12 +369,12 @@
 <li><strong>删除单规则</strong>：A -&gt; B（把B替换）<strong>降低语法树的深度</strong></li>
 <li><strong>删除空产生式</strong> （<strong>也会导致二义性</strong>） A -&gt; 空串</li>
 </ul>
-<p><img src="/../images/byyl6.png"></p>
+<p><img src="/../../images/byyl6.png"></p>
 <p>D可能为空，把D为空的情况带入 <strong>B</strong>有<strong>B -&gt; 空串</strong>，同样要删除，B取值DD和D，对于A，原本BD都有可能为空，及可能有<strong>abD、aBb、ab</strong>，再把不为空正常情况带入及<strong>aBbD</strong></p>
 <ul>
 <li><strong>消除直接左递归</strong>（采用EBNF(){0&#x2F;n}[0&#x2F;1]方式）<strong>U-&gt;Uy</strong></li>
 </ul>
-<p><img src="/../images/byyl7.png"></p>
+<p><img src="/../../images/byyl7.png"></p>
 <p><strong>匹配待检查串</strong>：</p>
 <ul>
 <li>自上而下：从S出发构造语法树，带回溯的方式，或者设计的时候限制文法，使其唯一确定，也就是线性的。</li>
@@ -395,7 +396,7 @@
 <li><strong>如果其中有初态&#x2F;终态，则设为初态&#x2F;终态</strong></li>
 </ol>
 </li>
-<li><strong>消除剩下的空移</strong>：如图，能到哪补哪<img src="/../images/byyl8.png"></li>
+<li><strong>消除剩下的空移</strong>：如图，能到哪补哪<img src="/../../images/byyl8.png"></li>
 </ol>
 <p>然后进行NDFA -&gt; DFA</p>
 <p><strong>造表法</strong></p>
@@ -410,7 +411,7 @@
 <li>再对两个子集进行划分：属于同一子集的任意状态q1和q2，对于任何a . Σ ，t(q1,a)与t(q2,a)属于同一子集</li>
 <li>删无关状态，不可达状态，死状态</li>
 </ol>
-<p>例<img src="/../images/byyl9.png"></p>
+<p>例<img src="/../../images/byyl9.png"></p>
 <table>
 <thead>
 <tr>
@@ -466,13 +467,48 @@
 <li>终止态都有Z -&gt; ε</li>
 <li>最后可以化简<strong>删除空产生式</strong></li>
 </ol>
-<h4 id="RE与FA的转化"><a href="#RE与FA的转化" class="headerlink" title="RE与FA的转化"></a>RE与FA的转化</h4><p><img src="/../images/byyl10.png"></p>
+<h4 id="RE与FA的转化"><a href="#RE与FA的转化" class="headerlink" title="RE与FA的转化"></a>RE与FA的转化</h4><p><img src="/../../images/byyl10.png"></p>
 <p>定理：</p>
 <ol>
 <li>RE -&gt; FA:<br>对于字母表Σ上的任意正规表达式e，一定可以构造一个输入字母表Σ上的NDFA A，使得L(A)&#x3D;L(e)。</li>
 <li>FA -&gt; RE:<br>由有穷自动机FA A所识别的语言L(A)，可以用Σ上的RE e来表示，使得L(A)&#x3D;L(e)。</li>
 </ol>
-<p><strong>RE -&gt; FA</strong></p>
+<p><strong>RE -&gt; FA</strong> </p>
+<h3 id="自上而下的语法分析"><a href="#自上而下的语法分析" class="headerlink" title="自上而下的语法分析"></a>自上而下的语法分析</h3><p>主要问题：消除回溯和直接或者间接左递归</p>
+<h4 id="消除间接左递归"><a href="#消除间接左递归" class="headerlink" title="消除间接左递归"></a>消除间接左递归</h4><p>间接改直接，然后再直接替换，双重循环：</p>
+<ol>
+<li>从小到大遍历这些非终结符，把排在前面的非终结符的产生式，代入到排在后面的非终结符中。</li>
+<li>在每次内层循环结束后，此时的 产生式中可能已经因为代入而出现了<strong>直接左递归</strong>。这时立刻使用消除直接左递归的公式处理 。</li>
+</ol>
+<h4 id="回溯的消除"><a href="#回溯的消除" class="headerlink" title="回溯的消除"></a>回溯的消除</h4><ol>
+<li>对于U→α1|α2|…|αn 由于是看输入决定选择哪个，所以有<br><em><strong>SELECT(U →αi)∩ SELECT(U →αj) &#x3D; Ø</strong></em><br>也就是 <strong>FIRST(αi) ∩ FIRST(αj)&#x3D; Ø (i≮j)</strong>，各符号串推出来的第一个终结符两两不同</li>
+<li>当 其中有符号串推出空时候，这一个条件就不够了，还需要满足，<br><em><strong>FIRST(αi)∩FOLLOW(U)&#x3D;Ø</strong></em><br>也就是选择的这个串给出的终结符与其他推出空的串的第一个后继终结符不相同</li>
+</ol>
+<p>满足上述两条件成为LL(1)文法</p>
+<ol>
+<li>求first集<ol>
+<li><strong>终结符直接拉入：</strong> 如果 X本身就是一个终结符，那么 FIRST(X) &#x3D; {X}</li>
+<li><strong>空串特殊处理：</strong> 如果有产生式 X -&gt; 空（即 X$可以推导出空串），就把  ε  加入到 FIRST(X) 中。</li>
+<li>如果 X 是一个非终结符，且有产生式 X -&gt; Y1 Y2 … Yk<ol>
+<li>首先，把 FIRST(Y1) 中除了 ε 之外的所有元素，放入 FIRST(X)。</li>
+<li>如果 Y1 能推导出空串那么还需要看Y2</li>
+<li>如果全懂都能推出 ε 那就把ε也加入</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>求follow集 (<em><strong>FOLLOW(A)</strong></em>)<ol>
+<li>起始符号直接把结束符号 # 加入</li>
+<li>对于 B -&gt; α1 A α2 把FIRST ( α2 )中除了 ε 的元素加入FLLOW ( A )，如果FIRST（α2）包含 ε ，那就把FOLLOW（B）中的元素也加入 FOLLOW（A）</li>
+</ol>
+</li>
+</ol>
+<p><img src="/../../images/byyl11.png"></p>
+<p>注意：<strong>FIRST  集中可能会包含 ε，但是 FOLLOW 集中绝对不能出现 ε</strong></p>
+<p>LL（1）文法条件：压缩的、无左递归、无回溯 ；LL（1）文法是无二义性的</p>
+<p>而且并非所有的文法都能通过消除左递归和反复提取公因子，改造为LL(1)文法的</p>
+<h3 id="自上而下语法分析"><a href="#自上而下语法分析" class="headerlink" title="自上而下语法分析"></a>自上而下语法分析</h3><p>从输入串进行规约，画出语法分析树</p>
+<p><strong>短语</strong> ：某个非终结符能推出的一段字串，有几个非终结符就有几个短语<br><strong>直接短语</strong>：非终结符一步推出的字串<br><strong>句柄</strong>：句型的最左直接短语</p>
 
     </div>
 

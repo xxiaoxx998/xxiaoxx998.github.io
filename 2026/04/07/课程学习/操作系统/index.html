@@ -27,7 +27,7 @@
 <meta property="og:description" content="操作系统操作系统是一个系统软件，是用户与计算机硬件之间的接口，计算机系统资源的管理（资源复用、虚化、抽象） 多道程序运行： 把多个作业一起放在主存，交替运行共享处理器 操作系统分类  分时操作系统分成很短的时间片，让用户交替使用 批处理操作系统单道多道批处理 实时操作系统 嵌入式系统：比如一些电气设备  操作系统的基本特征  并发性：两个或多个时间在同一时间间隔内发生活动的协调、资源共享 共享性：">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-04-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-04-29T09:44:53.531Z">
+<meta property="article:modified_time" content="2026-05-13T12:50:32.589Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
 
@@ -200,7 +200,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-04-29 17:44:53" itemprop="dateModified" datetime="2026-04-29T17:44:53+08:00">2026-04-29</time>
+                <time title="修改时间：2026-05-13 20:50:32" itemprop="dateModified" datetime="2026-05-13T20:50:32+08:00">2026-05-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -279,7 +279,269 @@
 <p><strong>系统调用：是接口、门，连接用户和内核。</strong></p>
 <p><strong>关系：一个系统调用，背后一定对应一段内核程序。</strong></p>
 <hr>
-<h2 id="openeuler自定义系统调用"><a href="#openeuler自定义系统调用" class="headerlink" title="openeuler自定义系统调用"></a>openeuler自定义系统调用</h2>
+<h2 id="openeuler自定义系统调用"><a href="#openeuler自定义系统调用" class="headerlink" title="openeuler自定义系统调用"></a>openeuler自定义系统调用</h2><h2 id="进程与线程"><a href="#进程与线程" class="headerlink" title="进程与线程"></a>进程与线程</h2><p>计算机最底层只有一个或多个 CPU，CPU 本质上只会不断做一件事：</p>
+<blockquote>
+<p>取指令 → 译码 → 取操作数 → 执行指令</p>
+</blockquote>
+<p><strong>CPU 怎么让这么多程序“同时”运行？</strong></p>
+<p>这一章就是围绕这个问题展开的：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">硬件基础</span><br><span class="line">  ↓</span><br><span class="line">中断机制</span><br><span class="line">  ↓</span><br><span class="line">进程</span><br><span class="line">  ↓</span><br><span class="line">进程状态与调度</span><br><span class="line">  ↓</span><br><span class="line">进程切换</span><br><span class="line">  ↓</span><br><span class="line">进程间通信</span><br><span class="line">  ↓</span><br><span class="line">线程</span><br><span class="line">  ↓</span><br><span class="line">安全问题：隐蔽通道</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-处理器与多核"><a href="#1-处理器与多核" class="headerlink" title="1.处理器与多核"></a>1.处理器与多核</h3><p>单处理器系统只有一运算处理器；多处理器有多个。后来出现了多核处理器（在一块CPU芯片上放多个执行核心）。<strong>多核比多CPU更紧凑、成本更低、功耗更小</strong>。</p>
+<p>初学者可以这样理解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">单核 CPU：一个厨师</span><br><span class="line">多核 CPU：一个厨房里多个厨师</span><br><span class="line">多处理器：多个厨房各有厨师</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>含义</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>并发</td>
+<td>看起来同时做，其实可能轮流做</td>
+<td>单核 CPU 快速切换多个任务</td>
+</tr>
+<tr>
+<td>并行</td>
+<td>真的同时做</td>
+<td>多核 CPU 同时运行多个线程</td>
+</tr>
+</tbody></table>
+<h3 id="2-用户态和内核态"><a href="#2-用户态和内核态" class="headerlink" title="2.用户态和内核态"></a>2.用户态和内核态</h3><p>用户态权限低，内核态权限高</p>
+<p>用户程序权限低，那它怎么请求操作系统帮它做事？</p>
+<p>答案就是后面的<strong>系统调用</strong>。</p>
+<h4 id="2-1-特权指令"><a href="#2-1-特权指令" class="headerlink" title="2.1 特权指令"></a>2.1 特权指令</h4><p>关中断、访问 I&#x2F;O 设备、设置定时器等列为特权操作，并且用户态程序只能执行非特权指令</p>
+<p>特权指令只能在内核态由操作系统执行</p>
+<h3 id="3-中断：唤醒操作系统的方式"><a href="#3-中断：唤醒操作系统的方式" class="headerlink" title="3.中断：唤醒操作系统的方式"></a>3.中断：唤醒操作系统的方式</h3><p>操作系统不是一直主动盯着所有事情，而是很多时候由事件触发</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>谁触发</th>
+<th>是否主动</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>中断</td>
+<td>外部硬件</td>
+<td>被动</td>
+<td>键盘输入、磁盘完成 I&#x2F;O、定时器</td>
+</tr>
+<tr>
+<td>异常</td>
+<td>当前程序出错</td>
+<td>被动</td>
+<td>除 0、非法访问内存、缺页</td>
+</tr>
+<tr>
+<td>系统调用</td>
+<td>用户程序主动请求</td>
+<td>主动</td>
+<td>read、write、fork</td>
+</tr>
+</tbody></table>
+<p>三者的关联：<strong>最终都可能通过中断机制进入内核态</strong></p>
+<h4 id="3-1-Fault-和-Trap-的区别"><a href="#3-1-Fault-和-Trap-的区别" class="headerlink" title="3.1 Fault 和 Trap 的区别"></a>3.1 Fault 和 Trap 的区别</h4><p>Fault：保存的是触发异常的那条指令地址，处理完后可能重新执行这条指令，例如：缺页异常</p>
+<p>Trap：保存的是下一条指令的地址，处理完成之后不再重新执行原指令，例如：断点调试、系统调用</p>
+<h4 id="3-2-定时器中断"><a href="#3-2-定时器中断" class="headerlink" title="3.2 定时器中断"></a>3.2 定时器中断</h4><p>定时器是 OS 回收控制的重要方式，可以用于分时 OS 调度，避免死循环或恶意程序非法独占 CPU。</p>
+<h4 id="PSW-程序状态字"><a href="#PSW-程序状态字" class="headerlink" title="PSW 程序状态字"></a>PSW 程序状态字</h4><p>它用来记录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">当前 CPU 工作状态</span><br><span class="line">能否执行特权指令</span><br><span class="line">程序执行顺序</span><br><span class="line">中断屏蔽信息</span><br><span class="line">条件码</span><br></pre></td></tr></table></figure>
+
+<p>可以把 PSW 理解成 CPU 当前状态的“控制面板”。</p>
+<p>它告诉 CPU：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">现在是用户态还是内核态？</span><br><span class="line">中断能不能响应？</span><br><span class="line">下一条指令在哪里？</span><br><span class="line">上一次运算结果有没有溢出？</span><br></pre></td></tr></table></figure>
+
+<p>这和进程切换也有关：<br> 每个进程运行时都有自己的状态，切换进程时也要保存和恢复这些状态。</p>
+<h3 id="4-进程"><a href="#4-进程" class="headerlink" title="4.进程"></a>4.进程</h3><p>程序本身只是静态文件，比如硬盘上的 <code>qq.exe</code>、<code>chrome.exe</code>。进程是程序真正运行起来后的动态实例。</p>
+<p>进程是程序关于某个数据集合的一次执行过程，也是操作系统进行资源分配和保护的基本单位。</p>
+<p>进程和程序：</p>
+<table>
+<thead>
+<tr>
+<th>对比点</th>
+<th>程序</th>
+<th>进程</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>性质</td>
+<td>静态</td>
+<td>动态</td>
+</tr>
+<tr>
+<td>是否运行</td>
+<td>不一定运行</td>
+<td>正在运行或等待运行</td>
+</tr>
+<tr>
+<td>生命周期</td>
+<td>可长期保存</td>
+<td>创建、运行、阻塞、终止</td>
+</tr>
+<tr>
+<td>组成</td>
+<td>指令集合</td>
+<td>程序段、数据段、PCB 等</td>
+</tr>
+<tr>
+<td>管理者</td>
+<td>文件系统</td>
+<td>操作系统</td>
+</tr>
+</tbody></table>
+<h3 id="5-PCB"><a href="#5-PCB" class="headerlink" title="5. PCB"></a>5. PCB</h3><p>PCB 是描述和管理进程的数据结构，是进程存在的唯一标志；操作系统通过 PCB 了解进程状态、断点信息，并进行调度、控制和管理。</p>
+<p>可以把 PCB 理解为进程档案：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">PCB =</span><br><span class="line">  进程 ID</span><br><span class="line">  当前状态</span><br><span class="line">  程序运行到哪里了</span><br><span class="line">  寄存器现场</span><br><span class="line">  优先级</span><br><span class="line">  使用了哪些资源</span><br><span class="line">  父子进程关系</span><br></pre></td></tr></table></figure>
+
+<p>所以：</p>
+<blockquote>
+<p>程序能不能运行，靠 CPU；</p>
+<p>进程能不能被管理，靠 PCB。</p>
+</blockquote>
+<h3 id="6-进程状态"><a href="#6-进程状态" class="headerlink" title="6. 进程状态"></a>6. 进程状态</h3><p>最基本的三态模型：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">就绪态 -&gt; 运行态 -&gt; 阻塞态</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>就绪态：除了CPU，其他资源都准备好了</li>
+<li>运行态：正在CPU上执行</li>
+<li>阻塞态：等待某件事，比如等待 I&#x2F;O 完成</li>
+</ul>
+<p>状态之间的联系</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">就绪 → 运行：调度程序分配 CPU</span><br><span class="line">运行 → 就绪：时间片用完</span><br><span class="line">运行 → 阻塞：等待 I/O 或事件</span><br><span class="line">阻塞 → 就绪：等待的事件发生</span><br></pre></td></tr></table></figure>
+
+<p>注意：<br> <strong>阻塞态不能直接变运行态。</strong></p>
+<h3 id="7-进程控制：创建、终止、阻塞、唤醒"><a href="#7-进程控制：创建、终止、阻塞、唤醒" class="headerlink" title="7. 进程控制：创建、终止、阻塞、唤醒"></a>7. 进程控制：创建、终止、阻塞、唤醒</h3><p>进程控制包括进程创建、终止、阻塞与唤醒等，一般由操作系统内核原语实现。原语是在执行期间不可分割的一段程序</p>
+<h4 id="进程创建的大致过程："><a href="#进程创建的大致过程：" class="headerlink" title="进程创建的大致过程："></a>进程创建的大致过程：</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">申请空闲 PCB</span><br><span class="line">  ↓</span><br><span class="line">分配资源</span><br><span class="line">  ↓</span><br><span class="line">初始化 PCB</span><br><span class="line">  ↓</span><br><span class="line">放入就绪队列</span><br></pre></td></tr></table></figure>
+
+<h4 id="阻塞和唤醒的区别"><a href="#阻塞和唤醒的区别" class="headerlink" title="阻塞和唤醒的区别"></a>阻塞和唤醒的区别</h4><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>谁发起</th>
+<th>状态变化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>阻塞</td>
+<td>当前进程自己</td>
+<td>运行态 → 阻塞态</td>
+</tr>
+<tr>
+<td>唤醒</td>
+<td>其他进程或中断处理程序</td>
+<td>阻塞态 → 就绪态</td>
+</tr>
+</tbody></table>
+<h4 id="7-1-五态模型"><a href="#7-1-五态模型" class="headerlink" title="7.1 五态模型"></a>7.1 五态模型</h4><p>三态模型只描述运行过程，不够完整，所以加入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">新建态 New</span><br><span class="line">终止态 Terminated</span><br></pre></td></tr></table></figure>
+
+<p>五态模型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">新建 → 就绪 → 运行 → 终止</span><br><span class="line">          ↑      ↓</span><br><span class="line">        阻塞 ← 等待事件</span><br></pre></td></tr></table></figure>
+
+<p>新建态</p>
+<p>进程刚刚被创建，但还没进入就绪队列。<br> 比如 PCB 正在初始化，资源还没完全分配。</p>
+<p>终止态</p>
+<p>进程已经结束，OS 正在或即将回收资源。<br> 比如程序执行完、异常退出、被父进程终止。</p>
+<h4 id="7-2-七态模型"><a href="#7-2-七态模型" class="headerlink" title="7.2 七态模型"></a>7.2 七态模型</h4><p>当系统资源紧张，内存不够，OS 可能会把某些进程暂时换出到磁盘。</p>
+<p>PPT 里说，挂起是把某些进程切换到静止状态，对换到磁盘镜像区中，暂时不参与进程调度，以平滑系统负荷。</p>
+<p>也就是说：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">挂起 = 暂时移出内存/不参与调度</span><br></pre></td></tr></table></figure>
+
+<p>这不是普通阻塞。</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>原因</th>
+<th>是否主要和内存&#x2F;调度有关</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>阻塞</td>
+<td>等事件</td>
+<td>等待 I&#x2F;O、锁、信号等</td>
+</tr>
+<tr>
+<td>挂起</td>
+<td>被 OS&#x2F;用户暂时移出活动集合</td>
+<td>常和内存不足、系统负载、调试有关</td>
+</tr>
+</tbody></table>
+<p>七态模型里会出现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">活动就绪</span><br><span class="line">活动阻塞</span><br><span class="line">挂起就绪</span><br><span class="line">挂起阻塞</span><br></pre></td></tr></table></figure>
+
+<p>理解方式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">就绪/阻塞：它等不等事件</span><br><span class="line">活动/挂起：它在不在内存、参不参与调度</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="8-进程切换"><a href="#8-进程切换" class="headerlink" title="8. 进程切换"></a>8. 进程切换</h3><p>多个进程共享 CPU，必须切换。</p>
+<p>进程切换就是中断处于运行态的进程，让出处理器，并完成上下文切换：保存老进程状态，装入新进程状态。</p>
+<p>所谓上下文，就是“进程运行到一半所需的全部环境”。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">保存旧进程寄存器、PC、栈等</span><br><span class="line">  ↓</span><br><span class="line">修改旧进程 PCB</span><br><span class="line">  ↓</span><br><span class="line">选择新进程</span><br><span class="line">  ↓</span><br><span class="line">恢复新进程上下文</span><br><span class="line">  ↓</span><br><span class="line">新进程继续运行</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="9-进程间通信"><a href="#9-进程间通信" class="headerlink" title="9. 进程间通信"></a>9. 进程间通信</h3><p>进程之间通常是隔离的。隔离保证安全，那么如何进行通信呢？</p>
+<p>IPC，进程间通信，IPC是进程之间的信息交换，是一种协作机制。原因包括信息共享、提高运算速度、模块化和方便性</p>
+<h4 id="两大基本模块"><a href="#两大基本模块" class="headerlink" title="两大基本模块"></a>两大基本模块</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">消息传递</span><br><span class="line">共享内存</span><br></pre></td></tr></table></figure>
+
+<p>消息传递安全、清晰，但可能慢一些；共享内存速度快，但容易产生同步问题。</p>
+<p>比如两个进程同时改同一个变量，就可能出现“时间有关的错误”。这就需要信号量、锁、互斥等同步机制。</p>
+<h3 id="10-线程"><a href="#10-线程" class="headerlink" title="10. 线程"></a>10. 线程</h3><p>线程是比进程更轻量的执行单位，由于进程的创建和切换成本较高，于是引入线程来减少程序并发执行所付出的时空开销，使操作系统具有更好的并发性。</p>
+<h4 id="进程和线程核心区别"><a href="#进程和线程核心区别" class="headerlink" title="进程和线程核心区别"></a>进程和线程核心区别</h4><table>
+<thead>
+<tr>
+<th>对比点</th>
+<th>进程</th>
+<th>线程</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>资源</td>
+<td>拥有独立资源</td>
+<td>基本不拥有资源</td>
+</tr>
+<tr>
+<td>地址空间</td>
+<td>进程间通常隔离</td>
+<td>同一进程内线程共享</td>
+</tr>
+<tr>
+<td>调度</td>
+<td>传统 OS 中进程可调度</td>
+<td>现代 OS 中线程是调度基本单位</td>
+</tr>
+<tr>
+<td>开销</td>
+<td>创建、切换开销大</td>
+<td>创建、切换开销小</td>
+</tr>
+<tr>
+<td>通信</td>
+<td>IPC 较复杂</td>
+<td>同进程线程共享数据，通信方便</td>
+</tr>
+</tbody></table>
+<h3 id="11-线程模型：用户级线程和内核级线程"><a href="#11-线程模型：用户级线程和内核级线程" class="headerlink" title="11.线程模型：用户级线程和内核级线程"></a>11.线程模型：用户级线程和内核级线程</h3><h4 id="11-1-用户级线程"><a href="#11-1-用户级线程" class="headerlink" title="11.1 用户级线程"></a>11.1 用户级线程</h4><p>用户级线程有用户态线程库管理，操作系统看不见</p>
+<p>优点：快，不需要频繁进入内核</p>
+<p>缺点：一个线程阻塞，可能导致整个进程阻塞</p>
+<h4 id="11-2-内核级线程"><a href="#11-2-内核级线程" class="headerlink" title="11.2 内核级线程"></a>11.2 内核级线程</h4><p>内核级线程由操作系统管理</p>
+<p>优点：一个线程阻塞，不影响同进程其他线程；可以更好利用多核</p>
+<p>缺点：创建和切换需要内核参与，开销较大</p>
+<h4 id="11-3-多线程映射模型"><a href="#11-3-多线程映射模型" class="headerlink" title="11.3 多线程映射模型"></a>11.3 多线程映射模型</h4><p>课件中讲了三种：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">多对一：多个用户线程 → 一个内核线程</span><br><span class="line">一对一：一个用户线程 → 一个内核线程</span><br><span class="line">多对多：多个用户线程 → 多个内核线程</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Linux、Windows 常见的是一对一模型。<br> 一个用户线程对应一个内核线程，能利用多核，但线程太多会增加系统开销</p>
+</blockquote>
+
     </div>
 
     
@@ -319,8 +581,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2026/03/29/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="prev" title="数据库">
-      <i class="fa fa-chevron-left"></i> 数据库
+    <a href="/2026/03/29/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
     </a></div>
       <div class="post-nav-item">
     <a href="/2026/04/12/AI%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/RAG%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B/" rel="next" title="RAG">
