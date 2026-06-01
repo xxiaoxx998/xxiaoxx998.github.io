@@ -26,10 +26,17 @@
 <meta property="og:site_name" content="Ducklinger">
 <meta property="og:description" content="操作系统操作系统是一个系统软件，是用户与计算机硬件之间的接口，计算机系统资源的管理（资源复用、虚化、抽象） 多道程序运行： 把多个作业一起放在主存，交替运行共享处理器 操作系统分类  分时操作系统分成很短的时间片，让用户交替使用 批处理操作系统单道多道批处理 实时操作系统 嵌入式系统：比如一些电气设备  操作系统的基本特征  并发性：两个或多个时间在同一时间间隔内发生活动的协调、资源共享 共享性：">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ducklinger.top/images/os1.png">
+<meta property="og:image" content="https://ducklinger.top/images/os3.png">
+<meta property="og:image" content="https://ducklinger.top/images/os2.png">
+<meta property="og:image" content="https://ducklinger.top/images/os4.png">
+<meta property="og:image" content="https://ducklinger.top/images/os5.png">
+<meta property="og:image" content="https://ducklinger.top/images/os6.png">
 <meta property="article:published_time" content="2026-04-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-05-13T12:50:32.589Z">
+<meta property="article:modified_time" content="2026-06-01T04:00:29.944Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ducklinger.top/images/os1.png">
 
 <link rel="canonical" href="https://ducklinger.top/2026/04/07/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
 
@@ -200,7 +207,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-05-13 20:50:32" itemprop="dateModified" datetime="2026-05-13T20:50:32+08:00">2026-05-13</time>
+                <time title="修改时间：2026-06-01 12:00:29" itemprop="dateModified" datetime="2026-06-01T12:00:29+08:00">2026-06-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -279,7 +286,7 @@
 <p><strong>系统调用：是接口、门，连接用户和内核。</strong></p>
 <p><strong>关系：一个系统调用，背后一定对应一段内核程序。</strong></p>
 <hr>
-<h2 id="openeuler自定义系统调用"><a href="#openeuler自定义系统调用" class="headerlink" title="openeuler自定义系统调用"></a>openeuler自定义系统调用</h2><h2 id="进程与线程"><a href="#进程与线程" class="headerlink" title="进程与线程"></a>进程与线程</h2><p>计算机最底层只有一个或多个 CPU，CPU 本质上只会不断做一件事：</p>
+<h2 id="openeuler自定义系统调用"><a href="#openeuler自定义系统调用" class="headerlink" title="openeuler自定义系统调用"></a>openeuler自定义系统调用</h2><h2 id="第二章-进程与线程"><a href="#第二章-进程与线程" class="headerlink" title="第二章 进程与线程"></a>第二章 进程与线程</h2><p>计算机最底层只有一个或多个 CPU，CPU 本质上只会不断做一件事：</p>
 <blockquote>
 <p>取指令 → 译码 → 取操作数 → 执行指令</p>
 </blockquote>
@@ -541,7 +548,750 @@
 <blockquote>
 <p>Linux、Windows 常见的是一对一模型。<br> 一个用户线程对应一个内核线程，能利用多核，但线程太多会增加系统开销</p>
 </blockquote>
+<hr>
+<h2 id="第三章-调度"><a href="#第三章-调度" class="headerlink" title="第三章  调度"></a>第三章  调度</h2><p>这一章可以按这条主线理解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">为什么需要调度</span><br><span class="line">  ↓</span><br><span class="line">调度队列</span><br><span class="line">  ↓</span><br><span class="line">三级调度</span><br><span class="line">  ↓</span><br><span class="line">调度性能指标</span><br><span class="line">  ↓</span><br><span class="line">作业/进程/线程调度</span><br><span class="line">  ↓</span><br><span class="line">具体调度算法</span><br><span class="line">  ↓</span><br><span class="line">实时、多处理器调度</span><br><span class="line">  ↓</span><br><span class="line">UNIX / Solaris / openEuler / Windows 实例</span><br><span class="line">  ↓</span><br><span class="line">算法评估</span><br></pre></td></tr></table></figure>
 
+<p>一句话总结：</p>
+<blockquote>
+<p><strong>调度就是操作系统在多个可运行任务中，按照某种策略选择“下一个使用 CPU 的任务”。</strong></p>
+</blockquote>
+<h3 id="3-1-调度的基本概念"><a href="#3-1-调度的基本概念" class="headerlink" title="3.1 调度的基本概念"></a>3.1 调度的基本概念</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">为什么需要调度</span><br><span class="line">  ↓</span><br><span class="line">调度队列</span><br><span class="line">  ↓</span><br><span class="line">三级调度</span><br><span class="line">  ↓</span><br><span class="line">调度性能指标</span><br><span class="line">  ↓</span><br><span class="line">作业/进程/线程调度</span><br><span class="line">  ↓</span><br><span class="line">具体调度算法</span><br><span class="line">  ↓</span><br><span class="line">实时、多处理器调度</span><br><span class="line">  ↓</span><br><span class="line">UNIX / Solaris / openEuler / Windows 实例</span><br><span class="line">  ↓</span><br><span class="line">算法评估</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-1-1-调度队列"><a href="#3-1-1-调度队列" class="headerlink" title="3.1.1 调度队列"></a>3.1.1 调度队列</h4><p>操作系统维护一组进程调度队列，包括作业队列、就绪队列、设备队列</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">作业队列：系统中所有作业/进程的集合</span><br><span class="line">就绪队列：已经在内存中，等待 CPU 的进程</span><br><span class="line">设备队列：等待某个 I/O 设备的进程</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-1-2-调度的三个层次"><a href="#3-1-2-调度的三个层次" class="headerlink" title="3.1.2 调度的三个层次"></a>3.1.2 调度的三个层次</h4><p>高级调度是长期调度，低级调度是短期&#x2F;CPU调度，中级调度是交换调度</p>
+<ol>
+<li><p>高级调度、作业调度、长程调度、Job Schedule<br>从外存后备队列里面选择作业进入内存成为进程，主要影响：系统中允许同时多少个作业、多道程序的道数</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">外存后备队列：J1 J2 J3 J4</span><br><span class="line">高级调度选择 J1 J3</span><br><span class="line">  ↓</span><br><span class="line">为它们分配内存和资源</span><br><span class="line">  ↓</span><br><span class="line">创建进程</span><br><span class="line">  ↓</span><br><span class="line">进入就绪队列</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>低级调度、进程调度、短程调度、CPU Schedule<br>从绪队列里面选择进程，将CPU使用权交给该进程</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">就绪队列：P1 P2 P3</span><br><span class="line">CPU 空闲</span><br><span class="line">低级调度选择 P2</span><br><span class="line">P2 进入运行态</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>中级调度、交换调度、中程调度、Middle-term Schedule<br>内存不够时，哪些进程暂时换出到磁盘，哪些进程再回到内存</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">内存紧张</span><br><span class="line">  ↓</span><br><span class="line">中级调度把某些阻塞/就绪进程换出</span><br><span class="line">  ↓</span><br><span class="line">变成挂起阻塞或挂起就绪</span><br><span class="line">  ↓</span><br><span class="line">需要时再换入内存</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="3-1-3-三种调度和进程状态的关系"><a href="#3-1-3-三种调度和进程状态的关系" class="headerlink" title="3.1.3 三种调度和进程状态的关系"></a>3.1.3 三种调度和进程状态的关系</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">高级调度：</span><br><span class="line">创建态/后备作业 → 就绪态</span><br><span class="line"></span><br><span class="line">低级调度：</span><br><span class="line">就绪态 → 运行态</span><br><span class="line"></span><br><span class="line">中级调度：</span><br><span class="line">就绪态 ↔ 挂起就绪态</span><br><span class="line">阻塞态 ↔ 挂起阻塞态</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-1-4-调度性能评价指标"><a href="#3-1-4-调度性能评价指标" class="headerlink" title="3.1.4 调度性能评价指标"></a>3.1.4 调度性能评价指标</h4><ol>
+<li>CPU利用率</li>
+<li>响应时间 </li>
+<li>周转时间 &#x3D; 等待时间 + 运行时间</li>
+<li>带权周转时间 （&#x3D; 周转时间 &#x2F; 实际需要运行的时间）</li>
+<li>吞吐率 （单位时间内完成的作业数量）</li>
+<li>公平性（避免饥饿和老化aging）</li>
+</ol>
+<h3 id="3-2-作业、进程和线程的调度"><a href="#3-2-作业、进程和线程的调度" class="headerlink" title="3.2 作业、进程和线程的调度"></a>3.2 作业、进程和线程的调度</h3><h4 id="3-2-1-作业"><a href="#3-2-1-作业" class="headerlink" title="3.2.1 作业"></a>3.2.1 作业</h4><p>作业是用户在一次解题或事务处理中要求计算机系统所做工作的集合，包括用户程序、数据和命令等</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">作业是任务实体</span><br><span class="line">进程是完成任务的执行实体</span><br><span class="line"></span><br><span class="line">作业：我要系统完成什么任务</span><br><span class="line">进程：系统真正派出去干活的执行单位</span><br><span class="line"></span><br><span class="line">作业 = 订单</span><br><span class="line">进程 = 负责执行订单的员工</span><br><span class="line"></span><br><span class="line">没有作业，进程不知道干什么</span><br><span class="line">没有进程，作业没法真正执行</span><br></pre></td></tr></table></figure>
+
+<p>作业的四种状态：提交（输入系统）-后备（已经进入外存，等待作业调度）-运行（进入内存，参与CPU的竞争（也包含就绪-运行-阻塞））-完成</p>
+<p><strong>JCB</strong>：作业控制块（类似PCB是进程存在的唯一标志）</p>
+<h4 id="3-2-2-进程调度"><a href="#3-2-2-进程调度" class="headerlink" title="3.2.2 进程调度"></a>3.2.2 进程调度</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">主要工作内容：</span><br><span class="line">记录所有进程状态、优先数、资源情况</span><br><span class="line">从就绪队列中选择一个进程</span><br><span class="line">分配或回收处理机</span><br></pre></td></tr></table></figure>
+
+<p><strong>抢占式和非抢占式</strong> （进程运行时能否抢占其CPU）</p>
+<p>进程调度发生的时机</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">运行态 → 等待态 	I/O请求：运行-&gt;等待</span><br><span class="line">运行态 → 就绪态	时间片用完：运行 -&gt; 就绪</span><br><span class="line">等待态 → 就绪态	I/O完成：等待-&gt; 就绪</span><br><span class="line">进程终止		 程序结束：运行-&gt;终止		</span><br></pre></td></tr></table></figure>
+
+<p><strong>分派器 Dispatcher</strong></p>
+<p>调度器负责“选谁”，分派器负责“真正交接 CPU”</p>
+<p>调度器说：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">下一个运行 P2</span><br></pre></td></tr></table></figure>
+
+<p>分派器就做：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">保存 P1 上下文</span><br><span class="line">恢复 P2 上下文</span><br><span class="line">切回用户态</span><br><span class="line">跳到 P2 上次停下的位置继续执行</span><br></pre></td></tr></table></figure>
+
+<p>这里会产生一个概念：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">分派延迟 = 停止一个进程到启动另一个进程所花的时间</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-3-线程调度"><a href="#3-2-3-线程调度" class="headerlink" title="3.2.3 线程调度"></a>3.2.3 线程调度</h4><p>线程是CPU调度的基本单位，用户级线程由线程库调度OS看不见，内核级线程由内核调度OS可操控</p>
+<p><strong>PCS</strong>:同一个进程内部的用户级线程竞争CPU</p>
+<p><strong>SCS</strong>:系统中内核级线程竞争CPU</p>
+<h3 id="3-3-调度算法"><a href="#3-3-调度算法" class="headerlink" title="3.3 调度算法"></a>3.3 调度算法</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">1.FCFS：先来先服务</span><br><span class="line"></span><br><span class="line">2.SJF：短作业优先</span><br><span class="line"></span><br><span class="line">3.SRTF：最短剩余时间优先(抢占式SJF)</span><br><span class="line">如果新来的进程比当前进程剩余时间更短，就抢占当前进程。</span><br><span class="line"></span><br><span class="line">4.优先级调度：将处理机分配给就绪队列中优先级最高的进程；相同优先级按 FCFS</span><br><span class="line">分静态优先级和动态优先级</span><br><span class="line"></span><br><span class="line">5.RR(抢占)：时间片轮转</span><br><span class="line"></span><br><span class="line">6.HRRF(非抢占)：高响应比优先 (响应比 = 1 + 等待时间 / 估计运行时间)</span><br><span class="line">综合 FCFS 和 SJF</span><br><span class="line"></span><br><span class="line">7.多级队列调度</span><br><span class="line">多级反馈队列调度(抢占)</span><br><span class="line"></span><br><span class="line">8.公平分享调度</span><br><span class="line"></span><br><span class="line">实时调度</span><br><span class="line">多处理器调度</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../../images/os1.png"></p>
+<h4 id="RR-时间片轮转"><a href="#RR-时间片轮转" class="headerlink" title="RR(时间片轮转)"></a>RR(时间片轮转)</h4><p>每次调度把 CPU 分配给队首进程，并让它执行一个时间片，时间片用完就放到就绪队列末尾</p>
+<p>假设时间片q &#x3D; 2</p>
+<table>
+<thead>
+<tr>
+<th>进程</th>
+<th>到达时间</th>
+<th>运行时间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>0</td>
+<td>5</td>
+</tr>
+<tr>
+<td>B</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>C</td>
+<td>0</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>调度：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">A 运行 2，剩 3</span><br><span class="line">B 运行 2，剩 1</span><br><span class="line">C 运行 1，完成</span><br><span class="line">A 运行 2，剩 1</span><br><span class="line">B 运行 1，完成</span><br><span class="line">A 运行 1，完成</span><br><span class="line"></span><br><span class="line">时间轴：</span><br><span class="line">0  2  4 5  7 8 9</span><br><span class="line">|A |B |C|A |B|A|</span><br></pre></td></tr></table></figure>
+
+<p>时间片太大则退化为先来先服务；时间片太小则调度频繁，产生大量上下文切换</p>
+<p><strong>公平分享调度算法</strong></p>
+<p>采用 RR 时，如果多个用户拥有的进程数不同，那么用户获得 CPU 的比率不同，这会造成某些用户响应比过低；公平分享调度就是基于进程组分配 CPU 时间。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">不是让每个进程公平</span><br><span class="line">而是让每个用户/进程组公平</span><br></pre></td></tr></table></figure>
+
+<p>计算公式</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CPUj(i) = CPUj(i-1) / 2</span><br><span class="line"></span><br><span class="line">GCPUk(i) = GCPUk(i-1) / 2</span><br><span class="line"></span><br><span class="line">Pj(i) = Basej + CPUj(i)/2 + GCPUk(i)/(4Wk)</span><br></pre></td></tr></table></figure>
+
+<p>假设用户1拥有进程 A 用户2拥有进程B C</p>
+<p>最终结论 ：执行顺序A-B-A-C-A-B-A-C用户对CPU使用是公平的</p>
+<p><img src="/../../images/os3.png"></p>
+<h4 id="多级反馈队列调度"><a href="#多级反馈队列调度" class="headerlink" title="多级反馈队列调度"></a>多级反馈队列调度</h4><p><img src="/../../images/os2.png"></p>
+<p>仅当第 1 个队列为空时，才调度第 2 个队列；<strong>仅当前面所有更高优先级队列都为空时，才调度第 i 个队列</strong>。并且如果低优先级队列正在运行时，有新进程进入更高优先级队列，那么高优先级进程会抢占当前进程。</p>
+<h3 id="3-4-调度实例"><a href="#3-4-调度实例" class="headerlink" title="3.4 调度实例"></a>3.4 调度实例</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">UNIX：多级反馈队列思想</span><br><span class="line">Solaris：多类别 + 优先级 + RR</span><br><span class="line">openEuler/Linux：CFS + 调度类 + 红黑树</span><br><span class="line">Windows：线程调度 + 抢占式优先级</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-1-UNIX调度实例"><a href="#3-4-1-UNIX调度实例" class="headerlink" title="3.4.1 UNIX调度实例"></a>3.4.1 UNIX调度实例</h4><p>UNIX 采用的是类似<strong>多级反馈队列</strong>的思想，调度时先从最高优先级队列中选择进程；如果同一优先级有多个进程，就选择就绪状态最久的那个。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">多个优先级队列</span><br><span class="line">  ↓</span><br><span class="line">先看高优先级</span><br><span class="line">  ↓</span><br><span class="line">同级别按等待时间/FCFS</span><br><span class="line">  ↓</span><br><span class="line">运行一个时间片</span><br><span class="line">  ↓</span><br><span class="line">可能被剥夺</span><br><span class="line"></span><br><span class="line">UNIX优先级大致分三层</span><br><span class="line">实时优先级 &gt; 内核优先级 &gt; 分时优先级</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-2-Solaris调度"><a href="#3-4-2-Solaris调度" class="headerlink" title="3.4.2 Solaris调度"></a>3.4.2 Solaris调度</h4><p>Solaris 是<strong>基于优先级的线程调度</strong></p>
+<p>每个类别有自己的调度算法，调度器会把类别优先级转换成全局线程优先级，然后选择全局优先级最高的线程执行</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">先判断线程属于哪一类</span><br><span class="line">  ↓</span><br><span class="line">计算它的全局优先级</span><br><span class="line">  ↓</span><br><span class="line">选择最高优先级线程</span><br><span class="line">  ↓</span><br><span class="line">同优先级用 RR</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-3-openEuler-Linux-调度"><a href="#3-4-3-openEuler-Linux-调度" class="headerlink" title="3.4.3 openEuler &#x2F; Linux 调度"></a>3.4.3 openEuler &#x2F; Linux 调度</h4><p>现代 Linux 类系统常用 <strong>CFS</strong>。</p>
+<p><strong>CFS核心思想</strong>：每个进程按权重公平地获得CPU时间</p>
+<p>核心指标  <code>vruntime:虚拟运行时间</code>  调度时选择该指标最小的进程</p>
+<p>参数 <code> nice 值越低优先级越高 分到的CPU比例更多</code></p>
+<p>CFS 使用红黑树，自平衡二叉树；<code>vruntime</code> 小的放左边，<code>vruntime</code> 大的放右边，最左边节点就是下一个要运行的任务</p>
+<h4 id="3-4-4-多核调度问题"><a href="#3-4-4-多核调度问题" class="headerlink" title="3.4.4 多核调度问题"></a>3.4.4 多核调度问题</h4><p>openEuler&#x2F;Linux 还要考虑多核 CPU。</p>
+<p>多核下有几个问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">缓存一致性</span><br><span class="line">缓存亲和性</span><br><span class="line">核间数据共享</span><br><span class="line">负载均衡</span><br></pre></td></tr></table></figure>
+
+<p>其中最重要的是两个：</p>
+<p><strong>CPU 亲和性</strong></p>
+<p>如果一个进程一直在同一个 CPU 核上运行，它的缓存数据可能还在这个核附近，继续运行会更快。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">同一个 CPU 上继续跑</span><br><span class="line">→ cache 命中率高</span><br><span class="line">→ 性能好</span><br></pre></td></tr></table></figure>
+
+<p><strong>负载均衡</strong></p>
+<p>如果 CPU0 很闲，CPU1 很忙，就需要迁移进程。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CPU1 上进程太多</span><br><span class="line">CPU0 空闲</span><br><span class="line">→ 把部分进程迁移到 CPU0</span><br></pre></td></tr></table></figure>
+
+<p>但这和亲和性有矛盾：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">迁移有利于负载均衡</span><br><span class="line">不迁移有利于缓存亲和性</span><br></pre></td></tr></table></figure>
+
+<p>所以多核调度要在二者之间平衡。</p>
+<h4 id="3-4-5-Windows-调度"><a href="#3-4-5-Windows-调度" class="headerlink" title="3.4.5 Windows  调度"></a>3.4.5 Windows  调度</h4><p>Windows 调度对象主要是<strong>线程</strong>，不是进程。实现了基于优先级的抢占式多处理器调度系统，总是运行最高优先级的就绪线程</p>
+<hr>
+<h2 id="第四章-同步"><a href="#第四章-同步" class="headerlink" title="第四章 同步"></a>第四章 同步</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">并发访问会出错</span><br><span class="line">  ↓</span><br><span class="line">引出同步与互斥</span><br><span class="line">  ↓</span><br><span class="line">提出临界资源和临界区</span><br><span class="line">  ↓</span><br><span class="line">尝试软件方法实现互斥</span><br><span class="line">  ↓</span><br><span class="line">再用硬件方法和锁实现互斥</span><br><span class="line">  ↓</span><br><span class="line">引入信号量 PV 操作</span><br><span class="line">  ↓</span><br><span class="line">解决经典同步问题</span><br><span class="line">  ↓</span><br><span class="line">引入管程</span><br><span class="line">  ↓</span><br><span class="line">拓展到现代同步：内存屏障</span><br></pre></td></tr></table></figure>
+
+
+
+<p>进程同步研究的是：多个进程&#x2F;线程并发访问共享资源时，如何保证结果正确</p>
+<h3 id="4-1-同步与互斥"><a href="#4-1-同步与互斥" class="headerlink" title="4.1 同步与互斥"></a>4.1 同步与互斥</h3><p>同步：多个进程并发访问共享变量，如果没有控制执行顺序，就可能出现资源状态不一致。</p>
+<p><strong>直接制约（同步）和间接制约（互斥）</strong></p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>关注点</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>同步</td>
+<td>执行顺序</td>
+<td>先生产，后消费</td>
+</tr>
+<tr>
+<td>互斥</td>
+<td>不能同时访问</td>
+<td>同一时刻只能一个进程改共享变量</td>
+</tr>
+</tbody></table>
+<h4 id="4-1-1-临界资源与临界区"><a href="#4-1-1-临界资源与临界区" class="headerlink" title="4.1.1 临界资源与临界区"></a>4.1.1 临界资源与临界区</h4><p>临界资源：一段时间内仅允许一个进程使用的资源，称为临界资源。例子有打印机、共享变量。</p>
+<p>临界区：进程中访问临界资源的那段代码，称为临界区。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">进入区：申请进入临界区</span><br><span class="line">临界区：访问共享资源</span><br><span class="line">退出区：释放临界资源</span><br><span class="line">剩余区：做其他事情</span><br></pre></td></tr></table></figure>
+
+<p>临界区访问原则：</p>
+<ol>
+<li>空闲让进：不能出现资源空闲，但需要该资源的进程不进去</li>
+<li>忙则等待：如果已经有进程进入临界区，其他进程必须等待</li>
+<li>有限等待：一个进程请求进入临界区之后不能让其一直等待</li>
+<li>让权等待：如果进程暂时进不了临界区，最好让其释放CPU而不是一直占用浪费资源</li>
+</ol>
+<h3 id="4-2-互斥的实现方法"><a href="#4-2-互斥的实现方法" class="headerlink" title="4.2 互斥的实现方法"></a>4.2 互斥的实现方法</h3><p>互斥实现分成三类：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">软件方法</span><br><span class="line">硬件方法</span><br><span class="line">更高级的抽象方法</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-1-turn-轮流进入"><a href="#4-2-1-turn-轮流进入" class="headerlink" title="4.2.1 turn 轮流进入"></a>4.2.1 turn 轮流进入</h4><p>思想：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">设置一个 turn 变量</span><br><span class="line">turn = 0 表示允许 p0 进入</span><br><span class="line">turn = 1 表示允许 p1 进入</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">P0:</span><br><span class="line"><span class="keyword">while</span> (turn != <span class="number">0</span>);</span><br><span class="line">临界区;</span><br><span class="line">turn = <span class="number">1</span>;</span><br><span class="line">剩余区;</span><br></pre></td></tr></table></figure>
+
+<p>它能保证：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">同一时刻不会两个进程都进入临界区</span><br></pre></td></tr></table></figure>
+
+<p>但问题是：<strong>必须严格轮流</strong>。</p>
+<p>比如 P0 用完后把 <code>turn</code> 改成 1，但 P1 此时根本不想进临界区。<br> 这时 P0 想再次进入，却发现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">turn = 1</span><br></pre></td></tr></table></figure>
+
+<p>于是 P0 只能等 P1。<br> 这就违反了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">空闲让进</span><br></pre></td></tr></table></figure>
+
+<p>因为临界区明明空着，但 P0 进不去。</p>
+<h4 id="4-2-2-先检查对方-flag-，在设置自己flag"><a href="#4-2-2-先检查对方-flag-，在设置自己flag" class="headerlink" title="4.2.2 先检查对方 flag ，在设置自己flag"></a>4.2.2 先检查对方 flag ，在设置自己flag</h4><p>思想：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flag[i] 表示 Pi 是否在临界区</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">P0：</span><br><span class="line"><span class="keyword">while</span> (flag[<span class="number">1</span>]);</span><br><span class="line">flag[<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">临界区;</span><br><span class="line">flag[<span class="number">0</span>] = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-3"><a href="#4-2-3" class="headerlink" title="4.2.3"></a>4.2.3</h4><p>改进思路：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">我先声明：我要进临界区</span><br><span class="line">再看对方是不是也要进</span><br></pre></td></tr></table></figure>
+
+<p>P0：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">flag[0] = true;</span><br><span class="line">while (flag[1]);</span><br><span class="line">临界区;</span><br><span class="line">flag[0] = false;</span><br></pre></td></tr></table></figure>
+
+<p>P1：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">flag[1] = true;</span><br><span class="line">while (flag[0]);</span><br><span class="line">临界区;</span><br><span class="line">flag[1] = false;</span><br></pre></td></tr></table></figure>
+
+<p>这次不会两个同时进入了。</p>
+<p>但可能出现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">P0 设置 flag[0] = true</span><br><span class="line">P1 设置 flag[1] = true</span><br><span class="line">P0 看到 flag[1] = true，等待</span><br><span class="line">P1 看到 flag[0] = true，等待</span><br></pre></td></tr></table></figure>
+
+<p>于是双方都等对方，谁也进不去。</p>
+<p>这违反了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">空闲让进 / 推进原则</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-4"><a href="#4-2-4" class="headerlink" title="4.2.4"></a>4.2.4</h4><p>Dekker 算法把前面的两个思想结合起来：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">flag：表示是否想进入临界区</span><br><span class="line">turn：表示冲突时该让谁进入</span><br></pre></td></tr></table></figure>
+
+<p>它解决的是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">既不能同时进</span><br><span class="line">也不能双方都卡住</span><br><span class="line">还不能强制无意义轮流</span><br></pre></td></tr></table></figure>
+
+<p>大致思想：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">我想进：flag[i] = true</span><br><span class="line">如果对方也想进：</span><br><span class="line">    看 turn</span><br><span class="line">    如果轮不到我：</span><br><span class="line">        我先撤回 flag[i]</span><br><span class="line">        等 turn 变成我</span><br><span class="line">        再重新声明想进</span><br><span class="line">进入临界区</span><br><span class="line">退出时把 turn 给对方，并撤回 flag</span><br></pre></td></tr></table></figure>
+
+<p>你可以把它理解成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">flag 管“意愿”</span><br><span class="line">turn 管“冲突时谁优先”</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-5"><a href="#4-2-5" class="headerlink" title="4.2.5"></a>4.2.5</h4><p>Peterson 算法更简洁，也是经典两个进程互斥软件算法。</p>
+<p>P0：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">flag[0] = true;</span><br><span class="line">turn = 1;</span><br><span class="line">while (flag[1] &amp;&amp; turn == 1);</span><br><span class="line">临界区;</span><br><span class="line">flag[0] = false;</span><br></pre></td></tr></table></figure>
+
+<p>P1：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">flag[1] = true;</span><br><span class="line">turn = 0;</span><br><span class="line">while (flag[0] &amp;&amp; turn == 0);</span><br><span class="line">临界区;</span><br><span class="line">flag[1] = false;</span><br></pre></td></tr></table></figure>
+
+<p>核心意思是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">我想进临界区，但如果对方也想进，我愿意让对方先</span><br></pre></td></tr></table></figure>
+
+<p>如果两边同时想进，最后写入的 <code>turn</code> 会决定谁等待，另一个进入。</p>
+<p>PPT三个错误版本分别破坏了不同点：</p>
+<table>
+<thead>
+<tr>
+<th>PPT 问题代码</th>
+<th>错在哪里</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>去掉 <code>if(turn != i)</code></td>
+<td>不管是不是自己优先，都退让</td>
+<td>破坏 turn 的裁决作用，可能推进异常</td>
+</tr>
+<tr>
+<td>等 <code>flag[j]</code> 而不是等 <code>turn</code></td>
+<td>退让后等对方“不想进”，不是等“轮到我”</td>
+<td>可能等待过久，削弱公平推进</td>
+</tr>
+<tr>
+<td>外层用 <code>while(turn != i)</code></td>
+<td>主要靠 turn 决定能否进入</td>
+<td>退化成强制轮流，违反空闲让进</td>
+</tr>
+</tbody></table>
+<h3 id="4-3-硬件方法实现互斥"><a href="#4-3-硬件方法实现互斥" class="headerlink" title="4.3 硬件方法实现互斥"></a>4.3 硬件方法实现互斥</h3><p>关中断</p>
+<p>因为在单核 CPU 上：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">没有中断</span><br><span class="line">  ↓</span><br><span class="line">OS 很难抢回 CPU</span><br><span class="line">  ↓</span><br><span class="line">当前进程不会被切走</span><br><span class="line">  ↓</span><br><span class="line">其他进程无法同时进入临界区</span><br></pre></td></tr></table></figure>
+
+<p>问题：</p>
+<ol>
+<li>效率低</li>
+<li>不适合多处理器</li>
+<li>安全性差</li>
+</ol>
+<h4 id="4-3-1-原子指令方法"><a href="#4-3-1-原子指令方法" class="headerlink" title="4.3.1 原子指令方法"></a>4.3.1 原子指令方法</h4><p><strong>TS 指令：Test-and-Set</strong></p>
+<p>TS 指令的功能可以理解成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">boolean TS(boolean *lock) &#123;</span><br><span class="line">    boolean old = *lock;</span><br><span class="line">    *lock = true;</span><br><span class="line">    return old;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它做了两件事：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">读取 lock 原来的值</span><br><span class="line">把 lock 设置为 true</span><br></pre></td></tr></table></figure>
+
+<p>关键是：</p>
+<blockquote>
+<p>这两个动作由硬件保证不可分割。</p>
+</blockquote>
+<p>共享变量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boolean lock = false;</span><br></pre></td></tr></table></figure>
+
+<p>含义：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">lock == false：资源空闲</span><br><span class="line">lock == true：资源被占用</span><br></pre></td></tr></table></figure>
+
+<p>进入临界区：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (TS(&amp;lock));</span><br><span class="line"></span><br><span class="line">临界区;</span><br><span class="line"></span><br><span class="line">lock = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Swap &#x2F; Exchange 指令</strong></p>
+<p>Swap 指令的功能是交换两个变量的值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Swap(boolean *a, boolean *b) &#123;</span><br><span class="line">    boolean temp = *a;</span><br><span class="line">    *a = *b;</span><br><span class="line">    *b = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个交换动作也是原子的。</p>
+<p>用法大致是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">boolean lock = <span class="literal">false</span>;</span><br><span class="line">boolean key;</span><br><span class="line"></span><br><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">    key = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">while</span> (key != <span class="literal">false</span>)</span><br><span class="line">        Swap(&amp;lock, &amp;key);</span><br><span class="line"></span><br><span class="line">    临界区;</span><br><span class="line"></span><br><span class="line">    lock = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    剩余区;</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+
+<p>理解方式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">key 是本进程想拿锁的意愿</span><br><span class="line">lock 是共享锁状态</span><br><span class="line">Swap 把 key 和 lock 原子交换</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-3-2-互斥锁"><a href="#4-3-2-互斥锁" class="headerlink" title="4.3.2 互斥锁"></a>4.3.2 互斥锁</h4><p>互斥锁通常用一个变量表示资源状态：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0：资源可用，开锁</span><br><span class="line">1：资源已占用，关锁</span><br></pre></td></tr></table></figure>
+
+<p>使用形式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lock(w);</span><br><span class="line"></span><br><span class="line">临界区;</span><br><span class="line"></span><br><span class="line">unlock(w);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">lock(w) &#123;</span><br><span class="line">    <span class="keyword">while</span> (w == <span class="number">1</span>);</span><br><span class="line">    w = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">unlock(w) &#123;</span><br><span class="line">    w = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>不过要注意：<br> 真正实现时，<code>while(w == 1); w = 1;</code> 这两步也必须通过原子操作保护，否则又会出现两个进程同时拿锁的问题。</p>
+<h4 id="4-3-3-自旋锁"><a href="#4-3-3-自旋锁" class="headerlink" title="4.3.3 自旋锁"></a>4.3.3 自旋锁</h4><p>自旋锁的意思是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如果锁被占用，不睡眠，而是在原地循环等待</span><br></pre></td></tr></table></figure>
+
+<p>也就是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (拿不到锁) &#123;</span><br><span class="line">    不断尝试;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>若预计等待时间很短，短到小于两次上下文切换时间，使用自旋锁是划算的，<strong>自旋锁适合多核处理器不适合单核处理器</strong></p>
+<h3 id="4-4-信号量"><a href="#4-4-信号量" class="headerlink" title="4.4 信号量"></a>4.4 信号量</h3><p>前面软件方法的缺点是忙式等待浪费 CPU，并且把同步责任推给各个进程会增加编程负担；因此 Dijkstra 提出了信号量和 P、V 操作</p>
+<h4 id="4-4-1-信号量的定义"><a href="#4-4-1-信号量的定义" class="headerlink" title="4.4.1 信号量的定义"></a>4.4.1 信号量的定义</h4><p>信号量可以先理解成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一个整数值 + 一个等待队列</span><br></pre></td></tr></table></figure>
+
+<p>PPT 中定义信号量由两个成员组成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S = (s, q)</span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s：整数变量，表示资源数量或等待情况</span><br><span class="line">q：等待队列，存放被阻塞的进程</span><br></pre></td></tr></table></figure>
+
+<p>并且信号量的值只能通过两个操作改变：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">P 操作，也叫 wait</span><br><span class="line">申请一个资源</span><br><span class="line"></span><br><span class="line">P(S) &#123;</span><br><span class="line">    S.s = S.s - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (S.s &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        将当前进程设置为等待状态;</span><br><span class="line">        将当前进程放入 S.q 队列;</span><br><span class="line">        转调度程序;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">先把资源数减 <span class="number">1</span></span><br><span class="line">如果减完后仍然 &gt;= <span class="number">0</span>，说明申请成功</span><br><span class="line">如果减完后 &lt; <span class="number">0</span>，说明资源不够，当前进程阻塞等待</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">V 操作，也叫 signal</span><br><span class="line">释放一个资源</span><br><span class="line"></span><br><span class="line">V(S) &#123;</span><br><span class="line">    S.s = S.s + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (S.s &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        从 S.q 等待队列中移出一个进程;</span><br><span class="line">        将它设置为就绪状态;</span><br><span class="line">        插入就绪队列;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">先把资源数加 <span class="number">1</span></span><br><span class="line">如果加完后 &lt;= <span class="number">0</span>，说明之前有人在等</span><br><span class="line">于是唤醒一个等待进程</span><br></pre></td></tr></table></figure>
+
+<p>将s初值设为1就可以实现互斥</p>
+<h4 id="4-4-2-用信号量实现前驱关系"><a href="#4-4-2-用信号量实现前驱关系" class="headerlink" title="4.4.2 用信号量实现前驱关系"></a>4.4.2 用信号量实现前驱关系</h4><p>某个操作必须在另一个操作之前完成P1 完成后，P2 才能执行</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">P1() &#123;</span><br><span class="line">    执行 P1;</span><br><span class="line">    V(S);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">P2() &#123;</span><br><span class="line">    P(S);</span><br><span class="line">    执行 P2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>多个前驱,就把都放在前，用不同信号量表示</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">P(S3);</span><br><span class="line">P(S4);</span><br><span class="line">P(S5);</span><br><span class="line">执行 P6;</span><br><span class="line"><span class="comment">//改变前面三个P的顺序不影响结果，只影响阻塞在哪一步</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>初值</th>
+<th>作用</th>
+<th>常见位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>互斥信号量</td>
+<td>1</td>
+<td>保证临界区一次只进一个</td>
+<td>临界区前 P，临界区后 V</td>
+</tr>
+<tr>
+<td>同步信号量</td>
+<td>0 或资源数</td>
+<td>保证先后顺序或资源数量</td>
+<td>前驱等待处 P，前驱完成处 V</td>
+</tr>
+</tbody></table>
+<h3 id="4-5-进程同步问题"><a href="#4-5-进程同步问题" class="headerlink" title="4.5 进程同步问题"></a>4.5 进程同步问题</h3><h4 id="4-5-1-生产者消费者问题（有界缓冲区问题）"><a href="#4-5-1-生产者消费者问题（有界缓冲区问题）" class="headerlink" title="4.5.1 生产者消费者问题（有界缓冲区问题）"></a>4.5.1 生产者消费者问题（有界缓冲区问题）</h4><p>有若干生产者和消费者，共享一个大小为 <code>n</code> 的缓冲区：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">生产者：生产产品 → 放入缓冲区</span><br><span class="line">消费者：从缓冲区取产品 → 消费产品</span><br></pre></td></tr></table></figure>
+
+<p>限制条件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">缓冲区满：生产者不能再放，必须等待</span><br><span class="line">缓冲区空：消费者不能再取，必须等待</span><br><span class="line">缓冲区本身：同一时刻只能一个进程操作</span><br></pre></td></tr></table></figure>
+
+<p>所需信号量</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">semaphore empty = n; 	<span class="comment">//空缓冲区数量，初值为n</span></span><br><span class="line">semaphore full = <span class="number">0</span>;		<span class="comment">//满缓冲区数量，初值为0</span></span><br><span class="line">semaphore mutex = <span class="number">1</span>;	<span class="comment">//互斥信号量，初值为1</span></span><br></pre></td></tr></table></figure>
+
+<p>生产者代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Producer() &#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        produce_item();</span><br><span class="line"></span><br><span class="line">        P(empty);</span><br><span class="line">        P(mutex);</span><br><span class="line"></span><br><span class="line">        put_item_into_buffer();</span><br><span class="line"></span><br><span class="line">        V(mutex);</span><br><span class="line">        V(full);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>消费者代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Consumer() &#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        P(full);</span><br><span class="line">        P(mutex);</span><br><span class="line"></span><br><span class="line">        get_item_from_buffer();</span><br><span class="line"></span><br><span class="line">        V(mutex);</span><br><span class="line">        V(empty);</span><br><span class="line"></span><br><span class="line">        consume_item();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>P操作的顺序不能颠倒，先判断资源条件是否满足，在进入临界区</p>
+<p>假如颠倒：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">生产者先 P(mutex)，拿到锁，mutex = 0</span><br><span class="line">然后 P(empty)，发现 empty = 0，于是阻塞</span><br><span class="line"></span><br><span class="line">生产者阻塞时还占着 mutex</span><br><span class="line">消费者想取产品，也需要 P(mutex)</span><br><span class="line">但 mutex 被生产者占着</span><br><span class="line">消费者进不去</span><br><span class="line">生产者等消费者取走产品释放 empty</span><br><span class="line">消费者等生产者释放 mutex</span><br></pre></td></tr></table></figure>
+
+<p>发生死锁</p>
+<blockquote>
+<p><strong>同步 P 要放在互斥 P 前面；否则可能拿着锁去等待条件，导致别人无法改变条件。</strong></p>
+</blockquote>
+<h4 id="4-5-2-读者写者问题"><a href="#4-5-2-读者写者问题" class="headerlink" title="4.5.2 读者写者问题"></a>4.5.2 读者写者问题</h4><p>多个进程共享一个数据对象，有两类进程写者（只读数据），读者（修改数据）</p>
+<p>约束是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">多个读者可以同时读</span><br><span class="line">写者必须独占</span><br><span class="line">写者写时，不能有读者或其他写者</span><br></pre></td></tr></table></figure>
+
+<p><strong>读者优先</strong></p>
+<p>只要已经有读者在读，后续读者可以继续进入，写者需要等所有读者退出</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> readcount = <span class="number">0</span>; <span class="comment">// 当前正在读的读者数量</span></span><br><span class="line">semaphore rmutex = <span class="number">1</span>; <span class="comment">//保护readcount的互斥锁</span></span><br><span class="line">semaphore wmutex = <span class="number">1</span>; <span class="comment">//控制读写互斥</span></span><br><span class="line"></span><br><span class="line">Reader() &#123;</span><br><span class="line">	p(rmutex);</span><br><span class="line">    <span class="keyword">if</span> (readcount == <span class="number">0</span>)</span><br><span class="line">        p(wmutex);</span><br><span class="line">    readcount++;</span><br><span class="line">    V(rmutex);</span><br><span class="line">    </span><br><span class="line">    read_data();</span><br><span class="line">    </span><br><span class="line">    p(rmutex);</span><br><span class="line">    readcount--;</span><br><span class="line">    <span class="keyword">if</span> (readcount == <span class="number">0</span>)</span><br><span class="line">        V(wmutex);</span><br><span class="line">    V(rmutex);</span><br><span class="line">&#125;</span><br><span class="line">第一个读者进入时：P(wmutex)，阻止写者</span><br><span class="line">后续读者进入时：不用再 P(wmutex)，可以一起读</span><br><span class="line">最后一个读者离开时：V(wmutex)，允许写者进入</span><br><span class="line">    </span><br><span class="line">Write()&#123;</span><br><span class="line">    P(wmutex);</span><br><span class="line">    </span><br><span class="line">    write_data();</span><br><span class="line">    </span><br><span class="line">    V(wmutex);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>rmutex</code> 不是表示读者数量，它只是用来互斥访问共享变量 <code>readcount</code>；真正表示读者数量的是 <code>readcount</code></strong></p>
+<h4 id="4-5-3-哲学家进餐问题"><a href="#4-5-3-哲学家进餐问题" class="headerlink" title="4.5.3 哲学家进餐问题"></a>4.5.3 哲学家进餐问题</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">5</span> 个哲学家围桌而坐</span><br><span class="line">每两个哲学家之间有一支筷子</span><br><span class="line">哲学家要吃饭必须拿到左右两支筷子</span><br><span class="line">吃完后放下筷子</span><br></pre></td></tr></table></figure>
+
+<p>如果每个哲学家都这样写</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">P(chopstick[i]);</span><br><span class="line">P(chopstick[(i + <span class="number">1</span>) % <span class="number">5</span>]);</span><br><span class="line"></span><br><span class="line">eat();</span><br><span class="line"></span><br><span class="line">V(chopstick[i]);</span><br><span class="line">V(chopstick[(i + <span class="number">1</span>) % <span class="number">5</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>可能出现死锁，所有人同时拿起左筷子全部等待右筷子</p>
+<p><strong>解决方法1：最多允许四个人同时尝试拿起筷子</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">semaphore room = <span class="number">4</span>;<span class="comment">//允许拿筷子的名额</span></span><br><span class="line">semaphore chopstick[<span class="number">5</span>] = &#123;<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Philosopher(i) &#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        think();</span><br><span class="line">        </span><br><span class="line">        P(room);</span><br><span class="line">        P(chopstick[i]);</span><br><span class="line">        P(chopstick[(i + <span class="number">1</span>) % <span class="number">5</span>]);</span><br><span class="line"></span><br><span class="line">        eat();</span><br><span class="line"></span><br><span class="line">        V(chopstick[i]);</span><br><span class="line">        V(chopstick[(i + <span class="number">1</span>) % <span class="number">5</span>]);</span><br><span class="line">        V(room);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最多 4 个人拿筷子<br>至少有 1 个人没参与竞争<br>因此不可能形成 5 人环形等待</p>
+<p><strong>解决方法2：资源分级法</strong></p>
+<p>给筷子编号0到4，规定每个哲学家只能先拿编号小的筷子，再拿编号大的筷子，释放的时候相反。这样可以破坏循环等待</p>
+<h4 id="4-5-4-睡眠的理发师问题"><a href="#4-5-4-睡眠的理发师问题" class="headerlink" title="4.5.4 睡眠的理发师问题"></a>4.5.4 睡眠的理发师问题</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">一个理发师</span><br><span class="line">一把理发椅</span><br><span class="line">N 把等待椅</span><br><span class="line">没有顾客时理发师睡觉</span><br><span class="line">顾客来时，如果有空位就等；没空位就离开</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">semaphore customers = <span class="number">0</span>: 等待理发的顾客数，初值为<span class="number">0</span></span><br><span class="line">semaphore barbers = <span class="number">0</span>：等待理发师服务的顾客数/理发师准备好，初值 <span class="number">0</span></span><br><span class="line">semaphore mutex = <span class="number">1</span>：保护 count，初值 <span class="number">1</span></span><br><span class="line"><span class="type">int</span> count = <span class="number">0</span>：等待顾客数</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">Barber()&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        P(customers);</span><br><span class="line">        </span><br><span class="line">        P(mutex);</span><br><span class="line">        count--;</span><br><span class="line">        V(barbers);</span><br><span class="line">        V(mutex);</span><br><span class="line">        </span><br><span class="line">        cut_hair();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">P(customers)：没有顾客就睡眠</span><br><span class="line">count--：叫一个等待顾客来理发</span><br><span class="line">V(barbers)：通知顾客，理发师准备好了</span><br><span class="line">cut_hair：理发</span><br><span class="line"></span><br><span class="line">Customer()&#123;</span><br><span class="line">    P(mutex);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(count &lt; N)&#123;</span><br><span class="line">        count++;</span><br><span class="line">        V(customers);</span><br><span class="line">        V(mutex);</span><br><span class="line">        </span><br><span class="line">        P(barbers);</span><br><span class="line">        get_haircut();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        V(mutex);</span><br><span class="line">        leave();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">先检查等待椅是否有空位</span><br><span class="line">有空位：count++，通知理发师有顾客</span><br><span class="line">没空位：释放 mutex 后离开</span><br></pre></td></tr></table></figure>
+
+<p><code>count</code> 是普通变量，用来判断等待椅有没有满；<br> <code>customers</code> 是信号量，用来让理发师“没顾客就睡，有顾客就醒”。</p>
+<h3 id="4-6-管程"><a href="#4-6-管程" class="headerlink" title="4.6 管程"></a>4.6 管程</h3><p>管程就是把共享资源和访问共享资源的操作封装在一起，并自动保证同一时刻只有一个进程进入</p>
+<p>它解决的是信号量编程容易出错的问题。</p>
+<p>信号量方式像这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">每个进程自己写 P/V</span><br><span class="line">程序员自己保证顺序正确</span><br></pre></td></tr></table></figure>
+
+<p>管程方式像这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">把共享数据放进一个“受保护的房间”</span><br><span class="line">进程只能通过管程提供的函数访问它</span><br><span class="line">一次只允许一个进程进房间</span><br></pre></td></tr></table></figure>
+
+<p>管程不是单纯一个变量，也不是单纯一个函数，而是一种封装结构。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//管程 = 共享数据 + 操作共享数据的函数 + 同步机制</span></span><br><span class="line">monitor Buffer &#123;</span><br><span class="line">    共享缓冲区;</span><br><span class="line">    条件变量;</span><br><span class="line"></span><br><span class="line">    put() &#123; ... &#125;</span><br><span class="line">    get() &#123; ... &#125;</span><br><span class="line">&#125;  </span><br><span class="line"><span class="comment">//生产者只能调用Buffer.put();</span></span><br><span class="line"><span class="comment">//消费者只能调用Buffer.get();</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>同一时刻最多只有一个进程在管程内执行。</strong></p>
+</blockquote>
+<p>所以进入管程函数时，不需要程序员手动写：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">P(mutex);</span><br><span class="line">...</span><br><span class="line">V(mutex);</span><br></pre></td></tr></table></figure>
+
+<p>管程机制会自动保证互斥。</p>
+<h4 id="4-6-1-条件变量-condition"><a href="#4-6-1-条件变量-condition" class="headerlink" title="4.6.1 条件变量 condition"></a>4.6.1 条件变量 condition</h4><p>调用管程的进程无法进行用于阻塞的机制，配合 <code>wait</code> 和 <code>signal</code> 使用</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">condition notFull;</span><br><span class="line">condition notEmpty;</span><br><span class="line"></span><br><span class="line">C.wait();</span><br><span class="line"><span class="comment">//当前进程因为条件不满足，阻塞自己</span></span><br><span class="line"><span class="comment">//并释放管程，让其他进程可以进入管程</span></span><br><span class="line"></span><br><span class="line">C.signal();</span><br><span class="line"><span class="comment">//唤醒一个等待在条件变量 C 上的进程</span></span><br></pre></td></tr></table></figure>
+
+<p>条件变量和信号量的区别</p>
+<table>
+<thead>
+<tr>
+<th>对比点</th>
+<th>信号量</th>
+<th>条件变量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>是否有计数值</td>
+<td>有</td>
+<td>没有累计计数</td>
+</tr>
+<tr>
+<td>signal&#x2F;V 没人等时</td>
+<td>值会增加</td>
+<td>信号丢失</td>
+</tr>
+<tr>
+<td>用途</td>
+<td>资源计数、同步、互斥</td>
+<td>管程内部等待某条件</td>
+</tr>
+<tr>
+<td>是否自带互斥</td>
+<td>不自带，要配合使用</td>
+<td>管程本身保证互斥</td>
+</tr>
+</tbody></table>
+<p>举个区别：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">V(S);</span><br></pre></td></tr></table></figure>
+
+<p>如果没人等，<code>S</code> 的值会 +1，以后有人 <code>P(S)</code> 可以直接通过。</p>
+<p>但：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">notEmpty.signal();</span><br></pre></td></tr></table></figure>
+
+<p>如果此时没有消费者在等，这个 signal 就没了，不会保存给未来的消费者。</p>
+<blockquote>
+<p><strong>signal 会带来“谁留在管程里继续执行”的问题，Hoare 方法让被唤醒者立即执行。Hansen 方法规定 <code>signal</code> 必须是过程体最后一个操作</strong></p>
+</blockquote>
+<p><strong>管程解决生产者消费者问题</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">monitor BoundedBuffer &#123;</span><br><span class="line">    item buffer[N];</span><br><span class="line">    <span class="type">int</span> count = <span class="number">0</span>;</span><br><span class="line">    condition notFull, notEmpty;</span><br><span class="line"></span><br><span class="line">    <span class="type">void</span> <span class="title function_">put</span><span class="params">(item x)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (count == N)</span><br><span class="line">            notFull.wait();</span><br><span class="line"></span><br><span class="line">        放入产品;</span><br><span class="line">        count++;</span><br><span class="line"></span><br><span class="line">        notEmpty.signal();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    item <span class="title function_">get</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (count == <span class="number">0</span>)</span><br><span class="line">            notEmpty.wait();</span><br><span class="line"></span><br><span class="line">        取出产品;</span><br><span class="line">        count--;</span><br><span class="line"></span><br><span class="line">        notFull.signal();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> 产品;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//没有显式写</span></span><br><span class="line"><span class="comment">//P(mutex);</span></span><br><span class="line"><span class="comment">//V(mutex);</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-7作业题"><a href="#4-7作业题" class="headerlink" title="4.7作业题"></a>4.7作业题</h3><h4 id="4-7-1-多个表格读写者问题"><a href="#4-7-1-多个表格读写者问题" class="headerlink" title="4.7.1 多个表格读写者问题"></a>4.7.1 多个表格读写者问题</h4><p>有P1、P2、P3三类进程（每类进程都有K个）共享一组表格F（F有N个），P1对F只读不写，P2对F只写不读，P3对F先读后写。进程可同时读同一个Fi（0≤i≤ N）；但有进程写时，其他进程不能读和写。</p>
+<ol>
+<li>用信号量和P、V操作给出方案</li>
+<li>对方案的正确性进行分析说明</li>
+<li>对访问的公平性进行分析</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line">semaphore rwmutex[N];<span class="comment">//读写互斥</span></span><br><span class="line">semaphore rmutex[N];<span class="comment">//保护readcount</span></span><br><span class="line">semaphore <span class="built_in">queue</span>[N];<span class="comment">//在统一入口处公平竞争（排队）</span></span><br><span class="line"><span class="type">int</span> readcount[N];<span class="comment">//读者计数</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; N; i++) &#123;</span><br><span class="line">    rwmutex[i] = <span class="number">1</span>;</span><br><span class="line">    rmutex[i] = <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">queue</span>[i] = <span class="number">1</span>;</span><br><span class="line">    readcount[i] = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">readlock(i)&#123;</span><br><span class="line">    P(<span class="built_in">queue</span>[i]);</span><br><span class="line">    P(rmutex[i]);</span><br><span class="line">    </span><br><span class="line">    readcount++;</span><br><span class="line">    <span class="keyword">if</span> (readcount[i] == <span class="number">1</span>)&#123;</span><br><span class="line">        P(rwmutex[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    V(rwmutex[i]);</span><br><span class="line">    V(<span class="built_in">queue</span>[i]);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">readunlock(i)&#123;</span><br><span class="line">    P(rmutex[i]);</span><br><span class="line">    </span><br><span class="line">    readcount[i]--;</span><br><span class="line">    <span class="keyword">if</span>(readcount[i] == <span class="number">0</span>)&#123;</span><br><span class="line">        V(rwmutex[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    P(rmutex);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">writelock(i)&#123;</span><br><span class="line">    P(<span class="built_in">queue</span>[i]);</span><br><span class="line">    P(rwmutex[i]);</span><br><span class="line">    V(<span class="built_in">queue</span>[i]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">writeunlock(i)&#123;</span><br><span class="line">    V(rwmutex[i]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">P1(i)&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>) &#123;</span><br><span class="line">        readlock(i);</span><br><span class="line">        </span><br><span class="line">        readFi(i);</span><br><span class="line">        </span><br><span class="line">        readunlock(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">P2(i)&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        writelock(i);</span><br><span class="line">        </span><br><span class="line">        writeFi(i);</span><br><span class="line">        </span><br><span class="line">        writeunlock(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">P3(i)&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        readlock(i);</span><br><span class="line">        readFi(i);</span><br><span class="line">        readunlock(i);</span><br><span class="line">        </span><br><span class="line">        writelock(i);</span><br><span class="line">        writeFi(i);</span><br><span class="line">        writeunlock(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-7-2-生产者消费者"><a href="#4-7-2-生产者消费者" class="headerlink" title="4.7.2 生产者消费者"></a>4.7.2 生产者消费者</h4><p>三组进程P1（K个，K&gt;1）、P2（1个）、P3（1个）、互斥使用一个包含N(N&gt;1)个单元的缓冲区buf1，P2-1、P3-1、P4（各有1个）执行定期统计</p>
+<ol>
+<li>P1每次用produce()，生成一个正整数并用put()送入缓冲区<br>buf1某一空单元中，循环访问缓冲区</li>
+<li>P2每次用getodd()从buf1缓冲区取出一个奇数，放到自己私<br>有缓冲区buf2中（缓冲区长度为M&gt;1），然后由P2-1（1个<br>）进程读取P2的私有缓冲区， 使用countodd()统计奇数个数</li>
+<li>P3每次用geteven()从buf1缓冲区中取出一个偶数， ，放到<br>自己私有缓冲区buf3中（缓冲区长度为M&gt;1），然后由P3-1<br>（1个）进程读取P3的私有缓冲区， 使用counteven()统计偶<br>数个数</li>
+<li>P4在P2-1、P3-1产生一个统计值后，就输出一个包含统计时<br>间的结果</li>
+<li>请用信号量机制实现这几个进程的同步与互斥活动，并说明<br>所定义的信号量含义。</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line">semaphore empty1 = N;<span class="comment">//剩余产生位</span></span><br><span class="line">semaphore full_odd = <span class="number">0</span>;<span class="comment">//剩余奇数读取位</span></span><br><span class="line">semaphore full_even = <span class="number">0</span>;<span class="comment">//剩余偶数读取位</span></span><br><span class="line">semaphore mutex1 = <span class="number">1</span>;<span class="comment">//生产消费互斥信号</span></span><br><span class="line">semaphore empty2 = M;</span><br><span class="line">semaphore full2 = <span class="number">0</span>;</span><br><span class="line">semaphore mutex2 = <span class="number">1</span>;</span><br><span class="line">semaphore empty3 = M;</span><br><span class="line">semaphore full3 = <span class="number">0</span>;</span><br><span class="line">semaphore mutex3 = <span class="number">1</span>;</span><br><span class="line"><span class="comment">//P4信号量</span></span><br><span class="line">semaphore odd = <span class="number">0</span>;</span><br><span class="line">semaphore even = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">P1() &#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        <span class="type">int</span> a = produce();</span><br><span class="line"></span><br><span class="line">        P(empty1);</span><br><span class="line">        P(mutex1);</span><br><span class="line"></span><br><span class="line">        put_buf1(a);</span><br><span class="line"></span><br><span class="line">        V(mutex1);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (is_odd(a))</span><br><span class="line">            V(full_odd);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            V(full_even);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">P2()&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        <span class="comment">//先取一个奇数</span></span><br><span class="line">        P(full_odd);</span><br><span class="line">        P(mutex1);</span><br><span class="line">        </span><br><span class="line">        <span class="type">int</span> x = getodd();</span><br><span class="line">        </span><br><span class="line">        V(mutex1);</span><br><span class="line">        V(empty1);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//再放入自己的缓冲区</span></span><br><span class="line">        P(empty2);</span><br><span class="line">        P(mutex2);</span><br><span class="line">        </span><br><span class="line">        put_into_buf2(x);</span><br><span class="line">        </span><br><span class="line">        V(mutex2);</span><br><span class="line">        V(full2); </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">P3() &#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        P(full_even);</span><br><span class="line">        P(mutex1);</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> x = geteven_buf1();</span><br><span class="line"></span><br><span class="line">        V(mutex1);</span><br><span class="line">        V(empty1);</span><br><span class="line"></span><br><span class="line">        P(empty3);</span><br><span class="line">        P(mutex3);</span><br><span class="line"></span><br><span class="line">        put_buf3(x);</span><br><span class="line"></span><br><span class="line">        V(mutex3);</span><br><span class="line">        V(full3);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">P2<span class="number">-1</span>()&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        P(full2);</span><br><span class="line">        P(mutex2);</span><br><span class="line">        </span><br><span class="line">        <span class="type">int</span> x = get_buf2();</span><br><span class="line">        </span><br><span class="line">        V(mutex2);</span><br><span class="line">        V(empty2);</span><br><span class="line">        </span><br><span class="line">        countodd();</span><br><span class="line">        </span><br><span class="line">        V(odd);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">P3<span class="number">-1</span>()&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        P(full3);</span><br><span class="line">        P(mutex3);</span><br><span class="line">        </span><br><span class="line">        <span class="type">int</span> x = get_buf3();</span><br><span class="line">        </span><br><span class="line">        V(mutex3);</span><br><span class="line">        V(empty3);</span><br><span class="line">        </span><br><span class="line">        counteven();</span><br><span class="line">        </span><br><span class="line">        V(even);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">P4()&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        P(odd);</span><br><span class="line">        P(even);</span><br><span class="line">        </span><br><span class="line">        output();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-7-3-独木桥问题"><a href="#4-7-3-独木桥问题" class="headerlink" title="4.7.3 独木桥问题"></a>4.7.3 独木桥问题</h4><p>独木桥问题</p>
+<ol>
+<li><p>独木桥只允许一台汽车过河，当车到达桥头时，如果桥上无<br>车，则可上桥，否则车在桥头等待，直到桥上无车。使用<br>PV操作解决该问题。</p>
+</li>
+<li><p>如果独木桥允许多台车同方向过河，当车到达桥头时，如果<br>桥上只有同方向车且不超过N台，或者桥上无车，则可上桥<br>通过，否则等待，直到满足上桥条件。使用PV操作解决该<br>问题。</p>
+</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1.</span></span><br><span class="line">semaphore mutex = <span class="number">1</span>;<span class="comment">//桥是否被占用</span></span><br><span class="line"></span><br><span class="line">Car()&#123;</span><br><span class="line">    P(mutex);</span><br><span class="line">    </span><br><span class="line">    cross_bridge();</span><br><span class="line">    </span><br><span class="line">    V(mutex)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.</span></span><br><span class="line">semaphore mutex = <span class="number">1</span>;       <span class="comment">// 保护共享变量</span></span><br><span class="line">semaphore wait[<span class="number">2</span>] = &#123;<span class="number">0</span>, <span class="number">0</span>&#125;; <span class="comment">// 两个方向的等待队列</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> count = <span class="number">0</span>;             <span class="comment">// 当前桥上车辆数</span></span><br><span class="line"><span class="type">int</span> dir = <span class="number">-1</span>;              <span class="comment">// 当前桥上方向，-1 表示桥空</span></span><br><span class="line"><span class="type">int</span> waiting[<span class="number">2</span>] = &#123;<span class="number">0</span>, <span class="number">0</span>&#125;;   <span class="comment">// 两个方向等待车辆数</span></span><br><span class="line"></span><br><span class="line">arrive(<span class="type">int</span> x) &#123;</span><br><span class="line">    P(mutex);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (count == <span class="number">0</span>) &#123;</span><br><span class="line">        dir = x;</span><br><span class="line">        count++;</span><br><span class="line">        V(mutex);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (dir == x &amp;&amp; count &lt; N)&#123;</span><br><span class="line">        count++;</span><br><span class="line">        V(mutex);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        waiting[x]++;</span><br><span class="line">        V(mutex);</span><br><span class="line">        </span><br><span class="line">        P(wait[x]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">leave(<span class="type">int</span> x)&#123;</span><br><span class="line">    P(mutex);</span><br><span class="line">    </span><br><span class="line">    count--;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (count == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (waiting[<span class="number">1</span>-x] &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            dir = <span class="number">1</span> - x;</span><br><span class="line">            </span><br><span class="line">            <span class="type">int</span> num = min(N, waiting[<span class="number">1</span>-x]);</span><br><span class="line">            count = num;</span><br><span class="line">            waiting[<span class="number">1</span>-x] -= num;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i = -; i &lt; num; i++)&#123;</span><br><span class="line">                V(wait[<span class="number">1</span>-x]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (waiting[x] &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            dir = x;</span><br><span class="line">            </span><br><span class="line">            <span class="type">int</span> num = min(N, waiting[x]);</span><br><span class="line">            count - num;</span><br><span class="line">            waiting[x] -= num;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; num; i++)&#123;</span><br><span class="line">                V(wait[x]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            dir = <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    V(mutex);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Car(<span class="type">int</span> x) &#123;</span><br><span class="line">    Arrive(x);</span><br><span class="line"></span><br><span class="line">    cross_bridge();</span><br><span class="line"></span><br><span class="line">    Leave(x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-7-4-红黑客过河问题"><a href="#4-7-4-红黑客过河问题" class="headerlink" title="4.7.4 红黑客过河问题"></a>4.7.4 红黑客过河问题</h4><p>红黑客过河问题</p>
+<ol>
+<li>有红客和黑客两组人员需要过河。河上有船，但是每次只能乘坐4人，且每次乘客满员时才能开船，到河对岸后空船返回。</li>
+<li>但船上乘客不能同时有3个红客 、1个黑客 或者 1个红客 、 3个黑客的组合。（其他组合安全）。请编写程序，用PV操作解决红客、黑客过河的问题</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> RED 0</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BLACK 1</span></span><br><span class="line"></span><br><span class="line">semaphore mutex = <span class="number">1</span>;          <span class="comment">// 保护 red、black 等等待人数变量</span></span><br><span class="line">semaphore redq = <span class="number">0</span>;           <span class="comment">// 红客等待队列</span></span><br><span class="line">semaphore blackq = <span class="number">0</span>;         <span class="comment">// 黑客等待队列</span></span><br><span class="line"></span><br><span class="line">semaphore boat_mutex = <span class="number">1</span>;     <span class="comment">// 保护 boarded</span></span><br><span class="line">semaphore boat_ready = <span class="number">0</span>;     <span class="comment">// 前3个上船者等待第4个人开船返回</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> red = <span class="number">0</span>;                  <span class="comment">// 当前等待的红客数</span></span><br><span class="line"><span class="type">int</span> black = <span class="number">0</span>;                <span class="comment">// 当前等待的黑客数</span></span><br><span class="line"><span class="type">int</span> boarded = <span class="number">0</span>;              <span class="comment">// 当前这一船已经上船的人数</span></span><br><span class="line"></span><br><span class="line">Red() &#123;</span><br><span class="line">    P(mutex);</span><br><span class="line"></span><br><span class="line">    red++;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (red &gt;= <span class="number">4</span>) &#123;</span><br><span class="line">        red -= <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">        V(redq);</span><br><span class="line">        V(redq);</span><br><span class="line">        V(redq);</span><br><span class="line">        V(redq);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (red &gt;= <span class="number">2</span> &amp;&amp; black &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">        red -= <span class="number">2</span>;</span><br><span class="line">        black -= <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">        V(redq);</span><br><span class="line">        V(redq);</span><br><span class="line">        V(blackq);</span><br><span class="line">        V(blackq);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    V(mutex);</span><br><span class="line"></span><br><span class="line">    P(redq);</span><br><span class="line"></span><br><span class="line">    BoardAndRow();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Black() &#123;</span><br><span class="line">    P(mutex);</span><br><span class="line"></span><br><span class="line">    black++;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (black &gt;= <span class="number">4</span>) &#123;</span><br><span class="line">        black -= <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">        V(blackq);</span><br><span class="line">        V(blackq);</span><br><span class="line">        V(blackq);</span><br><span class="line">        V(blackq);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (red &gt;= <span class="number">2</span> &amp;&amp; black &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">        red -= <span class="number">2</span>;</span><br><span class="line">        black -= <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">        V(redq);</span><br><span class="line">        V(redq);</span><br><span class="line">        V(blackq);</span><br><span class="line">        V(blackq);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    V(mutex);</span><br><span class="line"></span><br><span class="line">    P(blackq);</span><br><span class="line"></span><br><span class="line">    BoardAndRow();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">BoardAndRow() &#123;</span><br><span class="line">    board();</span><br><span class="line"></span><br><span class="line">    P(boat_mutex);</span><br><span class="line"></span><br><span class="line">    boarded++;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (boarded == <span class="number">4</span>) &#123;</span><br><span class="line">        row_boat();          <span class="comment">// 第4个人负责开船过河</span></span><br><span class="line">        return_boat();       <span class="comment">// 空船返回</span></span><br><span class="line"></span><br><span class="line">        boarded = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        V(boat_ready);</span><br><span class="line">        V(boat_ready);</span><br><span class="line">        V(boat_ready);</span><br><span class="line"></span><br><span class="line">        V(boat_mutex);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        V(boat_mutex);</span><br><span class="line"></span><br><span class="line">        P(boat_ready);       <span class="comment">// 前3个人等待第4个人开船返回</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="第五章-死锁"><a href="#第五章-死锁" class="headerlink" title="第五章 死锁"></a>第五章 死锁</h2><h3 id="5-1-死锁产生的原因和特征"><a href="#5-1-死锁产生的原因和特征" class="headerlink" title="5.1 死锁产生的原因和特征"></a>5.1 死锁产生的原因和特征</h3><p>资源分类：<br>可剥夺资源和不可剥夺资源<br>竞争可剥夺资源一般不会产生死锁，竞争不可剥夺资源容易产生死锁可剥</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">可夺资源：CPU、主存</span><br><span class="line">不可剥夺资源：打印机、读卡机、互斥锁</span><br></pre></td></tr></table></figure>
+
+<p>永久性资源和消耗性资源</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">永久性资源：打印机、磁盘、文件</span><br><span class="line">消耗性资源：消息、信件、信号</span><br></pre></td></tr></table></figure>
+
+<p><strong>死锁产生的四个必要条件</strong></p>
+<p>死锁发生时，四个条件一定同时成立，只要破坏其中一个，就能预防死锁</p>
+<ol>
+<li><strong>互斥条件</strong><br>资源一次只能给一个进程使用</li>
+<li><strong>请求和保持条件</strong><br>进程已经占有一些资源，同时又请求新的资源</li>
+<li><strong>不剥夺条件</strong><br>进程已经获得得资源，在它主动释放之前，系统不能强行夺走</li>
+<li><strong>循环等待条件</strong><br>存在一个进程等待环</li>
+</ol>
+<p><strong>资源分配图</strong></p>
+<p><img src="/../../images/os4.png"></p>
+<p><strong>处理死锁的方法</strong></p>
+<p>忽略、预防、避免、检测和解除</p>
+<ol>
+<li><p>忽略：鸵鸟算法</p>
+</li>
+<li><p>预防死锁：破坏四个必要条件之一</p>
+<p><strong>破坏互斥条件</strong>：资源共享<br><strong>破坏请求和保持条件</strong>：一次性申请所有资源或者申请新的资源之前先释放已有的资源<br><strong>破坏不可剥夺条件</strong>：如果一个进程申请新的资源失败，就强行剥夺它已经占有的资源<br><strong>破坏循环等待条件</strong>：给所有资源编号，进程只能按编号递增顺序申请资源</p>
+</li>
+</ol>
+<p><strong>死锁避免</strong></p>
+<p>如果系统能找到一个进程执行顺序，使所有进程都能顺利完成，则系统处于安全状态，这个顺序叫安全序列。反之为不安全状态：让系统始终不进入不安全状态</p>
+<p><strong>银行家算法</strong></p>
+<p><img src="/../../images/os5.png"></p>
+<p><strong>资源分配图的化简</strong></p>
+<p><img src="/../../images/os6.png"></p>
+<h2 id="第六章-主存储器管理"><a href="#第六章-主存储器管理" class="headerlink" title="第六章 主存储器管理"></a>第六章 主存储器管理</h2><h3 id="6-1-主存储器的主要功能"><a href="#6-1-主存储器的主要功能" class="headerlink" title="6.1 主存储器的主要功能"></a>6.1 主存储器的主要功能</h3><p>主存储器是程序与数据执行和处理的必经载体，但主存存取速度远远跟不上处理器处理速度，因此必须要有一套管理机制</p>
+<h4 id="6-1-1-内存"><a href="#6-1-1-内存" class="headerlink" title="6.1.1 内存"></a>6.1.1 内存</h4><ol>
+<li>系统区：这部分主要给操作系统自身使用，普通用户程序不能随便访问，包括操作系统内核程序和数据结构</li>
+<li>用户去：分区分页分段主要是讨论用户区怎么分配给各个进程，包括应用程序和用户进程的数据</li>
+</ol>
+<h4 id="6-1-2-功能"><a href="#6-1-2-功能" class="headerlink" title="6.1.2 功能"></a>6.1.2 功能</h4><ol>
+<li><p>存储空间的分配和回收</p>
+</li>
+<li><p>抽象与映射<br>地址映射、地址变换和重定位</p>
+</li>
+<li><p>隔离和共享，进程之间默认隔离，授权之后可以共享，<strong>一旦共享就要考虑互斥和同步</strong></p>
+</li>
+<li><p>存储扩充：用户希望程序拥有很大的地址空间，但物理内存有限。</p>
+<p>所以 OS 要在逻辑上提供：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">比实际物理内存更大的存储空间</span><br></pre></td></tr></table></figure>
+
+<p>后面的分页、交换、虚拟存储，都是为了解决这个问题。</p>
+</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">逻辑地址：程序看到的地址</span><br><span class="line">物理地址：内存中的真实地址</span><br><span class="line"></span><br><span class="line">地址空间：逻辑地址的集合</span><br><span class="line">主存空间：物理地址的集合</span><br><span class="line"></span><br><span class="line">连续分配：一个进程必须放在一整块连续内存中</span><br><span class="line">离散分配：一个进程可以分散放在多个内存块中</span><br><span class="line"></span><br><span class="line">分页：按固定大小切，主要是系统管理需要</span><br><span class="line">分段：按程序逻辑功能切，主要是用户/程序需要</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="6-2-程序的装入和链接"><a href="#6-2-程序的装入和链接" class="headerlink" title="6.2 程序的装入和链接"></a>6.2 程序的装入和链接</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">源程序</span><br><span class="line">  ↓ 编译</span><br><span class="line">目标模块</span><br><span class="line">  ↓ 链接</span><br><span class="line">装入模块 / 可执行文件</span><br><span class="line">  ↓ 装入</span><br><span class="line">内存中的进程</span><br></pre></td></tr></table></figure>
+
+<h4 id="6-2-1-装入"><a href="#6-2-1-装入" class="headerlink" title="6.2.1 装入"></a>6.2.1 装入</h4><ol>
+<li>绝对装入方式：在编译的时候就知道程序将来要放在内存的那个位置，生成代码中使用<strong>绝对地址</strong></li>
+<li>可重定位装入方式（静态重定位）：编译时后生成的是<strong>相对地址</strong>，装入程序根据内存当前空闲情况，把程序放到合适的位置</li>
+<li>动态运行时装入（动态重定位）：装入内存时<strong>不修改程序里面的逻辑地址</strong>，而是在程序运行过程中，每次访问内存时再进行地址变换，需要 <strong>重定位寄存器</strong>，起始地址修改时（程序被移动到另一块内存）不用修改逻辑地址，直接修改重定位寄存器里面的值（目标地址 &#x3D; 重定位寄存器 + 逻辑地址）</li>
+</ol>
+<p><strong>PCB不只是记录进程状态，也保存进程运行所需的地址映射信息</strong></p>
+<table>
+<thead>
+<tr>
+<th>装入方式</th>
+<th>地址确定时间</th>
+<th>是否需要硬件支持</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>绝对装入</td>
+<td>编译时</td>
+<td>不需要</td>
+<td>简单，但位置固定</td>
+</tr>
+<tr>
+<td>可重定位装入</td>
+<td>装入时</td>
+<td>不需要</td>
+<td>装入时统一改地址</td>
+</tr>
+<tr>
+<td>动态运行时装入</td>
+<td>运行时</td>
+<td>需要</td>
+<td>最灵活，可支持移动</td>
+</tr>
+</tbody></table>
+<h4 id="6-2-2-链接"><a href="#6-2-2-链接" class="headerlink" title="6.2.2 链接"></a>6.2.2 链接</h4><ol>
+<li>静态链接：静态链接是在<strong>程序运行之前</strong>，把所有目标模块和库函数都合并成一个完整可执行文件</li>
+<li>装入时动态链接：一边装入，一边链接需要的外部模块，如果装入目标模块时遇到外部模块调用，装入程序会寻找相应外部目标模块，将其装入内存，并修改目标模块中的相对地址</li>
+<li>运行时动态链接：运行时动态链接把某些目标模块的链接推迟到执行时才进行；如果被调用模块还没装入，由 OS 找到它、装入并链接；如果没被调用，就不会加载</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>链接方式</th>
+<th>链接时间</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>静态链接</td>
+<td>程序运行前</td>
+<td>全部提前打包</td>
+</tr>
+<tr>
+<td>装入时动态链接</td>
+<td>装入内存时</td>
+<td>边装入边链接</td>
+</tr>
+<tr>
+<td>运行时动态链接</td>
+<td>程序运行过程中</td>
+<td>用到谁再加载谁</td>
+</tr>
+</tbody></table>
+<h3 id="6-3-内存保护"><a href="#6-3-内存保护" class="headerlink" title="6.3 内存保护"></a>6.3 内存保护</h3><p>防止进程有意或无意破坏操作系统或其他进程</p>
+<p>os需要保证：</p>
+<p>进程只能访问自己被允许访问的内存<br>用户程序不能随便访问内核区<br>读权限、写权限、执行权限要区分</p>
+<h4 id="6-3-1-界限寄存器法"><a href="#6-3-1-界限寄存器法" class="headerlink" title="6.3.1 界限寄存器法"></a>6.3.1 界限寄存器法</h4><p>给每个进程规定一个合法地址范围，访问前先检查是否越界</p>
+<ol>
+<li>上下界寄存器：使用上下界寄存器保存进程内存开始和结束地址</li>
+<li>基址限长寄存器：基址保存起始地址，限长存长度</li>
+</ol>
+<h4 id="6-3-2-存储保护键"><a href="#6-3-2-存储保护键" class="headerlink" title="6.3.2 存储保护键"></a>6.3.2 存储保护键</h4><p>存储保护键可以类比成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">内存块有锁</span><br><span class="line">进程有钥匙</span><br><span class="line">钥匙和锁匹配，才能访问</span><br></pre></td></tr></table></figure>
+
+<p>为每个存储块分配一个保护键，相当于锁；给进入系统的每个作业赋予保护键，相当于钥匙；访问时检查是否匹配，不匹配就产生保护性中断。</p>
+<p>这个方法适合按内存块进行保护。</p>
+<h4 id="6-3-3-环保护机制"><a href="#6-3-3-环保护机制" class="headerlink" title="6.3.3 环保护机制"></a>6.3.3 环保护机制</h4><p>处理器状态可分为多个环，编号越小，特权级越高</p>
+<p><strong>程序可以访问相同环或较低特权环的数据<br>程序可以调用相同环或较高特权环的服务</strong></p>
+<h4 id="6-3-4-访问权限保护"><a href="#6-3-4-访问权限保护" class="headerlink" title="6.3.4 访问权限保护"></a>6.3.4 访问权限保护</h4><p>除了地址范围和特权级，还可以给内存区域设置访问权限。</p>
+<p>常见权限有：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">禁止访问</span><br><span class="line">只执行</span><br><span class="line">只读</span><br><span class="line">读/写</span><br></pre></td></tr></table></figure>
+
+<p>比如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">代码段：通常可执行、只读</span><br><span class="line">数据段：可读写</span><br><span class="line">只读常量区：只读</span><br><span class="line">内核区：用户态不可访问</span><br></pre></td></tr></table></figure>
+
+<p>这很重要。比如代码段如果可写，攻击者可能修改程序指令；栈如果可执行，可能引发安全问题。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>保护思路</th>
+<th>重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>界限寄存器</td>
+<td>检查地址是否越界</td>
+<td>防止访问范围外内存</td>
+</tr>
+<tr>
+<td>存储保护键</td>
+<td>锁钥匙匹配</td>
+<td>按内存块控制访问</td>
+</tr>
+<tr>
+<td>环保护机制</td>
+<td>按特权级访问</td>
+<td>区分内核和用户</td>
+</tr>
+<tr>
+<td>访问权限</td>
+<td>控制读&#x2F;写&#x2F;执行</td>
+<td>防止非法操作类型</td>
+</tr>
+</tbody></table>
+<h3 id="6-4-内存分配"><a href="#6-4-内存分配" class="headerlink" title="6.4 内存分配"></a>6.4 内存分配</h3><h4 id="6-4-1-单一连续分配"><a href="#6-4-1-单一连续分配" class="headerlink" title="6.4.1 单一连续分配"></a>6.4.1 单一连续分配</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">单一连续分配：内存分为系统区和用户区</span><br><span class="line">用户区一次只装入一道用户作业</span><br><span class="line">实现简单，但内存利用率低，不适合多道程序</span><br></pre></td></tr></table></figure>
+
+<h4 id="6-4-2-固定分区分配"><a href="#6-4-2-固定分区分配" class="headerlink" title="6.4.2 固定分区分配"></a>6.4.2 固定分区分配</h4><p>系统启动或初始化时，把内存用户区划分成若干个固定大小的分区，每个分区最多装入一个作业</p>
+<ol>
+<li>等长分区</li>
+<li>不等放分区</li>
+</ol>
+<p>系统一般会维护一张<strong>分区说明表</strong>，记录每个分区的信息，当一个作业进入时，系统查表，找一个能容纳它的空闲分区。</p>
+<h4 id="6-4-3-动态分区分配"><a href="#6-4-3-动态分区分配" class="headerlink" title="6.4.3 动态分区分配"></a>6.4.3 动态分区分配</h4><p>作业装入时，按大小为其划分一块内存区，缺点：外部碎片</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">内部碎片：分配进去以后，分区里面浪费</span><br><span class="line">外部碎片：分区外面零散空闲，拼不成大块</span><br></pre></td></tr></table></figure>
+
+<p><strong>动态分区算法</strong></p>
+<ol>
+<li><strong>First Fit</strong>：从空闲分区表开头开始找找到第一个能满足大小要求的空闲分区就分配</li>
+<li><strong>Next Fit</strong>：从上次查找结束的位置继续往后找</li>
+<li><strong>Best Fit</strong>：选择能满足要求的最小空闲分区</li>
+<li><strong>Worst Fit</strong>：选择最大的空闲分区进行分配</li>
+</ol>
+<p><strong>动态分区的回收</strong>：回收时要检查相邻空闲区，能合并就合并</p>
+<p><strong>紧凑技术</strong>：如果外部碎片太多，可以把已经分配的进程移动到一起，使空闲区合并成一整块，需要<strong>动态重定位支持</strong></p>
+<h4 id="6-4-4-伙伴系统"><a href="#6-4-4-伙伴系统" class="headerlink" title="6.4.4 伙伴系统"></a>6.4.4 伙伴系统</h4><p><strong>分配过程</strong></p>
+<p>假设系统有一个 64KB 空闲块。</p>
+<p>现在有进程申请：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10KB</span><br></pre></td></tr></table></figure>
+
+<p>系统要分配能容纳 10KB 的最小 2 的幂：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">16KB</span><br></pre></td></tr></table></figure>
+
+<p>于是从 64KB 开始分裂：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">64KB</span><br><span class="line"> ↓</span><br><span class="line">32KB + 32KB</span><br><span class="line"> ↓</span><br><span class="line">16KB + 16KB + 32KB</span><br></pre></td></tr></table></figure>
+
+<p>分配其中一个 16KB 给进程。</p>
+<p>剩余空闲块是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">16KB</span><br><span class="line">32KB</span><br></pre></td></tr></table></figure>
+
+<p>注意：虽然进程只要 10KB，但系统给了 16KB，所以会有：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">16KB - 10KB = 6KB</span><br></pre></td></tr></table></figure>
+
+<p>这 6KB 是<strong>内部碎片</strong>。</p>
+<p><strong>回收过程</strong></p>
+<p>假设刚才分配出去的 16KB 后来释放了。</p>
+<p>系统会检查它的伙伴块是否空闲。</p>
+<p>如果它的伙伴 16KB 也空闲，则合并：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">16KB + 16KB</span><br><span class="line"> ↓</span><br><span class="line">32KB</span><br></pre></td></tr></table></figure>
+
+<p>再继续检查这个 32KB 的伙伴是否空闲。</p>
+<p>如果另一个 32KB 也空闲，则继续合并：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">32KB + 32KB</span><br><span class="line"> ↓</span><br><span class="line">64KB</span><br></pre></td></tr></table></figure>
+
+<p>伙伴系统回收时的优势： <strong>可以快速把相邻的伙伴空闲块合并成大块，减少外部碎片。</strong></p>
+<h4 id="6-4-5-覆盖和交换"><a href="#6-4-5-覆盖和交换" class="headerlink" title="6.4.5 覆盖和交换"></a>6.4.5 覆盖和交换</h4><p>覆盖的核心思想是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">一个程序不需要所有模块同时在内存中</span><br><span class="line">只把当前需要的模块装入内存</span><br><span class="line">用完后可以被其他模块覆盖</span><br></pre></td></tr></table></figure>
+
+<p>交换的核心思想是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">把暂时不能运行的进程从内存换出到外存</span><br><span class="line">需要运行时再换入内存</span><br><span class="line"></span><br><span class="line">进程 P1 阻塞等待 I/O</span><br><span class="line">↓</span><br><span class="line">OS 把 P1 换出到磁盘</span><br><span class="line">↓</span><br><span class="line">腾出内存给 P2</span><br><span class="line">↓</span><br><span class="line">P1 需要运行时再换入</span><br><span class="line"></span><br><span class="line">就绪 ↔ 挂起就绪</span><br><span class="line">阻塞 ↔ 挂起阻塞</span><br></pre></td></tr></table></figure>
+
+<h4 id="6-4-6-分页存储管理"><a href="#6-4-6-分页存储管理" class="headerlink" title="6.4.6 分页存储管理"></a>6.4.6 分页存储管理</h4>
     </div>
 
     

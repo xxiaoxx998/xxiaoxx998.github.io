@@ -38,7 +38,7 @@
 <meta property="og:image" content="https://ducklinger.top/images/byyl10.png">
 <meta property="og:image" content="https://ducklinger.top/images/byyl11.png">
 <meta property="article:published_time" content="2026-03-19T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-05-13T10:09:42.051Z">
+<meta property="article:modified_time" content="2026-05-20T11:12:18.391Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://ducklinger.top/images/czxt1.png">
@@ -212,7 +212,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-05-13 18:09:42" itemprop="dateModified" datetime="2026-05-13T18:09:42+08:00">2026-05-13</time>
+                <time title="修改时间：2026-05-20 19:12:18" itemprop="dateModified" datetime="2026-05-20T19:12:18+08:00">2026-05-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -509,6 +509,102 @@
 <p>而且并非所有的文法都能通过消除左递归和反复提取公因子，改造为LL(1)文法的</p>
 <h3 id="自上而下语法分析"><a href="#自上而下语法分析" class="headerlink" title="自上而下语法分析"></a>自上而下语法分析</h3><p>从输入串进行规约，画出语法分析树</p>
 <p><strong>短语</strong> ：某个非终结符能推出的一段字串，有几个非终结符就有几个短语<br><strong>直接短语</strong>：非终结符一步推出的字串<br><strong>句柄</strong>：句型的最左直接短语</p>
+<h3 id="LR（K）分析方法"><a href="#LR（K）分析方法" class="headerlink" title="LR（K）分析方法"></a>LR（K）分析方法</h3><h4 id="LR-0"><a href="#LR-0" class="headerlink" title="LR(0)"></a>LR(0)</h4><p>在产生式右部加上一个  ‘  .  ‘ </p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A → ·xyz</td>
+<td>还没识别 x</td>
+</tr>
+<tr>
+<td>A → x·yz</td>
+<td>已识别 x，期待 y</td>
+</tr>
+<tr>
+<td>A → xy·z</td>
+<td>已识别 xy，期待 z</td>
+</tr>
+<tr>
+<td>A → xyz·</td>
+<td>已完整识别 xyz，可以归约</td>
+</tr>
+</tbody></table>
+<p>LR分析本质上是把“识别句柄”的过程变成一个<strong>DFA状态转换的过程</strong></p>
+<h5 id="活前缀"><a href="#活前缀" class="headerlink" title="活前缀"></a>活前缀</h5><p>活前缀就是某个规范句型中，还没有超过句柄右端的前缀，LR分析过程就是构造一个DFA，用来识别所有可能的或前缀。只要栈中符号能被这个DFA接受，分析过程就是合法的。</p>
+<h5 id="构造LR分析表"><a href="#构造LR分析表" class="headerlink" title="构造LR分析表"></a>构造LR分析表</h5><ol>
+<li>CLOSURE操作</li>
+</ol>
+<p>如果项目集中有：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A → α·Bβ</span><br></pre></td></tr></table></figure>
+
+<p>说明现在期待一个非终结符 <code>B</code>。</p>
+<p>那么所有 <code>B</code> 的产生式都要加入项目集：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">B → ·γ</span><br></pre></td></tr></table></figure>
+
+<p><strong>既然接下来可能要识别B，那么B的所有可能开头都要考虑进去</strong></p>
+<ol start="2">
+<li>GOTO操作</li>
+</ol>
+<p>如果某个项目是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A → α·Xβ</span><br></pre></td></tr></table></figure>
+
+<p>当读入 <code>X</code> 后，点号右移：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A → αX·β</span><br></pre></td></tr></table></figure>
+
+<p>然后再对新项目集求 CLOSURE。</p>
+<p>这就是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOTO(I, X)</span><br></pre></td></tr></table></figure>
+
+<p>表示：<strong>从状态I识别符号X之后，到达那个新状态</strong></p>
+<p>构造步骤：</p>
+<ol>
+<li><p>如果状态中有</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">U → x·ay</span><br></pre></td></tr></table></figure>
+
+<p>并且a是终结符，<code>GOTO(Ii, a) = Ij</code>，则：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ACTION[i, a] = Sj</span><br></pre></td></tr></table></figure>
+
+<p>表示移进</p>
+</li>
+<li><p>如果状态中有</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S&#x27; → S·</span><br></pre></td></tr></table></figure>
+
+<p>则</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ACTION[i, #] = acc</span><br></pre></td></tr></table></figure>
+
+<p>表示接受</p>
+</li>
+<li><p>如果状态中有</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">U → x·</span><br></pre></td></tr></table></figure>
+
+<p>则对所有终结符都填归约动作：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ACTION[i, a] = rj</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果状态中有非终结符转换：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOTO(Ii, V) = Ij</span><br></pre></td></tr></table></figure>
+
+<p>则：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOTO[i, V] = j</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>从DFA状态转化图来造表</p>
+<h5 id="LR（0）文法的冲突"><a href="#LR（0）文法的冲突" class="headerlink" title="LR（0）文法的冲突"></a>LR（0）文法的冲突</h5><p>解决<strong>移进-归约冲突、归约-归约冲突</strong></p>
+<ol>
+<li><p>SLR（1）：用FOLLOW集解决部分冲突<br>只有当前输入符号属于产生式左部的FOLLOW集时，才允许归约<br>对于</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">U → x·</span><br></pre></td></tr></table></figure>
+
+<p>只对</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a ∈ FOLLOW(U)</span><br></pre></td></tr></table></figure>
+
+<p>的符号进行归约</p>
+</li>
+<li><p>LR（1）：给项目加向前看符号（不考）</p>
+</li>
+</ol>
 
     </div>
 
