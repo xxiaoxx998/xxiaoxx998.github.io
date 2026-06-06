@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://ducklinger.top/images/os5.png">
 <meta property="og:image" content="https://ducklinger.top/images/os6.png">
 <meta property="article:published_time" content="2026-04-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-06-01T06:46:50.529Z">
+<meta property="article:modified_time" content="2026-06-06T08:41:13.541Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://ducklinger.top/images/os1.png">
@@ -207,7 +207,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-06-01 14:46:50" itemprop="dateModified" datetime="2026-06-01T14:46:50+08:00">2026-06-01</time>
+                <time title="修改时间：2026-06-06 16:41:13" itemprop="dateModified" datetime="2026-06-06T16:41:13+08:00">2026-06-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1291,7 +1291,96 @@
 <p>交换的核心思想是：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">把暂时不能运行的进程从内存换出到外存</span><br><span class="line">需要运行时再换入内存</span><br><span class="line"></span><br><span class="line">进程 P1 阻塞等待 I/O</span><br><span class="line">↓</span><br><span class="line">OS 把 P1 换出到磁盘</span><br><span class="line">↓</span><br><span class="line">腾出内存给 P2</span><br><span class="line">↓</span><br><span class="line">P1 需要运行时再换入</span><br><span class="line"></span><br><span class="line">就绪 ↔ 挂起就绪</span><br><span class="line">阻塞 ↔ 挂起阻塞</span><br></pre></td></tr></table></figure>
 
-<h4 id="6-4-6-分页存储管理"><a href="#6-4-6-分页存储管理" class="headerlink" title="6.4.6 分页存储管理"></a>6.4.6 分页存储管理</h4>
+<h4 id="6-4-6-分页存储管理"><a href="#6-4-6-分页存储管理" class="headerlink" title="6.4.6 分页存储管理"></a>6.4.6 分页存储管理</h4><p>分页存储管理就是为了解决<code>进程必须占用一整块连续的内存</code>从而产生的外部的碎片</p>
+<p><strong>页和页框</strong></p>
+<p>页：把进程的逻辑地址空间分为大小相等的块</p>
+<p>页框：把物理内存也切成同样大小相等的块</p>
+<p><strong>将物理地址连续转化成逻辑地址连续减少外部碎片</strong></p>
+<p><strong>页表</strong>：查询逻辑页号对应的物理块号</p>
+<p><strong>地址结构</strong>：逻辑地址 &#x3D; 页号 + 页内偏移<br>程序的访问逻辑地址，通过逻辑地址求得页号和页内偏移-&gt;查询页表组成物理地址</p>
+<p>分页基本消除外部碎片，但是可能产生内部碎片</p>
+<p>分页的关键改进是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">进程被切成页</span><br><span class="line">内存被切成页框</span><br><span class="line">页可以离散装入页框</span><br><span class="line">页表负责地址映射</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>快表TLB与多级页表</strong></p>
+<p>上一种方法的问题是：每次访问内存都要先查页表，在访问真正的数据会变慢</p>
+<p>TLB再cpu附近速度很快，其中保存最近用过的页表项</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">先查 TLB</span><br><span class="line">  ↓</span><br><span class="line">如果命中：直接得到物理块号</span><br><span class="line">  ↓</span><br><span class="line">形成物理地址，访问内存</span><br><span class="line"></span><br><span class="line">如果未命中：</span><br><span class="line">  ↓</span><br><span class="line">访问内存中的页表</span><br><span class="line">  ↓</span><br><span class="line">找到物理块号</span><br><span class="line">  ↓</span><br><span class="line">把该页表项放入 TLB</span><br><span class="line">  ↓</span><br><span class="line">再访问真正数据</span><br></pre></td></tr></table></figure>
+
+<p><strong>TLB的作用是减少查页表带来的额外内存访问</strong></p>
+<p>所以TLB的命中率是评价分页系统性能的重要标准</p>
+<p>由于页表过大，需要引进多级页表表，即在页表在进行分页，例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一级页号 p1 + 二级页号 p2 + 页内偏移 d</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="6-4-7-分段存储管理"><a href="#6-4-7-分段存储管理" class="headerlink" title="6.4.7 分段存储管理"></a>6.4.7 分段存储管理</h4><p>分段：按照程序的逻辑结构，把程序分为若干个段</p>
+<p><strong>分段地址结构</strong> ：段号 s + 段内偏移 w （逻辑地址 &#x3D; 段号 + 段内地址）</p>
+<p><strong>段表</strong>：记录段号、段长和段基址</p>
+<p>分段地址变化过程：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">逻辑地址：段号 S + 段内偏移 W</span><br><span class="line">        ↓</span><br><span class="line">查段表，找到该段的段基址和段长</span><br><span class="line">        ↓</span><br><span class="line">判断 W 是否小于段长</span><br><span class="line">        ↓</span><br><span class="line">如果 W &gt;= 段长，越界中断</span><br><span class="line">        ↓</span><br><span class="line">如果合法，物理地址 = 段基址 + W</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>对比</th>
+<th>分页</th>
+<th>分段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>划分依据</td>
+<td>固定大小</td>
+<td>程序逻辑单位</td>
+</tr>
+<tr>
+<td>大小</td>
+<td>每页大小相同</td>
+<td>每段大小可不同</td>
+</tr>
+<tr>
+<td>地址结构</td>
+<td>页号 + 页内偏移</td>
+<td>段号 + 段内偏移</td>
+</tr>
+<tr>
+<td>表结构</td>
+<td>页表记录块号</td>
+<td>段表记录基址和段长</td>
+</tr>
+<tr>
+<td>碎片</td>
+<td>可能有内部碎片</td>
+<td>可能有外部碎片</td>
+</tr>
+<tr>
+<td>用户是否可见</td>
+<td>通常用户不可见</td>
+<td>通常用户可见</td>
+</tr>
+<tr>
+<td>适合</td>
+<td>内存管理</td>
+<td>共享、保护、逻辑组织</td>
+</tr>
+</tbody></table>
+<p><strong>分段的优点</strong>：</p>
+<p>第一，符合程序逻辑结构。<br> 程序本来就有代码段、数据段、栈段等，按段管理更自然。</p>
+<p>第二，方便共享。<br> 比如多个进程可以共享同一个代码段或库函数段。</p>
+<p>第三，方便保护。<br> 不同段可以设置不同权限：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">代码段：只读、可执行</span><br><span class="line">数据段：可读写</span><br><span class="line">栈段：可读写</span><br></pre></td></tr></table></figure>
+
+<p><strong>缺点</strong>：容易产生外部碎片</p>
+<h4 id="6-4-8-段页式存储管理"><a href="#6-4-8-段页式存储管理" class="headerlink" title="6.4.8 段页式存储管理"></a>6.4.8 段页式存储管理</h4><p><strong>先按逻辑结构分段，再把每个段分页</strong></p>
+<p>段页式逻辑地址组成： 段号S + 段内页号 P + 页内偏移 W</p>
+<p>需要：<strong>段表和页表</strong></p>
+<p>缺点也很明显：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">地址变换更复杂</span><br><span class="line">需要先查段表，再查页表</span><br><span class="line">表占用空间更多</span><br><span class="line">访问速度可能下降</span><br></pre></td></tr></table></figure>
+
+<p>所以实际系统中通常要配合快表 TLB 来提高地址转换速度。</p>
+<h2 id="第七章-虚拟内存管理"><a href="#第七章-虚拟内存管理" class="headerlink" title="第七章 虚拟内存管理"></a>第七章 虚拟内存管理</h2><h3 id="7-1-虚拟内存"><a href="#7-1-虚拟内存" class="headerlink" title="7.1 虚拟内存"></a>7.1 虚拟内存</h3>
     </div>
 
     

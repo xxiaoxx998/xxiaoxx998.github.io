@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-50x50.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-50x50.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="theme-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ducklinger.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="date:2026-06-02title:密码学复习categories:课程学习密码学期末复习流程0. 复习目标本复习流程用于《密码学》期末复习，目标是：  梳理 PPT 中的核心模块； 对应往年试题高频考点； 按模块逐步复习、补充笔记； 最终能够完成计算题、简答题、算法题和综合设计题。   第一阶段：基础概念与古典密码模块 1：密码学基本概念复习目标掌握密码学最基本的概念，能够回答简答题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ducklinger">
+<meta property="og:url" content="https://ducklinger.top/2026/06/02/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E5%AF%86%E7%A0%81%E5%AD%A6/index.html">
+<meta property="og:site_name" content="Ducklinger">
+<meta property="og:description" content="date:2026-06-02title:密码学复习categories:课程学习密码学期末复习流程0. 复习目标本复习流程用于《密码学》期末复习，目标是：  梳理 PPT 中的核心模块； 对应往年试题高频考点； 按模块逐步复习、补充笔记； 最终能够完成计算题、简答题、算法题和综合设计题。   第一阶段：基础概念与古典密码模块 1：密码学基本概念复习目标掌握密码学最基本的概念，能够回答简答题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-06-02T01:31:04.148Z">
+<meta property="article:modified_time" content="2026-06-06T07:38:32.625Z">
+<meta property="article:author" content="Ducklinger">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://ducklinger.top/2026/06/02/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E5%AF%86%E7%A0%81%E5%AD%A6/">
+
+
+<script id="page-configurations">
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | Ducklinger</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ducklinger</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section">分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-poems">
+
+    <a href="/poems/" rel="section">诗歌</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main main-post">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ducklinger.top/2026/06/02/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E5%AF%86%E7%A0%81%E5%AD%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2026-06-02 09:31:04" itemprop="dateCreated datePublished" datetime="2026-06-02T09:31:04+08:00">2026-06-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-06-06 15:38:32" itemprop="dateModified" datetime="2026-06-06T15:38:32+08:00">2026-06-06</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <hr>
+<h2 id="date-2026-06-02title-密码学复习categories-课程学习"><a href="#date-2026-06-02title-密码学复习categories-课程学习" class="headerlink" title="date:2026-06-02title:密码学复习categories:课程学习"></a>date:2026-06-02<br>title:密码学复习<br>categories:课程学习</h2><h1 id="密码学期末复习流程"><a href="#密码学期末复习流程" class="headerlink" title="密码学期末复习流程"></a>密码学期末复习流程</h1><h2 id="0-复习目标"><a href="#0-复习目标" class="headerlink" title="0. 复习目标"></a>0. 复习目标</h2><p>本复习流程用于《密码学》期末复习，目标是：</p>
+<ol>
+<li>梳理 PPT 中的核心模块；</li>
+<li>对应往年试题高频考点；</li>
+<li>按模块逐步复习、补充笔记；</li>
+<li>最终能够完成计算题、简答题、算法题和综合设计题。</li>
+</ol>
+<hr>
+<h1 id="第一阶段：基础概念与古典密码"><a href="#第一阶段：基础概念与古典密码" class="headerlink" title="第一阶段：基础概念与古典密码"></a>第一阶段：基础概念与古典密码</h1><h2 id="模块-1：密码学基本概念"><a href="#模块-1：密码学基本概念" class="headerlink" title="模块 1：密码学基本概念"></a>模块 1：密码学基本概念</h2><h3 id="复习目标"><a href="#复习目标" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握密码学最基本的概念，能够回答简答题。</p>
+<h3 id="需要掌握的知识点"><a href="#需要掌握的知识点" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><ul>
+<li>明文、密文、加密、解密</li>
+<li>加密算法、解密算法</li>
+<li>加密密钥 Ke、解密密钥 Kd</li>
+<li>密码体制五元组：<code>&lt;M, C, K, E, D&gt;</code></li>
+<li>加密公式：<code>C = E(M, Ke)</code></li>
+<li>解密公式：<code>M = D(C, Kd)</code></li>
+<li>密钥在密码系统中的作用</li>
+<li>密码体制的分类：<ul>
+<li>对称密码</li>
+<li>非对称密码</li>
+<li>分组密码</li>
+<li>序列密码</li>
+</ul>
+</li>
+</ul>
+<h3 id="必背答题模板"><a href="#必背答题模板" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>密码体制由明文空间 M、密文空间 C、密钥空间 K、加密算法 E 和解密算法 D 组成。发送方使用加密密钥 Ke 对明文 M 加密得到密文 C，即 C&#x3D;E(M,Ke)。接收方使用解密密钥 Kd 对密文 C 解密得到明文 M，即 M&#x3D;D(C,Kd)。密钥的作用是控制加密和解密变换，是保证密码系统安全性的核心。</p>
+<h3 id="自查问题"><a href="#自查问题" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>什么是明文？</li>
+<li>什么是密文？</li>
+<li>加密和解密的基本过程是什么？</li>
+<li>密钥为什么重要？</li>
+<li>密码体制五元组分别代表什么？</li>
+</ul>
+<hr>
+<h2 id="模块-2：对称密码与非对称密码"><a href="#模块-2：对称密码与非对称密码" class="headerlink" title="模块 2：对称密码与非对称密码"></a>模块 2：对称密码与非对称密码</h2><h3 id="复习目标-1"><a href="#复习目标-1" class="headerlink" title="复习目标"></a>复习目标</h3><p>能够区分对称密码和非对称密码，并说明它们的优缺点和典型算法。</p>
+<h3 id="需要掌握的知识点-1"><a href="#需要掌握的知识点-1" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><h4 id="对称密码"><a href="#对称密码" class="headerlink" title="对称密码"></a>对称密码</h4><ul>
+<li>加密密钥和解密密钥相同或容易互推</li>
+<li>公式特点：<code>Ke = Kd</code></li>
+<li>优点：<ul>
+<li>速度快</li>
+<li>适合大量数据加密</li>
+<li>工程实现成熟</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>密钥分配困难</li>
+<li>不适合大规模开放网络</li>
+<li>难以直接实现数字签名</li>
+</ul>
+</li>
+<li>典型算法：<ul>
+<li>DES</li>
+<li>AES</li>
+<li>SM4</li>
+<li>ZUC</li>
+<li>RC4</li>
+</ul>
+</li>
+</ul>
+<h4 id="非对称密码"><a href="#非对称密码" class="headerlink" title="非对称密码"></a>非对称密码</h4><ul>
+<li>加密密钥和解密密钥不同</li>
+<li>公式特点：<code>Ke ≠ Kd</code></li>
+<li>公钥可以公开，私钥必须保密</li>
+<li>优点：<ul>
+<li>便于密钥分配</li>
+<li>可以实现数字签名</li>
+<li>适合身份认证和密钥协商</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>运算速度慢</li>
+<li>不适合直接加密大量数据</li>
+</ul>
+</li>
+<li>典型算法：<ul>
+<li>RSA</li>
+<li>ElGamal</li>
+<li>ECC</li>
+<li>SM2</li>
+</ul>
+</li>
+</ul>
+<h3 id="必背答题模板-1"><a href="#必背答题模板-1" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>对称密码是指加密密钥和解密密钥相同或容易互相推出的密码体制，优点是速度快，适合大量数据加密，缺点是密钥分配困难。非对称密码是指加密密钥和解密密钥不同，公钥可以公开，私钥由用户秘密保存，优点是便于密钥分配并能实现数字签名，缺点是运算速度较慢。</p>
+<h3 id="自查问题-1"><a href="#自查问题-1" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>对称密码的“对称”是什么意思？</li>
+<li>非对称密码的“非对称”是什么意思？</li>
+<li>为什么公钥可以公开？</li>
+<li>为什么非对称密码适合数字签名？</li>
+<li>对称密码和非对称密码通常如何配合使用？</li>
+</ul>
+<hr>
+<h2 id="模块-3：古典密码与加法密码"><a href="#模块-3：古典密码与加法密码" class="headerlink" title="模块 3：古典密码与加法密码"></a>模块 3：古典密码与加法密码</h2><h3 id="复习目标-2"><a href="#复习目标-2" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握加法密码的加密、解密方法，能完成往年计算题。</p>
+<h3 id="需要掌握的知识点-2"><a href="#需要掌握的知识点-2" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><ul>
+<li>字母编号：<ul>
+<li>A&#x3D;0</li>
+<li>B&#x3D;1</li>
+<li>…</li>
+<li>Z&#x3D;25</li>
+</ul>
+</li>
+<li>加法密码加密公式：</li>
+</ul>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C = (M + k) mod 26</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>加法密码解密公式：</li>
+</ul>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">M = (C - k) mod 26</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>密文字母表的写法</li>
+<li>空格一般保留，不参与加密</li>
+</ul>
+<h3 id="典型题型"><a href="#典型题型" class="headerlink" title="典型题型"></a>典型题型</h3><p>给定密钥 k，对英文短语进行加密。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">k = 5</span><br><span class="line">明文：WUHAN UNIVERSITY</span><br></pre></td></tr></table></figure>
+
+<h3 id="解题步骤"><a href="#解题步骤" class="headerlink" title="解题步骤"></a>解题步骤</h3><ol>
+<li>写出明文字母表；</li>
+<li>将字母表整体后移 k 位；</li>
+<li>得到密文字母表；</li>
+<li>逐字母替换明文；</li>
+<li>空格保留。</li>
+</ol>
+<h3 id="自查问题-2"><a href="#自查问题-2" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>k&#x3D;5 时，A 加密后是什么？</li>
+<li>k&#x3D;5 时，W 加密后是什么？</li>
+<li>加法密码如何解密？</li>
+<li>为什么要 mod 26？</li>
+</ul>
+<hr>
+<h1 id="第二阶段：分组密码"><a href="#第二阶段：分组密码" class="headerlink" title="第二阶段：分组密码"></a>第二阶段：分组密码</h1><h2 id="模块-4：DES"><a href="#模块-4：DES" class="headerlink" title="模块 4：DES"></a>模块 4：DES</h2><h3 id="复习目标-3"><a href="#复习目标-3" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握 DES 的整体结构、S 盒查表方法和 Feistel 结构特点。</p>
+<h3 id="需要掌握的知识点-3"><a href="#需要掌握的知识点-3" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><h4 id="DES-基本特征"><a href="#DES-基本特征" class="headerlink" title="DES 基本特征"></a>DES 基本特征</h4><ul>
+<li>分组长度：64 位</li>
+<li>密钥长度：64 位，其中有效密钥 56 位</li>
+<li>结构：Feistel 结构</li>
+<li>轮数：16 轮</li>
+<li>加密和解密使用同一算法</li>
+<li>解密时子密钥顺序相反</li>
+<li>综合使用：<ul>
+<li>置换</li>
+<li>代替</li>
+<li>异或</li>
+<li>S 盒</li>
+</ul>
+</li>
+</ul>
+<h4 id="DES-加密流程"><a href="#DES-加密流程" class="headerlink" title="DES 加密流程"></a>DES 加密流程</h4><ol>
+<li>64 位明文经过初始置换 IP；</li>
+<li>分成左半部分 L0 和右半部分 R0；</li>
+<li>进行 16 轮 Feistel 迭代；</li>
+<li>每轮使用一个子密钥 Ki；</li>
+<li>最后经过逆初始置换 IP^-1 得到密文。通常合并为 R16 || L16</li>
+</ol>
+<h4 id="Feistel-轮函数公式"><a href="#Feistel-轮函数公式" class="headerlink" title="Feistel 轮函数公式"></a>Feistel 轮函数公式</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Li = Ri-1</span><br><span class="line">Ri = Li-1 ⊕ f(Ri-1, Ki)</span><br><span class="line">f(Ri-1, Ki) = P(S(E(Ri-1) ⊕ Ki))//先异或再分组</span><br></pre></td></tr></table></figure>
+
+<h3 id="DES-S-盒查表"><a href="#DES-S-盒查表" class="headerlink" title="DES S 盒查表"></a>DES S 盒查表</h3><h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><p>S 盒输入 6 位，输出 4 位。</p>
+<p>设输入为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">b1 b2 b3 b4 b5 b6</span><br></pre></td></tr></table></figure>
+
+<p>行号：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">b1b6</span><br></pre></td></tr></table></figure>
+
+<p>列号：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">b2b3b4b5</span><br></pre></td></tr></table></figure>
+
+<p>然后查表得到输出。</p>
+<h3 id="高频考点"><a href="#高频考点" class="headerlink" title="高频考点"></a>高频考点</h3><ul>
+<li>DES 是不是对合运算？</li>
+<li>DES 为什么加密解密算法相同？</li>
+<li>DES S 盒如何查表？</li>
+<li>S 盒起什么作用？</li>
+<li>Feistel 结构为什么可逆？</li>
+</ul>
+<h3 id="必背答题模板-2"><a href="#必背答题模板-2" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>DES 是 64 位分组密码，采用 Feistel 结构，共进行 16 轮迭代。明文首先经过初始置换 IP，然后分成左右两半 L0 和 R0。每一轮中，右半部分经过轮函数 f 和子密钥 Ki 处理后与左半部分异或，再交换左右两部分。DES 解密与加密使用相同算法，只是子密钥使用顺序相反。</p>
+<h3 id="自查问题-3"><a href="#自查问题-3" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>DES 的分组长度是多少？</li>
+<li>DES 的轮数是多少？</li>
+<li>DES 是什么结构？</li>
+<li>S 盒输入几位，输出几位？</li>
+<li>S 盒查表时行号和列号怎么确定？</li>
+</ul>
+<hr>
+<h2 id="模块-5：AES"><a href="#模块-5：AES" class="headerlink" title="模块 5：AES"></a>模块 5：AES</h2><h3 id="复习目标-4"><a href="#复习目标-4" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握 AES 的整体结构、轮变换、AES-128 的轮数，以及第一轮字节计算的基本思路。</p>
+<h3 id="需要掌握的知识点-4"><a href="#需要掌握的知识点-4" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><h4 id="AES-基本特征"><a href="#AES-基本特征" class="headerlink" title="AES 基本特征"></a>AES 基本特征</h4><ul>
+<li>分组长度：128 位</li>
+<li>密钥长度：<ul>
+<li>128 位</li>
+<li>192 位</li>
+<li>256 位</li>
+</ul>
+</li>
+<li>AES-128 轮数：10 轮</li>
+<li>结构：SP 结构</li>
+<li>AES 不是 Feistel 结构</li>
+<li>AES 加密和解密算法不同</li>
+</ul>
+<h4 id="AES-基本轮变换"><a href="#AES-基本轮变换" class="headerlink" title="AES 基本轮变换"></a>AES 基本轮变换</h4><ol>
+<li>SubBytes 字节代换</li>
+<li>ShiftRows 行移位</li>
+<li>MixColumns 列混合</li>
+<li>AddRoundKey 轮密钥加</li>
+</ol>
+<h4 id="AES-加密流程"><a href="#AES-加密流程" class="headerlink" title="AES 加密流程"></a>AES 加密流程</h4><ol>
+<li>初始轮密钥加 AddRoundKey；</li>
+<li>前 9 轮：<ul>
+<li>SubBytes</li>
+<li>ShiftRows</li>
+<li>MixColumns</li>
+<li>AddRoundKey</li>
+</ul>
+</li>
+<li>第 10 轮：<ul>
+<li>SubBytes</li>
+<li>ShiftRows</li>
+<li>AddRoundKey</li>
+</ul>
+</li>
+<li>最后一轮没有 MixColumns。</li>
+</ol>
+<h3 id="高频考点-1"><a href="#高频考点-1" class="headerlink" title="高频考点"></a>高频考点</h3><ul>
+<li>AES-128 有多少轮？10</li>
+<li>AES 的四个基本变换是什么？s盒置换、左移、列扩散、添加轮密钥、</li>
+<li>AES 为什么最后一轮没有 MixColumns？保证加解密的对称性</li>
+<li>为什么第一步和最后一步必须是 AddRoundKey？如果第一步不加密钥，那么前几步只是把明文做了公开变换，攻击者也能同步计算出来，不能提供真正的保密性。</li>
+<li>AES 和 DES 的区别是什么？</li>
+</ul>
+<h3 id="必背答题模板-3"><a href="#必背答题模板-3" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>AES 是 128 位分组密码，采用 SP 结构。AES-128 使用 128 位密钥，共进行 10 轮加密。加密过程首先进行初始轮密钥加，然后前 9 轮依次执行字节代换、行移位、列混合和轮密钥加，最后一轮省略列混合。AES 的安全性主要来自 S 盒的非线性混淆以及行移位、列混合带来的扩散。</p>
+<h3 id="第一轮字节计算思路"><a href="#第一轮字节计算思路" class="headerlink" title="第一轮字节计算思路"></a>第一轮字节计算思路</h3><p>如果题目要求计算 AES 第一轮某个字节：</p>
+<ol>
+<li>将明文按 AES 状态矩阵填入；</li>
+<li>进行初始 AddRoundKey；</li>
+<li>如果密钥全 0，则状态值不变；</li>
+<li>查 S 盒完成 SubBytes；</li>
+<li>判断该字节是否受 ShiftRows 影响；</li>
+<li>如果经过 MixColumns，需要同一列 4 个字节共同参与计算；</li>
+<li>最后再与第一轮轮密钥异或。</li>
+</ol>
+<h3 id="自查问题-4"><a href="#自查问题-4" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>AES 是 Feistel 结构吗？</li>
+<li>AES-128 有多少轮？</li>
+<li>AES 最后一轮为什么没有 MixColumns？</li>
+<li>SubBytes 的作用是什么？</li>
+<li>MixColumns 的作用是什么？</li>
+<li>AddRoundKey 的作用是什么？</li>
+</ul>
+<hr>
+<h2 id="模块-6：SM4"><a href="#模块-6：SM4" class="headerlink" title="模块 6：SM4"></a>模块 6：SM4</h2><h3 id="复习目标-5"><a href="#复习目标-5" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握 SM4 的基本结构和与 AES、DES 的区别。</p>
+<h3 id="需要掌握的知识点-5"><a href="#需要掌握的知识点-5" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><h4 id="SM4-基本特征"><a href="#SM4-基本特征" class="headerlink" title="SM4 基本特征"></a>SM4 基本特征</h4><ul>
+<li>我国商用分组密码算法</li>
+<li>分组长度：128 位</li>
+<li>密钥长度：128 位</li>
+<li>轮数：32 轮</li>
+<li>结构：非对称 Feistel 结构</li>
+<li>数据处理单位：<ul>
+<li>字节，8 位</li>
+<li>字，32 位</li>
+</ul>
+</li>
+<li>加密解密算法结构相同</li>
+<li>解密时轮密钥逆序使用</li>
+</ul>
+<h4 id="SM4-基本部件"><a href="#SM4-基本部件" class="headerlink" title="SM4 基本部件"></a>SM4 基本部件</h4><ul>
+<li>异或运算</li>
+<li>循环左移</li>
+<li>S 盒</li>
+<li>非线性变换 τ</li>
+<li>线性变换 L</li>
+<li>合成变换 T</li>
+</ul>
+<h4 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h4><ul>
+<li>S 盒：混淆</li>
+<li>线性变换 L：扩散</li>
+<li>轮密钥：引入密钥控制</li>
+</ul>
+<h3 id="必背答题模板-4"><a href="#必背答题模板-4" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>SM4 是我国商用分组密码算法，分组长度和密钥长度均为 128 位，共进行 32 轮迭代。SM4 采用非对称 Feistel 结构，基本部件包括 S 盒、非线性变换和线性变换。S 盒用于实现混淆，线性变换用于实现扩散。SM4 加密和解密算法结构相同，解密时轮密钥按逆序使用。</p>
+<h3 id="自查问题-5"><a href="#自查问题-5" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>SM4 的分组长度是多少？</li>
+<li>SM4 的密钥长度是多少？</li>
+<li>SM4 有多少轮？</li>
+<li>SM4 是 Feistel 结构还是 SP 结构？</li>
+<li>SM4 解密时轮密钥如何使用？</li>
+</ul>
+<hr>
+<h2 id="模块-7：分组密码工作模式"><a href="#模块-7：分组密码工作模式" class="headerlink" title="模块 7：分组密码工作模式"></a>模块 7：分组密码工作模式</h2><h3 id="复习目标-6"><a href="#复习目标-6" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握 ECB、CBC、CFB、OFB、CTR 五种模式的流程、作用、优缺点。</p>
+<hr>
+<h2 id="7-1-ECB-模式"><a href="#7-1-ECB-模式" class="headerlink" title="7.1 ECB 模式"></a>7.1 ECB 模式</h2><h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ci = E(Mi, K)</span><br></pre></td></tr></table></figure>
+
+<p>每个明文分组独立加密。</p>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>简单</li>
+<li>可并行</li>
+<li>错误不扩散</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>相同明文块得到相同密文块</li>
+<li>会暴露明文模式</li>
+<li>不适合大量结构化数据</li>
+</ul>
+<h3 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h3><ul>
+<li>加密少量随机数据</li>
+<li>加密密钥等短数据</li>
+</ul>
+<hr>
+<h2 id="7-2-CBC-模式"><a href="#7-2-CBC-模式" class="headerlink" title="7.2 CBC 模式"></a>7.2 CBC 模式</h2><h3 id="流程-1"><a href="#流程-1" class="headerlink" title="流程"></a>流程</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C1 = E(M1 ⊕ IV, K)</span><br><span class="line">Ci = E(Mi ⊕ Ci-1, K)</span><br></pre></td></tr></table></figure>
+
+<h3 id="解密"><a href="#解密" class="headerlink" title="解密"></a>解密</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">M1 = D(C1, K) ⊕ IV</span><br><span class="line">Mi = D(Ci, K) ⊕ Ci-1</span><br></pre></td></tr></table></figure>
+
+<h3 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>隐藏明文模式</li>
+<li>比 ECB 更安全</li>
+</ul>
+<h3 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>加密不能完全并行</li>
+<li>需要 IV</li>
+<li>密文错误会影响当前块和下一块</li>
+</ul>
+<h3 id="适用场景-1"><a href="#适用场景-1" class="headerlink" title="适用场景"></a>适用场景</h3><ul>
+<li>文件加密</li>
+<li>普通数据块加密</li>
+</ul>
+<hr>
+<h2 id="7-3-CFB-模式"><a href="#7-3-CFB-模式" class="headerlink" title="7.3 CFB 模式"></a>7.3 CFB 模式</h2><h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ul>
+<li>将分组密码转化为类似序列密码</li>
+<li>加密分组密码输出后与明文异或</li>
+<li>密文反馈到移位寄存器</li>
+</ul>
+<h3 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>可以处理小于分组长度的数据</li>
+<li>适合流式数据</li>
+</ul>
+<h3 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>错误会传播</li>
+<li>加密过程有反馈依赖</li>
+</ul>
+<hr>
+<h2 id="7-4-OFB-模式"><a href="#7-4-OFB-模式" class="headerlink" title="7.4 OFB 模式"></a>7.4 OFB 模式</h2><h3 id="特点-1"><a href="#特点-1" class="headerlink" title="特点"></a>特点</h3><ul>
+<li>输出反馈模式</li>
+<li>分组密码输出反馈到寄存器</li>
+<li>不反馈密文</li>
+</ul>
+<h3 id="优点-3"><a href="#优点-3" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>无错误传播</li>
+<li>适合语音、图像等数据</li>
+</ul>
+<h3 id="缺点-3"><a href="#缺点-3" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>不容易发现密文被篡改</li>
+<li>初始向量不能重复</li>
+</ul>
+<hr>
+<h2 id="7-5-CTR-模式"><a href="#7-5-CTR-模式" class="headerlink" title="7.5 CTR 模式"></a>7.5 CTR 模式</h2><h3 id="流程-2"><a href="#流程-2" class="headerlink" title="流程"></a>流程</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Oi = E(Ti, K)</span><br><span class="line">Ci = Mi ⊕ Oi</span><br></pre></td></tr></table></figure>
+
+<p>其中 Ti 是计数器。</p>
+<h3 id="优点-4"><a href="#优点-4" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>可以并行</li>
+<li>适合高速加密</li>
+<li>可以处理任意长度数据</li>
+<li>适合短块</li>
+</ul>
+<h3 id="缺点-4"><a href="#缺点-4" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>计数器不能重复</li>
+<li>一旦重复会造成密钥流复用</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>加密核心</th>
+<th>是否需要 IV&#x2F;计数器</th>
+<th>是否可并行加密</th>
+<th>是否需要 Padding</th>
+<th>错误传播</th>
+<th>主要优点</th>
+<th>主要缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ECB</td>
+<td><code>Ci=E(Mi,K)</code></td>
+<td>不需要</td>
+<td>可以</td>
+<td>需要</td>
+<td>不传播</td>
+<td>简单、并行</td>
+<td>暴露明文模式</td>
+</tr>
+<tr>
+<td>CBC</td>
+<td><code>Ci=E(Mi⊕Ci-1,K)</code></td>
+<td>需要 IV</td>
+<td>不可以</td>
+<td>需要</td>
+<td>影响当前和下一块</td>
+<td>隐藏模式</td>
+<td>加密不能并行</td>
+</tr>
+<tr>
+<td>CFB</td>
+<td><code>Ci=Mi⊕E(Ci-1,K)</code></td>
+<td>需要 IV</td>
+<td>不可以</td>
+<td>通常不需要</td>
+<td>会传播一段</td>
+<td>可流式处理</td>
+<td>依赖反馈</td>
+</tr>
+<tr>
+<td>OFB</td>
+<td><code>Ci=Mi⊕Oi</code>，<code>Oi=E(Oi-1,K)</code></td>
+<td>需要 IV</td>
+<td>密钥流可预生成</td>
+<td>不需要</td>
+<td>不传播</td>
+<td>适合实时数据</td>
+<td>不检测篡改</td>
+</tr>
+<tr>
+<td>CTR</td>
+<td><code>Ci=Mi⊕E(Ti,K)</code></td>
+<td>需要计数器</td>
+<td>可以</td>
+<td>不需要</td>
+<td>不传播</td>
+<td>高速并行</td>
+<td>计数器不能重复</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="高频考点-2"><a href="#高频考点-2" class="headerlink" title="高频考点"></a>高频考点</h2><ul>
+<li>至少写出三种工作模式</li>
+<li>说明每种模式的流程</li>
+<li>比较 ECB 和 CBC</li>
+<li>CTR 为什么能并行？</li>
+<li>OFB 为什么无错误传播？</li>
+<li>CFB 和 OFB 有什么区别？</li>
+</ul>
+<h3 id="自查问题-6"><a href="#自查问题-6" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>ECB 为什么不安全？</li>
+<li>CBC 为什么需要 IV？</li>
+<li>CFB 反馈的是密文还是输出？</li>
+<li>OFB 反馈的是什么？</li>
+<li>CTR 为什么不能重复计数器？</li>
+</ul>
+<hr>
+<h2 id="模块-8：短块问题与-Padding"><a href="#模块-8：短块问题与-Padding" class="headerlink" title="模块 8：短块问题与 Padding"></a>模块 8：短块问题与 Padding</h2><h3 id="复习目标-7"><a href="#复习目标-7" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握短块问题定义、padding 作用和常见处理方法。</p>
+<h3 id="短块问题"><a href="#短块问题" class="headerlink" title="短块问题"></a>短块问题</h3><p>分组密码要求每个输入块长度固定。如果明文长度不是分组长度的整数倍，最后剩余的数据块长度小于标准分组长度，这就是短块问题。</p>
+<h3 id="Padding-的作用"><a href="#Padding-的作用" class="headerlink" title="Padding 的作用"></a>Padding 的作用</h3><p>Padding 用于将不足一个分组的数据补齐到完整分组长度，使分组密码能够正常处理。解密后再根据填充规则去掉填充数据，还原原始明文。</p>
+<h3 id="常见处理方法"><a href="#常见处理方法" class="headerlink" title="常见处理方法"></a>常见处理方法</h3><ol>
+<li>填充法 Padding</li>
+<li>CFB 模式</li>
+<li>OFB 模式</li>
+<li>CTR 模式</li>
+<li>X CBC</li>
+<li>密文窃取</li>
+</ol>
+<h3 id="各方法比较"><a href="#各方法比较" class="headerlink" title="各方法比较"></a>各方法比较</h3><h4 id="Padding"><a href="#Padding" class="headerlink" title="Padding"></a>Padding</h4><p>优点：</p>
+<ul>
+<li>简单</li>
+<li>易实现</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>密文长度可能增加</li>
+<li>需要正确去填充</li>
+<li>设计不当可能存在 padding oracle 问题</li>
+</ul>
+<h4 id="CTR-OFB-CFB"><a href="#CTR-OFB-CFB" class="headerlink" title="CTR &#x2F; OFB &#x2F; CFB"></a>CTR &#x2F; OFB &#x2F; CFB</h4><p>优点：</p>
+<ul>
+<li>可处理任意长度数据</li>
+<li>最后一块可直接按实际长度异或</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>初始向量或计数器不能重复</li>
+</ul>
+<h4 id="X-CBC"><a href="#X-CBC" class="headerlink" title="X CBC"></a>X CBC</h4><p>优点：</p>
+<ul>
+<li>可处理任意长度数据</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>需要多个密钥</li>
+<li>控制较复杂</li>
+</ul>
+<h3 id="必背答题模板-5"><a href="#必背答题模板-5" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>短块问题是指明文长度不是分组长度的整数倍，导致最后一个明文块长度不足一个完整分组。由于分组密码只能处理固定长度分组，因此需要特殊处理。常见方法包括填充法、CFB、OFB、CTR、X CBC 和密文窃取。Padding 的作用是将短块补齐到完整分组长度，使其能够被分组密码加密。</p>
+<h3 id="自查问题-7"><a href="#自查问题-7" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>什么是短块问题？</li>
+<li>Padding 的作用是什么？</li>
+<li>CTR 如何处理短块？</li>
+<li>Padding 有什么缺点？</li>
+</ul>
+<hr>
+<h1 id="第三阶段：序列密码与-ZUC"><a href="#第三阶段：序列密码与-ZUC" class="headerlink" title="第三阶段：序列密码与 ZUC"></a>第三阶段：序列密码与 ZUC</h1><h2 id="模块-9：序列密码基础"><a href="#模块-9：序列密码基础" class="headerlink" title="模块 9：序列密码基础"></a>模块 9：序列密码基础</h2><h3 id="复习目标-8"><a href="#复习目标-8" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握序列密码的基本模型、加解密公式和安全性要求。</p>
+<h3 id="需要掌握的知识点-6"><a href="#需要掌握的知识点-6" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><h4 id="序列密码定义"><a href="#序列密码定义" class="headerlink" title="序列密码定义"></a>序列密码定义</h4><p>明文、密文和密钥以位或字符为单位进行加解密。</p>
+<h4 id="基本公式"><a href="#基本公式" class="headerlink" title="基本公式"></a>基本公式</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Ci = mi ⊕ ki</span><br><span class="line">mi = Ci ⊕ ki</span><br></pre></td></tr></table></figure>
+
+<h4 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h4><p>用短的种子密钥通过密钥序列产生器生成长的密钥序列，再与明文异或。</p>
+<h3 id="密钥序列安全性要求"><a href="#密钥序列安全性要求" class="headerlink" title="密钥序列安全性要求"></a>密钥序列安全性要求</h3><ol>
+<li>长周期性</li>
+<li>非线性</li>
+<li>统计上的预期性</li>
+<li>可伸缩性</li>
+<li>不可预测性</li>
+</ol>
+<h3 id="必背答题模板-6"><a href="#必背答题模板-6" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>序列密码是以位或字符为单位进行加解密的密码体制。其加密方式通常是将明文序列与密钥序列逐位异或，得到密文序列。序列密码的安全性主要取决于密钥序列的安全性，一个好的密钥序列应具有长周期性、非线性、良好的统计特性、可伸缩性和不可预测性。</p>
+<h3 id="自查问题-8"><a href="#自查问题-8" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li><p>序列密码和分组密码有什么区别？</p>
+</li>
+<li><p>序列密码的加密公式是什么？</p>
+</li>
+<li><p>为什么密钥序列要有长周期？</p>
+</li>
+<li><p>为什么非线性重要？</p>
+</li>
+<li><p>什么是不可预测性？</p>
+</li>
+<li><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>序列密码</th>
+<th>分组密码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>加密单位</td>
+<td>位、字符、字节</td>
+<td>固定长度分组</td>
+</tr>
+<tr>
+<td>典型公式</td>
+<td><code>ci=mi⊕ki</code></td>
+<td><code>Ci=E(Mi,K)</code></td>
+</tr>
+<tr>
+<td>典型算法</td>
+<td>RC4、ZUC</td>
+<td>DES、AES、SM4</td>
+</tr>
+<tr>
+<td>是否需要填充</td>
+<td>通常不需要</td>
+<td>ECB&#x2F;CBC 通常需要</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>实时通信、流数据</td>
+<td>文件、数据块、协议加密</td>
+</tr>
+<tr>
+<td>核心安全</td>
+<td>密钥序列质量</td>
+<td>分组算法结构和模式</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<hr>
+<h2 id="模块-10：LFSR"><a href="#模块-10：LFSR" class="headerlink" title="模块 10：LFSR"></a>模块 10：LFSR</h2><h3 id="复习目标-9"><a href="#复习目标-9" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握线性反馈移位寄存器的反馈函数、状态转移、周期和 m 序列判断。</p>
+<h3 id="需要掌握的知识点-7"><a href="#需要掌握的知识点-7" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><ul>
+<li>连接多项式</li>
+<li>反馈函数</li>
+<li>状态转移过程</li>
+<li>输出序列</li>
+<li>周期</li>
+<li>m 序列判断</li>
+</ul>
+<h3 id="解题步骤-1"><a href="#解题步骤-1" class="headerlink" title="解题步骤"></a>解题步骤</h3><ol>
+<li>根据连接多项式写出反馈函数；</li>
+<li>画出 LFSR 逻辑框图；</li>
+<li>选定初始状态；</li>
+<li>按移位规则列出状态变迁；</li>
+<li>记录输出序列；</li>
+<li>判断周期；</li>
+<li>判断是否为 m 序列。</li>
+</ol>
+<h3 id="m-序列判断"><a href="#m-序列判断" class="headerlink" title="m 序列判断"></a>m 序列判断</h3><p>n 级 LFSR 的最大周期为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2^n - 1</span><br></pre></td></tr></table></figure>
+
+<p>如果周期达到 <code>2^n - 1</code>，则输出序列为 m 序列。</p>
+<h3 id="典型例子"><a href="#典型例子" class="headerlink" title="典型例子"></a>典型例子</h3><p>连接多项式：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g(x) = x^4 + x + 1</span><br></pre></td></tr></table></figure>
+
+<p>反馈函数：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v = S0 ⊕ S1</span><br></pre></td></tr></table></figure>
+
+<p>若状态按：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">S1 → S0</span><br><span class="line">S2 → S1</span><br><span class="line">S3 → S2</span><br><span class="line">v  → S3</span><br></pre></td></tr></table></figure>
+
+<p>则新状态为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(S1, S2, S3, v)</span><br></pre></td></tr></table></figure>
+
+<h3 id="自查问题-9"><a href="#自查问题-9" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>如何由连接多项式写反馈函数？</li>
+<li>n 级 LFSR 最大周期是多少？</li>
+<li>什么是 m 序列？</li>
+<li>为什么全 0 状态不能进入？</li>
+<li>如何列状态变迁表？</li>
+</ul>
+<hr>
+<h2 id="模块-11：ZUC-祖冲之密码"><a href="#模块-11：ZUC-祖冲之密码" class="headerlink" title="模块 11：ZUC 祖冲之密码"></a>模块 11：ZUC 祖冲之密码</h2><h3 id="复习目标-10"><a href="#复习目标-10" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握 ZUC 的用途、基本结构和三层组成。</p>
+<h3 id="需要掌握的知识点-8"><a href="#需要掌握的知识点-8" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><ul>
+<li>ZUC 是我国设计的序列密码算法</li>
+<li>ZUC 是 4G LTE 国际标准</li>
+<li>ZUC 本质上是密钥序列产生算法</li>
+<li>面向 32 位字</li>
+<li>三层结构：<ol>
+<li>16 级 LFSR</li>
+<li>比特重组 BR</li>
+<li>非线性函数 F</li>
+</ol>
+</li>
+<li>基于 ZUC 的算法：<ul>
+<li>128-EEA3：机密性算法</li>
+<li>128-EIA3：完整性算法</li>
+</ul>
+</li>
+</ul>
+<h3 id="必背答题模板-7"><a href="#必背答题模板-7" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>ZUC 是我国设计的序列密码算法，已成为 4G LTE 国际标准。它本质上是一个密钥序列产生算法，面向 32 位字。ZUC 由三层组成：上层是 16 级线性反馈移位寄存器 LFSR，中层是比特重组 BR，下层是非线性函数 F。LFSR 提供长周期序列，BR 对状态进行重组，F 引入非线性，最终生成密钥序列。</p>
+<h3 id="自查问题-10"><a href="#自查问题-10" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>ZUC 是分组密码还是序列密码？</li>
+<li>ZUC 的三层结构是什么？</li>
+<li>128-EEA3 用于什么？</li>
+<li>128-EIA3 用于什么？</li>
+<li>ZUC 为什么要加入非线性函数 F？</li>
+</ul>
+<hr>
+<h1 id="第四阶段：Hash-与-SM3"><a href="#第四阶段：Hash-与-SM3" class="headerlink" title="第四阶段：Hash 与 SM3"></a>第四阶段：Hash 与 SM3</h1><h2 id="模块-12：Hash-函数基础"><a href="#模块-12：Hash-函数基础" class="headerlink" title="模块 12：Hash 函数基础"></a>模块 12：Hash 函数基础</h2><h3 id="复习目标-11"><a href="#复习目标-11" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握 Hash 函数定义、安全性要求和应用。</p>
+<h3 id="需要掌握的知识点-9"><a href="#需要掌握的知识点-9" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><h4 id="Hash-函数定义"><a href="#Hash-函数定义" class="headerlink" title="Hash 函数定义"></a>Hash 函数定义</h4><p>Hash 函数将任意长输入 M 变换为定长输出 h：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">h = H(M)</span><br></pre></td></tr></table></figure>
+
+<p>Hash 函数是一种压缩变换。</p>
+<h3 id="安全性要求"><a href="#安全性要求" class="headerlink" title="安全性要求"></a>安全性要求</h3><h4 id="1-单向性"><a href="#1-单向性" class="headerlink" title="1. 单向性"></a>1. 单向性</h4><p>给定 h，难以找到 x，使：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">H(x) = h</span><br></pre></td></tr></table></figure>
+
+<p>也称抗原像攻击。</p>
+<h4 id="2-抗弱碰撞性"><a href="#2-抗弱碰撞性" class="headerlink" title="2. 抗弱碰撞性"></a>2. 抗弱碰撞性</h4><p>给定 x，难以找到 y≠x，使：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">H(x) = H(y)</span><br></pre></td></tr></table></figure>
+
+<p>也称抗第二原像攻击。</p>
+<h4 id="3-抗强碰撞性"><a href="#3-抗强碰撞性" class="headerlink" title="3. 抗强碰撞性"></a>3. 抗强碰撞性</h4><p>难以找到任意 x≠y，使：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">H(x) = H(y)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Hash-应用"><a href="#Hash-应用" class="headerlink" title="Hash 应用"></a>Hash 应用</h3><ul>
+<li>消息完整性校验</li>
+<li>数字签名</li>
+<li>消息认证</li>
+<li>口令保护</li>
+<li>文件指纹</li>
+</ul>
+<p>Hash 函数是将任意长度输入映射为固定长度输出的函数，是一种压缩变换。安全 Hash 函数应满足单向性、抗弱碰撞性和抗强碰撞性。单向性保证不能由摘要反推出原文；抗弱碰撞性保证给定一个消息难以找到另一个具有相同摘要的消息；抗强碰撞性保证难以找到任意两个摘要相同的不同消息。</p>
+<h3 id="自查问题-11"><a href="#自查问题-11" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>Hash 函数为什么是压缩函数？</li>
+<li>什么是单向性？</li>
+<li>什么是抗弱碰撞性？</li>
+<li>什么是抗强碰撞性？</li>
+<li>Hash 在数字签名中起什么作用？</li>
+</ul>
+<hr>
+<h2 id="模块-13：SM3"><a href="#模块-13：SM3" class="headerlink" title="模块 13：SM3"></a>模块 13：SM3</h2><h3 id="复习目标-12"><a href="#复习目标-12" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握 SM3 的基本定位和应用场景。</p>
+<h3 id="需要掌握的知识点-10"><a href="#需要掌握的知识点-10" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><ul>
+<li>SM3 是我国商用密码 Hash 算法</li>
+<li>输入任意长度消息</li>
+<li>输出固定长度摘要</li>
+<li>输出长度通常为 256 位</li>
+<li>可用于：<ul>
+<li>数字签名</li>
+<li>消息认证</li>
+<li>完整性校验</li>
+<li>SM2 签名前摘要计算</li>
+</ul>
+</li>
+</ul>
+<h3 id="必背答题模板-8"><a href="#必背答题模板-8" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>SM3 是我国商用密码杂凑算法，用于将任意长度消息压缩为固定长度摘要。SM3 具有 Hash 函数应具备的单向性、抗弱碰撞性和抗强碰撞性，常用于数字签名、消息认证和完整性校验等场景。在 SM2 签名中，SM3 通常用于计算待签名消息摘要。</p>
+<h3 id="自查问题-12"><a href="#自查问题-12" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>SM3 是什么类型的算法？</li>
+<li>SM3 输出摘要有什么作用？</li>
+<li>SM3 和 SM2 有什么关系？</li>
+<li>SM3 能不能用于加密？</li>
+</ul>
+<hr>
+<h1 id="第五阶段：公钥密码"><a href="#第五阶段：公钥密码" class="headerlink" title="第五阶段：公钥密码"></a>第五阶段：公钥密码</h1><h2 id="模块-14：公钥密码基础"><a href="#模块-14：公钥密码基础" class="headerlink" title="模块 14：公钥密码基础"></a>模块 14：公钥密码基础</h2><h3 id="复习目标-13"><a href="#复习目标-13" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握公钥密码思想、单向陷门函数和常见困难问题。</p>
+<h3 id="需要掌握的知识点-11"><a href="#需要掌握的知识点-11" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><h4 id="公钥密码基本思想"><a href="#公钥密码基本思想" class="headerlink" title="公钥密码基本思想"></a>公钥密码基本思想</h4><ul>
+<li>密钥分为公钥和私钥</li>
+<li>公钥可以公开</li>
+<li>私钥必须保密</li>
+<li>公钥和私钥不同</li>
+<li>由公钥不能推出私钥</li>
+</ul>
+<h4 id="单向函数"><a href="#单向函数" class="headerlink" title="单向函数"></a>单向函数</h4><p>正向计算容易，反向计算困难。</p>
+<h4 id="单向陷门函数"><a href="#单向陷门函数" class="headerlink" title="单向陷门函数"></a>单向陷门函数</h4><p>如果掌握陷门信息，反向计算容易；如果不掌握陷门信息，反向计算困难。</p>
+<h3 id="常见数学困难问题"><a href="#常见数学困难问题" class="headerlink" title="常见数学困难问题"></a>常见数学困难问题</h3><ol>
+<li>大整数因子分解问题<ul>
+<li>RSA</li>
+</ul>
+</li>
+<li>有限域离散对数问题<ul>
+<li>ElGamal</li>
+</ul>
+</li>
+<li>椭圆曲线离散对数问题<ul>
+<li>ECC</li>
+<li>SM2</li>
+</ul>
+</li>
+</ol>
+<h3 id="必背答题模板-9"><a href="#必背答题模板-9" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>公钥密码将密钥分为公开密钥和私有密钥。公开密钥可以公开，用于加密或验证签名；私有密钥由用户秘密保存，用于解密或产生签名。公钥密码的安全性依赖于单向陷门函数，即正向计算容易，反向计算在没有陷门时困难，而掌握私钥的合法用户可以高效完成反向运算。</p>
+<h3 id="自查问题-13"><a href="#自查问题-13" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>什么是单向函数？</li>
+<li>什么是单向陷门函数？</li>
+<li>RSA 基于什么困难问题？</li>
+<li>ElGamal 基于什么困难问题？</li>
+<li>SM2 基于什么困难问题？</li>
+</ul>
+<hr>
+<h2 id="模块-15：RSA"><a href="#模块-15：RSA" class="headerlink" title="模块 15：RSA"></a>模块 15：RSA</h2><h3 id="复习目标-14"><a href="#复习目标-14" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握 RSA 参数生成、加密、解密和签名计算。</p>
+<h3 id="需要掌握的知识点-12"><a href="#需要掌握的知识点-12" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><h4 id="RSA-参数生成"><a href="#RSA-参数生成" class="headerlink" title="RSA 参数生成"></a>RSA 参数生成</h4><ol>
+<li>选择两个大素数 p、q；</li>
+<li>计算：</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">n = pq</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>计算：</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">φ(n) = (p-1)(q-1)</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>选择 e，满足：</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcd(e, φ(n)) = 1</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>求 d，使：</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ed ≡ 1 mod φ(n)</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>公钥：</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(e, n)</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>私钥：</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(d, n)</span><br></pre></td></tr></table></figure>
+
+<h3 id="RSA-加密"><a href="#RSA-加密" class="headerlink" title="RSA 加密"></a>RSA 加密</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C = M^e mod n</span><br></pre></td></tr></table></figure>
+
+<h3 id="RSA-解密"><a href="#RSA-解密" class="headerlink" title="RSA 解密"></a>RSA 解密</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">M = C^d mod n</span><br></pre></td></tr></table></figure>
+
+<h3 id="RSA-签名"><a href="#RSA-签名" class="headerlink" title="RSA 签名"></a>RSA 签名</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S = H(M)^d mod n</span><br></pre></td></tr></table></figure>
+
+<h3 id="RSA-验签"><a href="#RSA-验签" class="headerlink" title="RSA 验签"></a>RSA 验签</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">H(M) ?= S^e mod n</span><br></pre></td></tr></table></figure>
+
+<h3 id="高频考点-3"><a href="#高频考点-3" class="headerlink" title="高频考点"></a>高频考点</h3><ul>
+<li>已知 n、e、M，求密文 C</li>
+<li>已知 p、q、e，求 d</li>
+<li>已知 e、n、C，求明文 M</li>
+<li>RSA 签名为什么要先 Hash</li>
+<li>RSA 的安全性基于什么困难问题</li>
+</ul>
+<h3 id="必背答题模板-10"><a href="#必背答题模板-10" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>RSA 的安全性基于大整数因子分解困难问题。首先选取两个大素数 p 和 q，计算 n&#x3D;pq 和 φ(n)&#x3D;(p-1)(q-1)，选择与 φ(n) 互素的 e 作为公钥指数，再求 d 满足 ed≡1 mod φ(n)。公钥为 (e,n)，私钥为 (d,n)。加密公式为 C&#x3D;M^e mod n，解密公式为 M&#x3D;C^d mod n。</p>
+<h3 id="自查问题-14"><a href="#自查问题-14" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>n 如何计算？</li>
+<li>φ(n) 如何计算？</li>
+<li>e 需要满足什么条件？</li>
+<li>d 如何计算？</li>
+<li>RSA 加密公式是什么？</li>
+<li>RSA 解密公式是什么？</li>
+<li>RSA 签名为什么要先 Hash？</li>
+</ul>
+<hr>
+<h2 id="模块-16：ElGamal"><a href="#模块-16：ElGamal" class="headerlink" title="模块 16：ElGamal"></a>模块 16：ElGamal</h2><h3 id="复习目标-15"><a href="#复习目标-15" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握 ElGamal 密钥生成、加密和解密流程。</p>
+<h3 id="需要掌握的知识点-13"><a href="#需要掌握的知识点-13" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><h4 id="参数选择"><a href="#参数选择" class="headerlink" title="参数选择"></a>参数选择</h4><ul>
+<li>选大素数 p</li>
+<li>选本原元 α 或 g</li>
+<li>选私钥 x</li>
+</ul>
+<h4 id="公钥计算"><a href="#公钥计算" class="headerlink" title="公钥计算"></a>公钥计算</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = g^x mod p</span><br></pre></td></tr></table></figure>
+
+<h4 id="公钥"><a href="#公钥" class="headerlink" title="公钥"></a>公钥</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(p, g, y)</span><br></pre></td></tr></table></figure>
+
+<h4 id="私钥"><a href="#私钥" class="headerlink" title="私钥"></a>私钥</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x</span><br></pre></td></tr></table></figure>
+
+<h3 id="加密流程"><a href="#加密流程" class="headerlink" title="加密流程"></a>加密流程</h3><p>随机选择 k：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">c1 = g^k mod p</span><br><span class="line">c2 = m · y^k mod p</span><br></pre></td></tr></table></figure>
+
+<p>密文：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(c1, c2)</span><br></pre></td></tr></table></figure>
+
+<h3 id="解密流程"><a href="#解密流程" class="headerlink" title="解密流程"></a>解密流程</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s = c1^x mod p</span><br><span class="line">m = c2 · s^-1 mod p</span><br></pre></td></tr></table></figure>
+
+<h3 id="高频考点-4"><a href="#高频考点-4" class="headerlink" title="高频考点"></a>高频考点</h3><ul>
+<li>公钥 y 如何计算？</li>
+<li>密文为什么是两个数？</li>
+<li>随机数 k 为什么不能重复？</li>
+<li>ElGamal 基于什么困难问题？</li>
+</ul>
+<h3 id="必背答题模板-11"><a href="#必背答题模板-11" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>ElGamal 密码基于有限域离散对数问题。系统选择大素数 p 和本原元 g，用户选择私钥 x，并计算公钥 y&#x3D;g^x mod p。加密时随机选择 k，计算 c1&#x3D;g^k mod p 和 c2&#x3D;m·y^k mod p，密文为 (c1,c2)。解密时计算共享密钥 s&#x3D;c1^x mod p，再用 s 的逆元恢复明文。</p>
+<h3 id="自查问题-15"><a href="#自查问题-15" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>ElGamal 的私钥是什么？</li>
+<li>ElGamal 的公钥是什么？</li>
+<li>ElGamal 加密时为什么要选随机数 k？</li>
+<li>ElGamal 密文为什么是二元组？</li>
+<li>ElGamal 安全性基于什么？</li>
+</ul>
+<hr>
+<h2 id="模块-17：椭圆曲线密码-ECC-SM2-加密"><a href="#模块-17：椭圆曲线密码-ECC-SM2-加密" class="headerlink" title="模块 17：椭圆曲线密码 ECC &#x2F; SM2 加密"></a>模块 17：椭圆曲线密码 ECC &#x2F; SM2 加密</h2><h3 id="复习目标-16"><a href="#复习目标-16" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握椭圆曲线密码的基本概念、密钥生成和求点方法。</p>
+<h3 id="需要掌握的知识点-14"><a href="#需要掌握的知识点-14" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><h4 id="素域-GF-p-上的椭圆曲线"><a href="#素域-GF-p-上的椭圆曲线" class="headerlink" title="素域 GF(p) 上的椭圆曲线"></a>素域 GF(p) 上的椭圆曲线</h4><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y^2 = x^3 + ax + b mod p</span><br></pre></td></tr></table></figure>
+
+<p>其中需要满足：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4a^3 + 27b^2 ≠ 0 mod p</span><br></pre></td></tr></table></figure>
+
+<h3 id="椭圆曲线密码参数"><a href="#椭圆曲线密码参数" class="headerlink" title="椭圆曲线密码参数"></a>椭圆曲线密码参数</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">T = &lt;p, a, b, G, n, h&gt;</span><br></pre></td></tr></table></figure>
+
+<p>含义：</p>
+<ul>
+<li>p：有限域</li>
+<li>a, b：曲线参数</li>
+<li>G：基点</li>
+<li>n：基点 G 的阶</li>
+<li>h：余因子</li>
+</ul>
+<h3 id="密钥生成"><a href="#密钥生成" class="headerlink" title="密钥生成"></a>密钥生成</h3><p>私钥：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d</span><br></pre></td></tr></table></figure>
+
+<p>公钥：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Q = dG</span><br></pre></td></tr></table></figure>
+
+<h3 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h3><p>基于椭圆曲线离散对数问题：</p>
+<p>已知 d 和 G，计算 Q&#x3D;dG 容易；<br>已知 Q 和 G，求 d 困难。</p>
+<hr>
+<h2 id="椭圆曲线求点方法"><a href="#椭圆曲线求点方法" class="headerlink" title="椭圆曲线求点方法"></a>椭圆曲线求点方法</h2><p>给定曲线：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y^2 = x^3 + ax + b mod p</span><br></pre></td></tr></table></figure>
+
+<p>步骤：</p>
+<ol>
+<li>枚举 x&#x3D;0,1,…,p-1；</li>
+<li>计算右边：</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f(x)=x^3+ax+b mod p</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>枚举 y&#x3D;0,1,…,p-1；</li>
+<li>找到满足：</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y^2 ≡ f(x) mod p</span><br></pre></td></tr></table></figure>
+
+<p>的 y；<br>\5. 写出所有点；<br>\6. 最后加上无穷远点 O。</p>
+<h3 id="必背答题模板-12"><a href="#必背答题模板-12" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>椭圆曲线公钥密码建立在椭圆曲线离散对数问题之上。用户选择随机数 d 作为私钥，计算 Q&#x3D;dG 作为公钥。给定 d 和 G，计算 Q 容易；但给定 Q 和 G，求 d 在计算上困难。SM2 是我国商用椭圆曲线公钥密码标准，具有密钥短、效率高、安全性强等特点。</p>
+<h3 id="自查问题-16"><a href="#自查问题-16" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>ECC 的基本曲线方程是什么？</li>
+<li>私钥 d 和公钥 Q 的关系是什么？</li>
+<li>什么是椭圆曲线离散对数问题？</li>
+<li>如何在 GF(p) 上求椭圆曲线点？</li>
+<li>为什么最后要加无穷远点 O？</li>
+</ul>
+<hr>
+<h1 id="第六阶段：数字签名与认证"><a href="#第六阶段：数字签名与认证" class="headerlink" title="第六阶段：数字签名与认证"></a>第六阶段：数字签名与认证</h1><h2 id="模块-18：数字签名基础"><a href="#模块-18：数字签名基础" class="headerlink" title="模块 18：数字签名基础"></a>模块 18：数字签名基础</h2><h3 id="复习目标-17"><a href="#复习目标-17" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握数字签名的概念、作用、模型和 RSA 签名安全问题。</p>
+<h3 id="需要掌握的知识点-15"><a href="#需要掌握的知识点-15" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><h4 id="数字签名作用"><a href="#数字签名作用" class="headerlink" title="数字签名作用"></a>数字签名作用</h4><ol>
+<li>身份认证</li>
+<li>数据完整性</li>
+<li>不可否认性</li>
+</ol>
+<h4 id="数字签名应满足"><a href="#数字签名应满足" class="headerlink" title="数字签名应满足"></a>数字签名应满足</h4><ol>
+<li>签名者不能抵赖；</li>
+<li>其他人不能伪造签名；</li>
+<li>发生争议时第三方可以验证。</li>
+</ol>
+<h3 id="数字签名模型"><a href="#数字签名模型" class="headerlink" title="数字签名模型"></a>数字签名模型</h3><p>签名：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S = SIG(M, Kd)</span><br></pre></td></tr></table></figure>
+
+<p>验证：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">VER(M, S, Ke)</span><br></pre></td></tr></table></figure>
+
+<h3 id="RSA-签名-1"><a href="#RSA-签名-1" class="headerlink" title="RSA 签名"></a>RSA 签名</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S = H(M)^d mod n</span><br></pre></td></tr></table></figure>
+
+<p>验证：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">H(M) ?= S^e mod n</span><br></pre></td></tr></table></figure>
+
+<h3 id="为什么-RSA-签名要先-Hash？"><a href="#为什么-RSA-签名要先-Hash？" class="headerlink" title="为什么 RSA 签名要先 Hash？"></a>为什么 RSA 签名要先 Hash？</h3><p>如果直接对消息 M 签名，RSA 的乘法同态性可能导致伪造签名。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">S1 = M1^d mod n</span><br><span class="line">S2 = M2^d mod n</span><br></pre></td></tr></table></figure>
+
+<p>则攻击者可以构造：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S3 = S1S2 mod n</span><br></pre></td></tr></table></figure>
+
+<p>它对应：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">M3 = M1M2 mod n</span><br></pre></td></tr></table></figure>
+
+<p>因此可能伪造新消息签名。</p>
+<h3 id="必背答题模板-13"><a href="#必背答题模板-13" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>数字签名是用签名者私钥对消息或消息摘要产生的认证信息，验证者可以用签名者公钥验证签名的真实性。数字签名能够提供身份认证、消息完整性和不可否认性。实际应用中通常不直接对消息签名，而是先计算消息 Hash 值，再对摘要签名，这样可以提高效率并防止利用 RSA 乘法同态性进行伪造攻击。</p>
+<h3 id="自查问题-17"><a href="#自查问题-17" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>数字签名有什么作用？</li>
+<li>数字签名和加密有什么区别？</li>
+<li>签名用公钥还是私钥？</li>
+<li>验签用公钥还是私钥？</li>
+<li>为什么签名前要 Hash？</li>
+</ul>
+<hr>
+<h2 id="模块-19：认证与数字签名区别"><a href="#模块-19：认证与数字签名区别" class="headerlink" title="模块 19：认证与数字签名区别"></a>模块 19：认证与数字签名区别</h2><h3 id="复习目标-18"><a href="#复习目标-18" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握认证的含义，以及认证和数字签名的区别。</p>
+<h3 id="认证定义"><a href="#认证定义" class="headerlink" title="认证定义"></a>认证定义</h3><p>认证是确认通信实体身份或消息来源真实性的过程。</p>
+<h3 id="认证类型"><a href="#认证类型" class="headerlink" title="认证类型"></a>认证类型</h3><ol>
+<li>身份认证</li>
+<li>消息认证</li>
+</ol>
+<h3 id="认证与数字签名区别"><a href="#认证与数字签名区别" class="headerlink" title="认证与数字签名区别"></a>认证与数字签名区别</h3><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>认证</th>
+<th>数字签名</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主要作用</td>
+<td>确认身份或消息来源</td>
+<td>身份认证、完整性、防抵赖</td>
+</tr>
+<tr>
+<td>常用技术</td>
+<td>口令、MAC、挑战响应</td>
+<td>公钥密码</td>
+</tr>
+<tr>
+<td>是否防抵赖</td>
+<td>通常不能</td>
+<td>可以</td>
+</tr>
+<tr>
+<td>是否第三方可验证</td>
+<td>不一定</td>
+<td>可以</td>
+</tr>
+<tr>
+<td>密钥特点</td>
+<td>常用共享密钥</td>
+<td>私钥签名、公钥验证</td>
+</tr>
+</tbody></table>
+<h3 id="必背答题模板-14"><a href="#必背答题模板-14" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>认证是确认实体身份或消息来源真实性的过程，主要用于证明通信对象或消息是真实的。数字签名是一种基于公钥密码的认证技术，不仅能够证明消息来源和完整性，还能提供不可否认性。普通消息认证码通常基于共享密钥，双方都能产生认证码，因此不能向第三方证明责任；而数字签名由私钥产生、公钥验证，因此可以防止签名者抵赖。</p>
+<h3 id="自查问题-18"><a href="#自查问题-18" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>什么是认证？</li>
+<li>身份认证和消息认证有什么区别？</li>
+<li>数字签名为什么能防抵赖？</li>
+<li>MAC 为什么不能防抵赖？</li>
+</ul>
+<hr>
+<h2 id="模块-20：SM2-数字签名"><a href="#模块-20：SM2-数字签名" class="headerlink" title="模块 20：SM2 数字签名"></a>模块 20：SM2 数字签名</h2><h3 id="复习目标-19"><a href="#复习目标-19" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握 SM2 签名的基本思想、密钥关系和安全基础。</p>
+<h3 id="需要掌握的知识点-16"><a href="#需要掌握的知识点-16" class="headerlink" title="需要掌握的知识点"></a>需要掌握的知识点</h3><ul>
+<li>SM2 是我国商用公钥密码标准</li>
+<li>SM2 签名基于椭圆曲线密码</li>
+<li>私钥：</li>
+</ul>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>公钥：</li>
+</ul>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Q = dG</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>签名时使用：<ul>
+<li>私钥 d</li>
+<li>消息摘要</li>
+<li>随机数 k</li>
+</ul>
+</li>
+<li>验证时使用：<ul>
+<li>公钥 Q</li>
+<li>消息摘要</li>
+<li>签名值</li>
+</ul>
+</li>
+<li>安全性基于椭圆曲线离散对数问题</li>
+</ul>
+<h3 id="必背答题模板-15"><a href="#必背答题模板-15" class="headerlink" title="必背答题模板"></a>必背答题模板</h3><p>SM2 数字签名算法是我国商用公钥密码标准中的椭圆曲线签名算法。用户选择随机数 d 作为私钥，计算 Q&#x3D;dG 作为公钥。签名时利用私钥、消息摘要和随机数生成签名值；验证时利用公钥和消息摘要检验签名是否有效。SM2 签名的安全性依赖于椭圆曲线离散对数问题。</p>
+<h3 id="自查问题-19"><a href="#自查问题-19" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>SM2 签名属于哪类算法？</li>
+<li>SM2 私钥和公钥关系是什么？</li>
+<li>SM2 签名为什么需要随机数？</li>
+<li>SM2 安全性基于什么困难问题？</li>
+</ul>
+<hr>
+<h1 id="第七阶段：密码协议与综合设计题"><a href="#第七阶段：密码协议与综合设计题" class="headerlink" title="第七阶段：密码协议与综合设计题"></a>第七阶段：密码协议与综合设计题</h1><h2 id="模块-21：密码协议基础"><a href="#模块-21：密码协议基础" class="headerlink" title="模块 21：密码协议基础"></a>模块 21：密码协议基础</h2><h3 id="复习目标-20"><a href="#复习目标-20" class="headerlink" title="复习目标"></a>复习目标</h3><p>掌握协议定义、特点和安全协议设计要求。</p>
+<h3 id="协议定义"><a href="#协议定义" class="headerlink" title="协议定义"></a>协议定义</h3><p>协议是两个或两个以上参与者为了完成某一特定任务而采取的一系列执行步骤。</p>
+<h3 id="协议特点"><a href="#协议特点" class="headerlink" title="协议特点"></a>协议特点</h3><ol>
+<li>每一方都必须了解协议；</li>
+<li>每一方都必须同意并遵循协议；</li>
+<li>每一步必须清楚、明确、无歧义；</li>
+<li>对每种可能情况都应规定动作；</li>
+<li>协议步骤必须有序执行。</li>
+</ol>
+<h3 id="密码协议常见安全目标"><a href="#密码协议常见安全目标" class="headerlink" title="密码协议常见安全目标"></a>密码协议常见安全目标</h3><ol>
+<li>保密性</li>
+<li>完整性</li>
+<li>身份认证</li>
+<li>不可否认性</li>
+<li>防重放</li>
+<li>密钥协商</li>
+<li>访问控制</li>
+<li>审计追踪</li>
+</ol>
+<h3 id="自查问题-20"><a href="#自查问题-20" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>什么是协议？</li>
+<li>协议和算法有什么区别？</li>
+<li>安全协议需要满足哪些目标？</li>
+<li>为什么协议步骤不能随意改变？</li>
+</ul>
+<hr>
+<h2 id="模块-22：综合设计题模板"><a href="#模块-22：综合设计题模板" class="headerlink" title="模块 22：综合设计题模板"></a>模块 22：综合设计题模板</h2><h3 id="复习目标-21"><a href="#复习目标-21" class="headerlink" title="复习目标"></a>复习目标</h3><p>能够完成电子支付、远程登录、文件传输、信息系统安全设计类大题。</p>
+<hr>
+<h2 id="综合设计题固定结构"><a href="#综合设计题固定结构" class="headerlink" title="综合设计题固定结构"></a>综合设计题固定结构</h2><h3 id="1-应用场景"><a href="#1-应用场景" class="headerlink" title="1. 应用场景"></a>1. 应用场景</h3><p>说明系统中有哪些参与方。</p>
+<p>例如电子支付系统：</p>
+<ul>
+<li>用户</li>
+<li>商户</li>
+<li>支付平台</li>
+<li>银行</li>
+<li>认证中心 CA</li>
+</ul>
+<h3 id="2-安全威胁"><a href="#2-安全威胁" class="headerlink" title="2. 安全威胁"></a>2. 安全威胁</h3><p>至少写 4 到 6 个：</p>
+<ul>
+<li>身份冒充</li>
+<li>数据泄露</li>
+<li>数据篡改</li>
+<li>重放攻击</li>
+<li>交易抵赖</li>
+<li>中间人攻击</li>
+<li>密钥泄露</li>
+<li>终端木马</li>
+<li>内部人员违规</li>
+</ul>
+<h3 id="3-安全目标"><a href="#3-安全目标" class="headerlink" title="3. 安全目标"></a>3. 安全目标</h3><p>对应写：</p>
+<ul>
+<li>保密性</li>
+<li>完整性</li>
+<li>身份认证</li>
+<li>不可否认性</li>
+<li>防重放</li>
+<li>密钥安全</li>
+<li>可审计性</li>
+</ul>
+<h3 id="4-密码技术选择"><a href="#4-密码技术选择" class="headerlink" title="4. 密码技术选择"></a>4. 密码技术选择</h3><table>
+<thead>
+<tr>
+<th>安全目标</th>
+<th>可用技术</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>保密性</td>
+<td>AES、SM4</td>
+</tr>
+<tr>
+<td>完整性</td>
+<td>Hash、SM3、HMAC、MAC</td>
+</tr>
+<tr>
+<td>身份认证</td>
+<td>数字证书、挑战响应、口令、双因素认证</td>
+</tr>
+<tr>
+<td>不可否认性</td>
+<td>RSA 签名、SM2 签名</td>
+</tr>
+<tr>
+<td>防重放</td>
+<td>随机数、时间戳、序列号</td>
+</tr>
+<tr>
+<td>密钥协商</td>
+<td>RSA、SM2、ECDH</td>
+</tr>
+<tr>
+<td>安全传输</td>
+<td>TLS、HTTPS</td>
+</tr>
+<tr>
+<td>审计</td>
+<td>日志、签名凭证、时间戳</td>
+</tr>
+</tbody></table>
+<h3 id="5-协议流程"><a href="#5-协议流程" class="headerlink" title="5. 协议流程"></a>5. 协议流程</h3><p>以电子支付为例：</p>
+<ol>
+<li>用户登录系统，服务器对用户进行身份认证；</li>
+<li>用户生成订单信息，包括订单号、金额、商户号、时间戳和随机数；</li>
+<li>用户对订单摘要进行数字签名；</li>
+<li>客户端与支付平台协商会话密钥；</li>
+<li>订单数据用 SM4 或 AES 加密传输；</li>
+<li>支付平台验证用户签名、时间戳和订单号；</li>
+<li>支付平台完成扣款；</li>
+<li>支付平台对支付结果签名；</li>
+<li>商户验证支付平台签名后确认收款；</li>
+<li>系统保存交易日志、签名和时间戳，便于审计和仲裁。</li>
+</ol>
+<h3 id="6-局限性"><a href="#6-局限性" class="headerlink" title="6. 局限性"></a>6. 局限性</h3><p>密码技术不能完全解决：</p>
+<ul>
+<li>用户终端中毒</li>
+<li>社会工程学诈骗</li>
+<li>用户误操作</li>
+<li>内部人员违规</li>
+<li>业务逻辑漏洞</li>
+<li>服务器被入侵</li>
+</ul>
+<p>因此还需要：</p>
+<ul>
+<li>风控系统</li>
+<li>权限管理</li>
+<li>日志审计</li>
+<li>设备绑定</li>
+<li>多因素认证</li>
+<li>人工审核</li>
+</ul>
+<h3 id="综合设计题答题模板"><a href="#综合设计题答题模板" class="headerlink" title="综合设计题答题模板"></a>综合设计题答题模板</h3><p>针对该系统，首先需要解决身份认证、数据保密、完整性、防抵赖和防重放等安全问题。可以采用数字证书或挑战响应完成身份认证，使用 SM4 或 AES 对业务数据进行加密，使用 SM3 或 HMAC 保证数据完整性，使用 SM2 或 RSA 数字签名实现不可否认性，并通过时间戳、随机数和序列号防止重放攻击。系统还应保存交易日志和签名凭证用于审计。密码技术虽然可以解决通信安全和数据真实性问题，但不能完全解决终端木马、社会工程学、内部人员违规等问题，因此还需要配合权限控制、风控系统和日志审计等措施。</p>
+<h3 id="自查问题-21"><a href="#自查问题-21" class="headerlink" title="自查问题"></a>自查问题</h3><ul>
+<li>综合设计题第一步写什么？</li>
+<li>电子支付有哪些安全威胁？</li>
+<li>什么技术保证保密性？</li>
+<li>什么技术保证完整性？</li>
+<li>什么技术保证不可否认性？</li>
+<li>如何防止重放攻击？</li>
+<li>密码技术解决不了哪些问题？</li>
+</ul>
+<hr>
+<h1 id="第八阶段：考前专项训练"><a href="#第八阶段：考前专项训练" class="headerlink" title="第八阶段：考前专项训练"></a>第八阶段：考前专项训练</h1><h2 id="训练-1：计算题"><a href="#训练-1：计算题" class="headerlink" title="训练 1：计算题"></a>训练 1：计算题</h2><h3 id="必练题型"><a href="#必练题型" class="headerlink" title="必练题型"></a>必练题型</h3><ul>
+<li>加法密码加密</li>
+<li>DES S 盒查表</li>
+<li>AES 第一轮字节计算</li>
+<li>RSA 加密</li>
+<li>RSA 求私钥 d</li>
+<li>LFSR 状态转移</li>
+<li>LFSR 判断 m 序列</li>
+<li>GF(p) 上椭圆曲线求点</li>
+</ul>
+<hr>
+<h2 id="训练-2：简答题"><a href="#训练-2：简答题" class="headerlink" title="训练 2：简答题"></a>训练 2：简答题</h2><h3 id="必背问题"><a href="#必背问题" class="headerlink" title="必背问题"></a>必背问题</h3><ul>
+<li>加密解密基本过程及密钥作用</li>
+<li>对称密码与非对称密码区别</li>
+<li>DES 的基本结构</li>
+<li>AES 的基本结构</li>
+<li>SM4 的基本结构</li>
+<li>分组密码工作模式</li>
+<li>短块问题和 padding</li>
+<li>序列密码安全性要求</li>
+<li>Hash 函数安全性</li>
+<li>RSA 签名为什么要先 Hash</li>
+<li>认证与数字签名区别</li>
+<li>公钥密码基本思想</li>
+</ul>
+<hr>
+<h2 id="训练-3：综合设计题"><a href="#训练-3：综合设计题" class="headerlink" title="训练 3：综合设计题"></a>训练 3：综合设计题</h2><h3 id="必练场景"><a href="#必练场景" class="headerlink" title="必练场景"></a>必练场景</h3><ul>
+<li>电子支付系统</li>
+<li>网上银行系统</li>
+<li>文件安全传输系统</li>
+<li>用户登录认证系统</li>
+<li>远程办公通信系统</li>
+</ul>
+<h3 id="每道设计题都按以下结构回答"><a href="#每道设计题都按以下结构回答" class="headerlink" title="每道设计题都按以下结构回答"></a>每道设计题都按以下结构回答</h3><ol>
+<li>应用场景；</li>
+<li>安全威胁；</li>
+<li>安全目标；</li>
+<li>密码技术；</li>
+<li>协议流程；</li>
+<li>局限性和补充措施。</li>
+</ol>
+<hr>
+<h1 id="第九阶段：七天复习安排"><a href="#第九阶段：七天复习安排" class="headerlink" title="第九阶段：七天复习安排"></a>第九阶段：七天复习安排</h1><h2 id="第-1-天：基础概念-古典密码"><a href="#第-1-天：基础概念-古典密码" class="headerlink" title="第 1 天：基础概念 + 古典密码"></a>第 1 天：基础概念 + 古典密码</h2><h3 id="任务"><a href="#任务" class="headerlink" title="任务"></a>任务</h3><ul>
+<li>复习密码体制五元组</li>
+<li>复习对称与非对称密码</li>
+<li>练习加法密码</li>
+<li>整理基础概念简答模板</li>
+</ul>
+<h3 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h3><ul>
+<li>写出 3 道基础简答题答案</li>
+<li>做 2 道加法密码计算题</li>
+</ul>
+<hr>
+<h2 id="第-2-天：DES-AES"><a href="#第-2-天：DES-AES" class="headerlink" title="第 2 天：DES + AES"></a>第 2 天：DES + AES</h2><h3 id="任务-1"><a href="#任务-1" class="headerlink" title="任务"></a>任务</h3><ul>
+<li>复习 DES 整体流程</li>
+<li>练习 DES S 盒查表</li>
+<li>复习 AES 四个基本变换</li>
+<li>理解 AES 第一轮计算流程</li>
+</ul>
+<h3 id="输出-1"><a href="#输出-1" class="headerlink" title="输出"></a>输出</h3><ul>
+<li>写出 DES 结构简答</li>
+<li>写出 AES 结构简答</li>
+<li>做 3 道 S 盒查表题</li>
+</ul>
+<hr>
+<h2 id="第-3-天：SM4-工作模式-短块"><a href="#第-3-天：SM4-工作模式-短块" class="headerlink" title="第 3 天：SM4 + 工作模式 + 短块"></a>第 3 天：SM4 + 工作模式 + 短块</h2><h3 id="任务-2"><a href="#任务-2" class="headerlink" title="任务"></a>任务</h3><ul>
+<li>复习 SM4 基本结构</li>
+<li>背 ECB、CBC、CFB、OFB、CTR</li>
+<li>复习短块问题</li>
+<li>复习 padding 作用</li>
+</ul>
+<h3 id="输出-2"><a href="#输出-2" class="headerlink" title="输出"></a>输出</h3><ul>
+<li>写出三种分组密码工作模式</li>
+<li>写出短块问题简答</li>
+<li>对比 ECB 和 CBC</li>
+</ul>
+<hr>
+<h2 id="第-4-天：序列密码-LFSR-ZUC"><a href="#第-4-天：序列密码-LFSR-ZUC" class="headerlink" title="第 4 天：序列密码 + LFSR + ZUC"></a>第 4 天：序列密码 + LFSR + ZUC</h2><h3 id="任务-3"><a href="#任务-3" class="headerlink" title="任务"></a>任务</h3><ul>
+<li>复习序列密码模型</li>
+<li>复习随机序列安全性</li>
+<li>练习 LFSR 状态转移</li>
+<li>复习 ZUC 三层结构</li>
+</ul>
+<h3 id="输出-3"><a href="#输出-3" class="headerlink" title="输出"></a>输出</h3><ul>
+<li>做 1 道完整 LFSR 题</li>
+<li>写出 ZUC 简答模板</li>
+<li>写出 m 序列判断方法</li>
+</ul>
+<hr>
+<h2 id="第-5-天：Hash-RSA-ElGamal"><a href="#第-5-天：Hash-RSA-ElGamal" class="headerlink" title="第 5 天：Hash + RSA + ElGamal"></a>第 5 天：Hash + RSA + ElGamal</h2><h3 id="任务-4"><a href="#任务-4" class="headerlink" title="任务"></a>任务</h3><ul>
+<li>复习 Hash 三个安全性</li>
+<li>练习 RSA 加密、解密、求 d</li>
+<li>复习 RSA 签名为什么要 Hash</li>
+<li>复习 ElGamal 流程</li>
+</ul>
+<h3 id="输出-4"><a href="#输出-4" class="headerlink" title="输出"></a>输出</h3><ul>
+<li>做 3 道 RSA 计算题</li>
+<li>写出 Hash 简答模板</li>
+<li>写出 ElGamal 加密流程</li>
+</ul>
+<hr>
+<h2 id="第-6-天：ECC-SM2-数字签名-认证"><a href="#第-6-天：ECC-SM2-数字签名-认证" class="headerlink" title="第 6 天：ECC &#x2F; SM2 + 数字签名 + 认证"></a>第 6 天：ECC &#x2F; SM2 + 数字签名 + 认证</h2><h3 id="任务-5"><a href="#任务-5" class="headerlink" title="任务"></a>任务</h3><ul>
+<li>复习椭圆曲线基本方程</li>
+<li>练习 GF(p) 求点</li>
+<li>复习 SM2 加密和签名</li>
+<li>复习认证与数字签名区别</li>
+</ul>
+<h3 id="输出-5"><a href="#输出-5" class="headerlink" title="输出"></a>输出</h3><ul>
+<li>做 1 道椭圆曲线求点题</li>
+<li>写出数字签名简答模板</li>
+<li>写出认证与签名区别</li>
+</ul>
+<hr>
+<h2 id="第-7-天：综合设计题-全卷模拟"><a href="#第-7-天：综合设计题-全卷模拟" class="headerlink" title="第 7 天：综合设计题 + 全卷模拟"></a>第 7 天：综合设计题 + 全卷模拟</h2><h3 id="任务-6"><a href="#任务-6" class="headerlink" title="任务"></a>任务</h3><ul>
+<li>背综合设计题模板</li>
+<li>练习电子支付系统设计</li>
+<li>复习所有高频简答</li>
+<li>模拟一套试卷</li>
+</ul>
+<h3 id="输出-6"><a href="#输出-6" class="headerlink" title="输出"></a>输出</h3><ul>
+<li>完成 1 道综合设计题</li>
+<li>完成 1 套计算题训练</li>
+<li>整理最后错题清单</li>
+</ul>
+<hr>
+<h1 id="第十阶段：考前速记清单"><a href="#第十阶段：考前速记清单" class="headerlink" title="第十阶段：考前速记清单"></a>第十阶段：考前速记清单</h1><h2 id="必背公式"><a href="#必背公式" class="headerlink" title="必背公式"></a>必背公式</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">C = E(M, Ke)</span><br><span class="line">M = D(C, Kd)</span><br><span class="line">C = (M + k) mod 26</span><br><span class="line">M = (C - k) mod 26</span><br><span class="line">DES:</span><br><span class="line">Li = Ri-1</span><br><span class="line">Ri = Li-1 ⊕ f(Ri-1, Ki)</span><br><span class="line">RSA:</span><br><span class="line">n = pq</span><br><span class="line">φ(n) = (p-1)(q-1)</span><br><span class="line">ed ≡ 1 mod φ(n)</span><br><span class="line">C = M^e mod n</span><br><span class="line">M = C^d mod n</span><br><span class="line">Hash:</span><br><span class="line">h = H(M)</span><br><span class="line">ECC:</span><br><span class="line">Q = dG</span><br><span class="line">CBC:</span><br><span class="line">C1 = E(M1 ⊕ IV, K)</span><br><span class="line">Ci = E(Mi ⊕ Ci-1, K)</span><br><span class="line">CTR:</span><br><span class="line">Oi = E(Ti, K)</span><br><span class="line">Ci = Mi ⊕ Oi</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="必背关键词"><a href="#必背关键词" class="headerlink" title="必背关键词"></a>必背关键词</h2><ul>
+<li>明文</li>
+<li>密文</li>
+<li>密钥</li>
+<li>对称密码</li>
+<li>非对称密码</li>
+<li>分组密码</li>
+<li>序列密码</li>
+<li>Feistel 结构</li>
+<li>SP 结构</li>
+<li>S 盒</li>
+<li>混淆</li>
+<li>扩散</li>
+<li>雪崩效应</li>
+<li>工作模式</li>
+<li>短块问题</li>
+<li>Padding</li>
+<li>LFSR</li>
+<li>m 序列</li>
+<li>Hash</li>
+<li>单向性</li>
+<li>抗弱碰撞</li>
+<li>抗强碰撞</li>
+<li>RSA</li>
+<li>ElGamal</li>
+<li>SM2</li>
+<li>数字签名</li>
+<li>认证</li>
+<li>不可否认性</li>
+<li>防重放</li>
+<li>密码协议</li>
+</ul>
+<hr>
+<h1 id="复习进度记录"><a href="#复习进度记录" class="headerlink" title="复习进度记录"></a>复习进度记录</h1><h2 id="已完成模块"><a href="#已完成模块" class="headerlink" title="已完成模块"></a>已完成模块</h2><ul>
+<li>模块 1：密码学基本概念</li>
+<li>模块 2：对称密码与非对称密码</li>
+<li>模块 3：古典密码与加法密码</li>
+<li>模块 4：DES</li>
+<li>模块 5：AES</li>
+<li>模块 6：SM4</li>
+<li>模块 7：分组密码工作模式</li>
+<li>模块 8：短块问题与 Padding</li>
+<li>模块 9：序列密码基础</li>
+<li>模块 10：LFSR</li>
+<li>模块 11：ZUC</li>
+<li>模块 12：Hash 函数基础</li>
+<li>模块 13：SM3</li>
+<li>模块 14：公钥密码基础</li>
+<li>模块 15：RSA</li>
+<li>模块 16：ElGamal</li>
+<li>模块 17：ECC &#x2F; SM2 加密</li>
+<li>模块 18：数字签名基础</li>
+<li>模块 19：认证与数字签名区别</li>
+<li>模块 20：SM2 数字签名</li>
+<li>模块 21：密码协议基础</li>
+<li>模块 22：综合设计题模板</li>
+</ul>
+<hr>
+<h1 id="错题记录"><a href="#错题记录" class="headerlink" title="错题记录"></a>错题记录</h1><h2 id="错题-1"><a href="#错题-1" class="headerlink" title="错题 1"></a>错题 1</h2><p>题目：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>错误原因：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>正确方法：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="错题-2"><a href="#错题-2" class="headerlink" title="错题 2"></a>错题 2</h2><p>题目：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>错误原因：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>正确方法：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="最后复习原则"><a href="#最后复习原则" class="headerlink" title="最后复习原则"></a>最后复习原则</h1><ol>
+<li>计算题先掌握方法，不要死背答案；</li>
+<li>简答题背模板，但要能换一种说法写出来；</li>
+<li>设计题按“威胁—目标—技术—流程—局限”结构写；</li>
+<li>遇到算法题，先写流程，再代入数据；</li>
+<li>考试时不会的题也要写出公式和基本思想，尽量拿步骤分。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------到底咯QAQ嘎嘎-------------</div>
+    
+</div>
+      </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="jachinzhang1/jachinzhang1.github.io"
+        data-repo-id="R_kgDONy_q0w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONy_q084Cmo0P"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/06/01/AI%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/Context%20Engineer/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-circle"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">山河辽阔，人间烟火 | 记录生活与思考的碎片</span>
+</div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/js/site-interactions.js"></script>
+<script>
+  (function() {
+    var overlay = document.createElement('div');
+    overlay.className = 'page-transition-overlay';
+    document.body.appendChild(overlay);
+
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a');
+      if (!link || !link.href) return;
+      if (link.target === '_blank') return;
+      if (link.host !== window.location.host) return;
+      if (link.getAttribute('download') != null) return;
+      if (link.hash && link.pathname === window.location.pathname) return;
+      if (e.metaKey || e.ctrlKey) return;
+
+      e.preventDefault();
+      document.body.classList.add('page-exiting');
+      setTimeout(function() {
+        window.location = link.href;
+      }, 260);
+    });
+
+    // Keep overlay hidden when navigating back via bfcache.
+    window.addEventListener('pageshow', function(e) {
+      document.body.classList.remove('page-exiting');
+    });
+  })();
+</script>
+
+</body>
+</html>

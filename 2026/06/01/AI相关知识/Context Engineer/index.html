@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-50x50.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-50x50.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="theme-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ducklinger.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="123title : Contex Engineerdata : 2026-06-01categories : AI    上下文工程 Context Engineer LangChain《Context Engineering for Agents》2025 年 7 月 2 日  什么是上下文工程？上下文工程就是在 agent trajectory（agent行为路径） 的每一步，把正确的信息放">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ducklinger">
+<meta property="og:url" content="https://ducklinger.top/2026/06/01/AI%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/Context%20Engineer/index.html">
+<meta property="og:site_name" content="Ducklinger">
+<meta property="og:description" content="123title : Contex Engineerdata : 2026-06-01categories : AI    上下文工程 Context Engineer LangChain《Context Engineering for Agents》2025 年 7 月 2 日  什么是上下文工程？上下文工程就是在 agent trajectory（agent行为路径） 的每一步，把正确的信息放">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ducklinger.top/images/ce1.png">
+<meta property="article:published_time" content="2026-06-01T07:43:49.652Z">
+<meta property="article:modified_time" content="2026-06-06T08:41:42.634Z">
+<meta property="article:author" content="Ducklinger">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ducklinger.top/images/ce1.png">
+
+<link rel="canonical" href="https://ducklinger.top/2026/06/01/AI%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/Context%20Engineer/">
+
+
+<script id="page-configurations">
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | Ducklinger</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ducklinger</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section">关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section">分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-poems">
+
+    <a href="/poems/" rel="section">诗歌</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main main-post">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ducklinger.top/2026/06/01/AI%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/Context%20Engineer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2026-06-01 15:43:49" itemprop="dateCreated datePublished" datetime="2026-06-01T15:43:49+08:00">2026-06-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-06-06 16:41:42" itemprop="dateModified" datetime="2026-06-06T16:41:42+08:00">2026-06-06</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">title : Contex Engineer</span><br><span class="line">data : 2026-06-01</span><br><span class="line">categories : AI</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="上下文工程-Context-Engineer"><a href="#上下文工程-Context-Engineer" class="headerlink" title="上下文工程 Context Engineer"></a>上下文工程 Context Engineer</h1><ul>
+<li>LangChain《Context Engineering for Agents》2025 年 7 月 2 日</li>
+</ul>
+<h2 id="什么是上下文工程？"><a href="#什么是上下文工程？" class="headerlink" title="什么是上下文工程？"></a>什么是上下文工程？</h2><p>上下文工程就是在 agent trajectory（agent行为路径） 的每一步，<strong>把正确的信息放到上下文窗口里</strong>。LLM像CPU，上下文窗口像RAM，RAM再大也是有限的，所以系统必须决定哪些内容值得放进去，文章随后把需要管理的上下文分成三类：<strong>instructions、knowledge、tools</strong>。换句话说，提示、记忆、few-shot、工具描述、事实知识、工具反馈，本质上都属于“上下文”。</p>
+<p>文章用四个动词概括实践路径：<strong>write、select、compress、isolate</strong></p>
+<p><strong>Write Context</strong> 主要谈两样东西。第一是 <strong>scratchpad</strong>：把计划、笔记、中间发现写到窗口外，例如写入文件或写入 state。第二是 <strong>memory</strong>：把信息跨会话保存下来。</p>
+<p><strong>Select Context</strong> 的重点是：写了还不够，更难的是<strong>在需要时选对</strong>。文章分别谈 scratchpad 读取、memory retrieval、tool selection 和 knowledge retrieval。它特别提醒两个现实问题：一是长期记忆检索容易“取错”，甚至让用户觉得上下文窗口“不再属于自己”；二是工具太多会让模型混淆，因此可以对工具描述做 RAG，只把最相关的工具送进当前调用。</p>
+<p><strong>Compressing Context</strong> 把压缩分成两条思路。第一条是 <strong>summarization</strong>：用模型把旧历史、重型工具结果或 agent-to-agent handoff 内容压缩成摘要。第二条是 <strong>trimming&#x2F;pruning</strong>：更机械地删掉不再需要的历史。文章强调，这两者都能省 token，但 summarization 的难点是不能漏掉关键事件和决策。</p>
+<p><strong>Isolating Context</strong> 提出两种常见做法。第一是 <strong>多智能体</strong>：把不同子任务交给不同子 agent，让每个 agent 在更窄的上下文里工作。第二是 <strong>环境或状态隔离</strong>：例如 Hugging Face 的 CodeAgent 把重型对象放在 sandbox &#x2F; state 里，只有必要结果才回流给 LLM。文章同时提醒，多智能体可能提升结果，但 token 代价也会显著上升。</p>
+<p><img src="/../../images/ce1.png"></p>
+<h2 id="工作流与代码解读"><a href="#工作流与代码解读" class="headerlink" title="工作流与代码解读"></a>工作流与代码解读</h2><p>原文正文更像“方法论地图”，并没有塞入很长的完整代码，而是把读者引到 LangGraph memory、Bigtool、summarization&#x2F;trim utilities、sandbox、多代理库等实现入口</p>
+<p><strong>示例一：短期记忆如何让 agent 记住同一线程中的信息</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain.agents <span class="keyword">import</span> create_agent</span><br><span class="line"><span class="keyword">from</span> langgraph.checkpoint.memory <span class="keyword">import</span> InMemorySaver</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_user_info</span>() -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;查当前用户信息。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;没有额外资料。&quot;</span></span><br><span class="line"></span><br><span class="line">agent = create_agent(</span><br><span class="line">    model=<span class="string">&quot;google_genai:gemini-3.5-flash&quot;</span>,</span><br><span class="line">    tools=[get_user_info],</span><br><span class="line">    checkpointer=InMemorySaver(),   <span class="comment"># 关键：把状态按 thread_id 持久化</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">thread_config = &#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: <span class="string">&quot;1&quot;</span>&#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第一轮：建立上下文</span></span><br><span class="line">agent.invoke(</span><br><span class="line">    &#123;<span class="string">&quot;messages&quot;</span>: [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="string">&quot;Hi! My name is Bob.&quot;</span>&#125;]&#125;,</span><br><span class="line">    thread_config,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第二轮：在同一个 thread_id 下再次调用</span></span><br><span class="line">response = agent.invoke(</span><br><span class="line">    &#123;<span class="string">&quot;messages&quot;</span>: [&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="string">&quot;What&#x27;s my name?&quot;</span>&#125;]&#125;,</span><br><span class="line">    thread_config,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(response[<span class="string">&quot;messages&quot;</span>][-<span class="number">1</span>].content)</span><br><span class="line"><span class="comment"># 预期：类似 &quot;You are Bob!&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>这段代码演示的是 <strong>LangChain Agent 的短期记忆机制</strong>：</p>
+<blockquote>
+<p>通过 InMemorySaver + thread_id，agent 可以在同一段对话中记住之前发生过的事情。</p>
+</blockquote>
+<p><code>InMemorySaver </code>负责保存状态<br><code>thread_id </code>负责区分是哪一段对话<br><code>agent.invoke</code> 负责每轮调用<br><code>response[&quot;messages&quot;][-1].content</code> 负责取最后回答</p>
+<p>thread可以由用户自己新建</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">用户新建一个聊天窗口 → 新 thread</span><br><span class="line">用户继续在当前聊天里发消息 → 同一个 thread</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>示例二：压缩上下文时，trimming 与 summarization 的差别</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain_core.messages.utils <span class="keyword">import</span> trim_messages, count_tokens_approximately</span><br><span class="line"><span class="keyword">from</span> langchain.chat_models <span class="keyword">import</span> init_chat_model</span><br><span class="line"><span class="keyword">from</span> langgraph.checkpoint.memory <span class="keyword">import</span> InMemorySaver</span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> StateGraph, START, MessagesState</span><br><span class="line"></span><br><span class="line">model = init_chat_model(<span class="string">&quot;claude-sonnet-4-6&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">call_model</span>(<span class="params">state: MessagesState</span>):</span><br><span class="line">    <span class="comment"># 只保留最近、最相关的一部分消息</span></span><br><span class="line">    messages = trim_messages(</span><br><span class="line">        state[<span class="string">&quot;messages&quot;</span>],</span><br><span class="line">        strategy=<span class="string">&quot;last&quot;</span>,//截取策略，最近保留</span><br><span class="line">        token_counter=count_tokens_approximately,</span><br><span class="line">        max_tokens=<span class="number">128</span>, //保留文本最大token</span><br><span class="line">        start_on=<span class="string">&quot;human&quot;</span>, //从用户对话开始截取</span><br><span class="line">        end_on=(<span class="string">&quot;human&quot;</span>, <span class="string">&quot;tool&quot;</span>), //从用户消息结束</span><br><span class="line">    )</span><br><span class="line">    response = model.invoke(messages)</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;messages&quot;</span>: [response]&#125;</span><br><span class="line"></span><br><span class="line">checkpointer = InMemorySaver()</span><br><span class="line">builder = StateGraph(MessagesState)</span><br><span class="line">builder.add_node(call_model)</span><br><span class="line">builder.add_edge(START, <span class="string">&quot;call_model&quot;</span>)</span><br><span class="line">graph = builder.<span class="built_in">compile</span>(checkpointer=checkpointer)</span><br><span class="line"></span><br><span class="line">config = &#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: <span class="string">&quot;1&quot;</span>&#125;&#125;</span><br><span class="line">graph.invoke(&#123;<span class="string">&quot;messages&quot;</span>: <span class="string">&quot;hi, my name is bob&quot;</span>&#125;, config)</span><br><span class="line">graph.invoke(&#123;<span class="string">&quot;messages&quot;</span>: <span class="string">&quot;write a short poem about cats&quot;</span>&#125;, config)</span><br><span class="line">graph.invoke(&#123;<span class="string">&quot;messages&quot;</span>: <span class="string">&quot;now do the same but for dogs&quot;</span>&#125;, config)</span><br><span class="line">final_response = graph.invoke(&#123;<span class="string">&quot;messages&quot;</span>: <span class="string">&quot;what&#x27;s my name?&quot;</span>&#125;, config)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(final_response[<span class="string">&quot;messages&quot;</span>][-<span class="number">1</span>].content)</span><br><span class="line"><span class="comment"># 官方示例输出：Your name is Bob, as you mentioned when you first introduced yourself.</span></span><br></pre></td></tr></table></figure>
+
+<p>这段代码展示的是 <strong>trimming</strong>：不让旧历史无限增长，而是按 token 预算裁掉消息列表的前段与此对应，LangChain 官方还提供 <code>SummarizationMiddleware</code>：它不是简单删除，而是先做一次独立的 LLM 摘要，再把旧消息替换成 summary message，并永久写回 state</p>
+<p>如果你想把“摘要压缩”写成 middleware，官方模式如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain.agents <span class="keyword">import</span> create_agent</span><br><span class="line"><span class="keyword">from</span> langchain.agents.middleware <span class="keyword">import</span> SummarizationMiddleware</span><br><span class="line"></span><br><span class="line">agent = create_agent(</span><br><span class="line">    model=<span class="string">&quot;gpt-5.4&quot;</span>,</span><br><span class="line">    tools=[...],</span><br><span class="line">    middleware=[</span><br><span class="line">        SummarizationMiddleware(</span><br><span class="line">            model=<span class="string">&quot;gpt-5.4-mini&quot;</span>,</span><br><span class="line">            trigger=&#123;<span class="string">&quot;tokens&quot;</span>: <span class="number">4000</span>&#125;,  <span class="comment"># 超过阈值时触发摘要</span></span><br><span class="line">            keep=&#123;<span class="string">&quot;messages&quot;</span>: <span class="number">20</span>&#125;,     <span class="comment"># 保留最近消息</span></span><br><span class="line">        ),</span><br><span class="line">    ],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>它的预期行为不是固定字符串，而是一个机制：当对话超出 token 阈值时，旧消息会被压成 summary message，未来轮次再也看不到原始旧消息，只看到摘要后的状态。</p>
+<p><strong>示例三：工具太多时，如何先检索工具再调用工具</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> types</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"><span class="keyword">from</span> langchain.chat_models <span class="keyword">import</span> init_chat_model</span><br><span class="line"><span class="keyword">from</span> langchain.embeddings <span class="keyword">import</span> init_embeddings</span><br><span class="line"><span class="keyword">from</span> langgraph.store.memory <span class="keyword">import</span> InMemoryStore</span><br><span class="line"><span class="keyword">from</span> langgraph_bigtool <span class="keyword">import</span> create_agent <span class="keyword">as</span> create_bigtool_agent</span><br><span class="line"><span class="keyword">from</span> langgraph_bigtool.utils <span class="keyword">import</span> convert_positional_only_function_to_tool</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把 Python math 库函数批量转成工具</span></span><br><span class="line">all_tools = []</span><br><span class="line"><span class="keyword">for</span> function_name <span class="keyword">in</span> <span class="built_in">dir</span>(math):</span><br><span class="line">    function = <span class="built_in">getattr</span>(math, function_name)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> <span class="built_in">isinstance</span>(function, types.BuiltinFunctionType):</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    tool = convert_positional_only_function_to_tool(function)//内置函数转化为agent可调用的工具描述</span><br><span class="line">    <span class="keyword">if</span> tool:</span><br><span class="line">        all_tools.append(tool)</span><br><span class="line"></span><br><span class="line">tool_registry = &#123;<span class="built_in">str</span>(uuid.uuid4()): tool <span class="keyword">for</span> tool <span class="keyword">in</span> all_tools&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把“工具描述”写入带向量索引的 Store</span></span><br><span class="line">embeddings = init_embeddings(<span class="string">&quot;openai:text-embedding-3-small&quot;</span>)</span><br><span class="line">store = InMemoryStore(</span><br><span class="line">    index=&#123;</span><br><span class="line">        <span class="string">&quot;embed&quot;</span>: embeddings,</span><br><span class="line">        <span class="string">&quot;dims&quot;</span>: <span class="number">1536</span>,//向量维度</span><br><span class="line">        <span class="string">&quot;fields&quot;</span>: [<span class="string">&quot;description&quot;</span>],</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line"><span class="keyword">for</span> tool_id, tool <span class="keyword">in</span> tool_registry.items():</span><br><span class="line">    store.put(</span><br><span class="line">        (<span class="string">&quot;tools&quot;</span>,),</span><br><span class="line">        tool_id,</span><br><span class="line">        &#123;<span class="string">&quot;description&quot;</span>: <span class="string">f&quot;<span class="subst">&#123;tool.name&#125;</span>: <span class="subst">&#123;tool.description&#125;</span>&quot;</span>&#125;,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建 agent</span></span><br><span class="line">llm = init_chat_model(<span class="string">&quot;openai:gpt-4o-mini&quot;</span>)</span><br><span class="line">agent = create_bigtool_agent(llm, tool_registry).<span class="built_in">compile</span>(store=store)</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="实现一个带有简单上下文功能的agent"><a href="#实现一个带有简单上下文功能的agent" class="headerlink" title="实现一个带有简单上下文功能的agent"></a>实现一个带有简单上下文功能的agent</h2>
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------到底咯QAQ嘎嘎-------------</div>
+    
+</div>
+      </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="jachinzhang1/jachinzhang1.github.io"
+        data-repo-id="R_kgDONy_q0w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONy_q084Cmo0P"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/06/01/CTF/CTF%E7%BB%BC%E5%90%88%E7%AC%94%E8%AE%B0/" rel="prev" title="CTF综合笔记">
+      <i class="fa fa-chevron-left"></i> CTF综合笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2026/06/02/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-circle"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">山河辽阔，人间烟火 | 记录生活与思考的碎片</span>
+</div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/js/site-interactions.js"></script>
+<script>
+  (function() {
+    var overlay = document.createElement('div');
+    overlay.className = 'page-transition-overlay';
+    document.body.appendChild(overlay);
+
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a');
+      if (!link || !link.href) return;
+      if (link.target === '_blank') return;
+      if (link.host !== window.location.host) return;
+      if (link.getAttribute('download') != null) return;
+      if (link.hash && link.pathname === window.location.pathname) return;
+      if (e.metaKey || e.ctrlKey) return;
+
+      e.preventDefault();
+      document.body.classList.add('page-exiting');
+      setTimeout(function() {
+        window.location = link.href;
+      }, 260);
+    });
+
+    // Keep overlay hidden when navigating back via bfcache.
+    window.addEventListener('pageshow', function(e) {
+      document.body.classList.remove('page-exiting');
+    });
+  })();
+</script>
+
+</body>
+</html>
