@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://ducklinger.top/images/os5.png">
 <meta property="og:image" content="https://ducklinger.top/images/os6.png">
 <meta property="article:published_time" content="2026-04-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-06-06T08:41:13.541Z">
+<meta property="article:modified_time" content="2026-06-07T07:50:36.232Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://ducklinger.top/images/os1.png">
@@ -207,7 +207,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-06-06 16:41:13" itemprop="dateModified" datetime="2026-06-06T16:41:13+08:00">2026-06-06</time>
+                <time title="修改时间：2026-06-07 15:50:36" itemprop="dateModified" datetime="2026-06-07T15:50:36+08:00">2026-06-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1380,7 +1380,141 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">地址变换更复杂</span><br><span class="line">需要先查段表，再查页表</span><br><span class="line">表占用空间更多</span><br><span class="line">访问速度可能下降</span><br></pre></td></tr></table></figure>
 
 <p>所以实际系统中通常要配合快表 TLB 来提高地址转换速度。</p>
-<h2 id="第七章-虚拟内存管理"><a href="#第七章-虚拟内存管理" class="headerlink" title="第七章 虚拟内存管理"></a>第七章 虚拟内存管理</h2><h3 id="7-1-虚拟内存"><a href="#7-1-虚拟内存" class="headerlink" title="7.1 虚拟内存"></a>7.1 虚拟内存</h3>
+<h2 id="第七章-虚拟内存管理"><a href="#第七章-虚拟内存管理" class="headerlink" title="第七章 虚拟内存管理"></a>第七章 虚拟内存管理</h2><h3 id="7-1-虚拟内存"><a href="#7-1-虚拟内存" class="headerlink" title="7.1 虚拟内存"></a>7.1 虚拟内存</h3><p>程序不必全部装入内存，缺哪一页再调哪一页</p>
+<p>程序运行有明显局部性，某一小段时间内真正用到的部分不多，可以在程序运行前直把一部分放入内存；运行过程中访问的信息不在内存中的时候，再由os将所需要的部分调入内存；同时还可以把不用的部分换出到外存</p>
+<p>也就是节省了内存空间，但增加了调页和磁盘 I&#x2F;O 的时间开销</p>
+<p>实现方法：请求分页存储管理和请求分段存储管理</p>
+<p>与前面一张的区别是：<strong>按需调入，请求到哪一页再调入那一页，普通分页是程序页面一次性调入</strong></p>
+<h3 id="7-2-请求分页存储管理"><a href="#7-2-请求分页存储管理" class="headerlink" title="7.2 请求分页存储管理"></a>7.2 请求分页存储管理</h3><p>请求分页是在分页存储管理的基础上增加<strong>请求调页和页面替换的功能</strong>，运行中的页面不存在内存中时<strong>硬件产生缺页中断</strong>，<strong>请求OS将缺页调入内存</strong>，如果内存没有空闲空间，就根据替换算法淘汰某个页面</p>
+<p><strong>请求分页的支持机构</strong></p>
+<p>硬件支持：</p>
+<ol>
+<li><p><strong>MMU</strong>：内存管理单元，接受虚拟地址作为输入，输出物理地址，并送到总线上对内存单元寻址</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CPU 发出逻辑地址</span><br><span class="line">↓</span><br><span class="line">MMU 查页表 / 快表</span><br><span class="line">↓</span><br><span class="line">如果页在内存，得到物理地址</span><br><span class="line">↓</span><br><span class="line">如果页不在内存，触发缺页中断</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>页表、缺页中断机构、地址变换机构</p>
+</li>
+</ol>
+<p>软件支持：</p>
+<ol>
+<li>请求调页程序</li>
+<li>页面替换算法</li>
+</ol>
+<p><strong>请求分页的页表项</strong></p>
+<p>页号、物理块号<br>存在位：该页是否存在主存中<br>访问字段：记录该页最近是否访问、访问次数、多久没访问等，主要用于替换算法<br>修改位（脏位）：该页被调入内存之后是否被修改，用于判断淘汰时直接丢弃还是写回内存<br>外存地址：该页在外存中的地址</p>
+<p>缺页中断：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">MMU 检查页表</span><br><span class="line">发现存在位 = 0</span><br><span class="line">↓</span><br><span class="line">产生缺页中断</span><br><span class="line">↓</span><br><span class="line">OS 介入，把缺页从外存调入内存</span><br><span class="line">↓</span><br><span class="line">修改页表</span><br><span class="line">↓</span><br><span class="line">重新执行刚才那条指令</span><br><span class="line"></span><br><span class="line">1. CPU 发起地址访问，MMU 查页表</span><br><span class="line">2. 如果页面不在内存，产生缺页中断</span><br><span class="line">3. OS 在外存中找到该页</span><br><span class="line">4. 找空闲页框</span><br><span class="line">5. 如果没有空闲页框，选择一个页面淘汰</span><br><span class="line">6. 如果淘汰页被修改过，先写回外存</span><br><span class="line">7. 把缺页调入内存</span><br><span class="line">8. 修改页表和相关表项</span><br><span class="line">9. 重新执行产生缺页的指令</span><br></pre></td></tr></table></figure>
+
+<p>缺页中断和普通中断的区别：</p>
+<ol>
+<li><p>产生时间不同：普通中断发生在指令执行之后，缺页中断发生在指令执行过程当中</p>
+</li>
+<li><p>返回位置：前者返回下一条指令的位置，后者重新执行该条指令</p>
+</li>
+<li><p>一条指令可能产生多个缺页中断比如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">copy A to B</span><br></pre></td></tr></table></figure>
+
+<p>可能访问源地址 A 时缺页，处理完后重新执行；又访问目标地址 B 时缺页，再处理一次</p>
+</li>
+</ol>
+<p>总体流程：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">逻辑地址</span><br><span class="line">↓</span><br><span class="line">拆成页号 + 页内偏移</span><br><span class="line">↓</span><br><span class="line">查 TLB</span><br><span class="line">↓</span><br><span class="line">TLB 命中：形成物理地址，访问内存</span><br><span class="line">↓</span><br><span class="line">TLB 未命中：查页表</span><br><span class="line">↓</span><br><span class="line">页在内存：更新 TLB，形成物理地址</span><br><span class="line">↓</span><br><span class="line">页不在内存：缺页中断</span><br><span class="line">↓</span><br><span class="line">OS 调页，修改页表</span><br><span class="line">↓</span><br><span class="line">重新执行指令</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="7-3-Copy-on-Write"><a href="#7-3-Copy-on-Write" class="headerlink" title="7.3 Copy-on-Write"></a>7.3 Copy-on-Write</h3><p>父进程创建子进程时，先不复制整份内存，而是让父子进程共享同一批物理页面；只有当其中一方要修改页面时，才真正复制该页面。</p>
+<p>父子进程的页表都指向同一批物理页面</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">P1 页表 → Page A</span><br><span class="line">P2 页表 → Page A</span><br><span class="line"></span><br><span class="line">P1 页表 → Page B</span><br><span class="line">P2 页表 → Page B</span><br><span class="line"></span><br><span class="line">P1 页表 → Page C</span><br><span class="line">P2 页表 → Page C</span><br></pre></td></tr></table></figure>
+
+<p>假设 P1 要修改 Page C。</p>
+<p>因为 Page C 被标记为只读，所以写操作会触发异常。</p>
+<p>操作系统发现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">这不是普通非法写入</span><br><span class="line">而是 COW 页面写入</span><br></pre></td></tr></table></figure>
+
+<p>于是 OS 会：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 分配一个新的物理页</span><br><span class="line">2. 把原 Page C 的内容复制到新页</span><br><span class="line">3. 让 P1 的页表指向新页</span><br><span class="line">4. 恢复 P1 对新页的写权限</span><br><span class="line">5. P2 仍然指向原来的 Page C</span><br></pre></td></tr></table></figure>
+
+<p>PPT 第 40、41 页的图正是这个过程：修改 Page C 前，两个进程都映射到同一个 Page C；修改 Page C 后，Process 1 获得 Copy of Page C，而 Process 2 仍然使用原 Page C</p>
+<p><strong>vfork()</strong>：子进程直接用父进程地址空间，父进程挂起，子进程应尽快 exec。</p>
+<h3 id="7-4-页面替换算法"><a href="#7-4-页面替换算法" class="headerlink" title="7.4 页面替换算法"></a>7.4 页面替换算法</h3><ol>
+<li><p>FIFO：先进先出页面替换算法</p>
+</li>
+<li><p>OPT：淘汰将来最长时间不会被访问的页面</p>
+</li>
+<li><p>LRU：淘汰最近最长时间没有被访问的页面</p>
+</li>
+<li><p>Clock：简单时钟算法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">看指针指向的页面</span><br><span class="line">如果访问位 = 0：淘汰它</span><br><span class="line">如果访问位 = 1：把访问位置 0，指针后移，继续找</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>增强型 Clock 算法</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">R=0, M=0：最近没访问，没修改，最好淘汰</span><br><span class="line">R=0, M=1：最近没访问，但修改过，淘汰要写回</span><br><span class="line">R=1, M=0：最近访问过，没修改</span><br><span class="line">R=1, M=1：最近访问过，且修改过，最不优先淘汰</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="7-5-页面管理的策略问题"><a href="#7-5-页面管理的策略问题" class="headerlink" title="7.5 页面管理的策略问题"></a>7.5 页面管理的策略问题</h3><p>页面什么时候装入？什么时候写回？每个进程分多少页框？替换范围是本进程还是全系统？</p>
+<p><strong>页面装入与清除策略</strong>、<strong>页面分配与替换策略</strong>。</p>
+<p><strong>页面装入</strong>：什么时候把页面调入主存？</p>
+<ol>
+<li>请求调页：用一页调一页</li>
+<li>预调页：根据局部性原理，提前把可能调入的页面调入内存</li>
+</ol>
+<p><strong>清除策略</strong>：什么时候把写过的页面写回外存</p>
+<ol>
+<li>请求清除</li>
+<li>预约清除：提前把修改过的页面成批写回外存</li>
+</ol>
+<p><strong>页面分配</strong>：每个进程分配多少页框</p>
+<ol>
+<li>固定分配</li>
+<li>可变分配：<br>如果某进程缺页率很高，说明需要更多页面，可以增加页框，反之可以减少</li>
+</ol>
+<p><strong>页面替换</strong>：发生缺页时，从哪里选牺牲页</p>
+<ol>
+<li>局部替换：从自己的页框中选择一页替换</li>
+<li>全局替换：可以从整个系统所有进程的页框中选择牺牲页</li>
+</ol>
+<p><strong>抖动问题</strong>：如果运行进程的大部分时间都用于页面换入&#x2F;换出，而几乎不能完成有效工作，则称该进程处于抖动状态，高缺页率，分配的页框数过少</p>
+<h3 id="7-7-局部页面替换算法"><a href="#7-7-局部页面替换算法" class="headerlink" title="7.7 局部页面替换算法"></a>7.7 局部页面替换算法</h3><p>抖动的根本原因之一：<br>进程当前真正需要的页面没有全部留在内存中</p>
+<p>所以能不能根据进程最近的访问情况，判断它当前真正需要哪些页面</p>
+<p><strong>局部最佳页面替换算法、工作集模型和工作集替换算法、模拟工作集替换算法、缺页频率替换算法。</strong></p>
+<p><strong>局部最佳页面替换算法</strong>：类似OPT，如果某页在未来 Δ 时间内不会再被访问，就可以把它移出驻留集</p>
+<p><strong>工作集模型 working set</strong>：基于局部性原理，通过考察最近时间内内的主存需求，估计不久将来的内存页框需求，<strong>工作集</strong>定义 <code>W(t,Δ )</code> t时刻之前的Δ 时间窗口内，进程访问过的页面集合</p>
+<p>页面访问序列：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1, 2, 3, 2, 4, 2, 5</span><br></pre></td></tr></table></figure>
+
+<p>假设当前时刻访问到最后一个 <code>5</code>，窗口 <code>Δ = 4</code>，看最近 4 次访问：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2, 4, 2, 5</span><br></pre></td></tr></table></figure>
+
+<p>那么工作集是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;2, 4, 5&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，集合不重复计数。</p>
+<p>所以工作集大小是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3</span><br></pre></td></tr></table></figure>
+
+<p>至少分配页框大小3</p>
+<p><strong>模拟工作集替换算法</strong></p>
+<p>例如时间戳算法：给每个页面记录最近一次被访问的时间，如果某页很久没被访问，超过阈值，就认为他不在工作集中</p>
+<p><strong>缺页频率替换算法 PFF</strong>：PFF 根据连续缺页之间的时间间隔测量缺页频率，并利用测量时间调整进程工作集尺寸；另一种实现是设置上下阈值，缺页率达到上限时增加物理块，达到下限时减少物理块</p>
+<h3 id="7-8-页面大小选择"><a href="#7-8-页面大小选择" class="headerlink" title="7.8 页面大小选择"></a>7.8 页面大小选择</h3><p>页面小：页内碎片小，但页表大、TLB覆盖范围小</p>
+<p>页面大：页表小、I&#x2F;O效率可能高，但页内碎片大</p>
+<p>设：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s = 每个进程平均长度</span><br><span class="line">p = 页面大小</span><br><span class="line">e = 每个页表项大小</span><br></pre></td></tr></table></figure>
+
+<p>则：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">每个进程页表空间 = se / p</span><br><span class="line">每个进程平均页内碎片 = p / 2</span><br></pre></td></tr></table></figure>
+
+<p>所以每个进程平均浪费空间：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">se / p + p / 2</span><br></pre></td></tr></table></figure>
+
+<p>对这个式子求最小值，可得到：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p = √(2es)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="7-9-内存映射文件"><a href="#7-9-内存映射文件" class="headerlink" title="7.9 内存映射文件"></a>7.9 内存映射文件</h3><p>内存映射文件就是用虚拟内存机制来访问文件。把文件内容映射成虚拟内存地址，再通过分页方式进行读取修改和写回，也就是虚拟页对应文件某一块的内容，写回方式也类似（脏位）</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">访问映射区</span><br><span class="line">↓</span><br><span class="line">对应文件页不在内存</span><br><span class="line">↓</span><br><span class="line">缺页中断</span><br><span class="line">↓</span><br><span class="line">OS 从文件中把对应页调入内存</span><br><span class="line">↓</span><br><span class="line">继续访问</span><br><span class="line"></span><br><span class="line">read()：</span><br><span class="line">文件 → 内核缓冲区 → 用户缓冲区</span><br><span class="line"></span><br><span class="line">mmap()：</span><br><span class="line">文件 → 映射到虚拟地址空间</span><br><span class="line">访问时通过缺页机制把文件页调入内存</span><br></pre></td></tr></table></figure>
+
+<p>访问方式简单，减少数据复制，方便进程共享</p>
+
     </div>
 
     
