@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-50x50.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-50x50.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="theme-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ducklinger.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="操作系统实验项目基本结构一、先理解 xv6 项目的整体结构 xv6 中有两类独立编译的程序：内核和用户程序。 123kernel&#x2F; 中的代码 → 编译、链接 → kernel&#x2F;kerneluser&#x2F; 中的代码   → 编译、链接 → 各个用户程序用户程序再被放入 fs.img，供 xv6 启动后运行  内核与用户程序分别拥有自己的代码和地址空间。用户程序需要通过系统调用请求内核服务。 理解文件关系">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统实验">
+<meta property="og:url" content="https://ducklinger.top/2026/10/27/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C/index.html">
+<meta property="og:site_name" content="Ducklinger">
+<meta property="og:description" content="操作系统实验项目基本结构一、先理解 xv6 项目的整体结构 xv6 中有两类独立编译的程序：内核和用户程序。 123kernel&#x2F; 中的代码 → 编译、链接 → kernel&#x2F;kerneluser&#x2F; 中的代码   → 编译、链接 → 各个用户程序用户程序再被放入 fs.img，供 xv6 启动后运行  内核与用户程序分别拥有自己的代码和地址空间。用户程序需要通过系统调用请求内核服务。 理解文件关系">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ducklinger.top/....%5Cimages%5Coslab1.png">
+<meta property="og:image" content="https://ducklinger.top/images/oslab2.png">
+<meta property="og:image" content="https://ducklinger.top/images/oslab3.png">
+<meta property="og:image" content="https://ducklinger.top/images/oslab4.png">
+<meta property="article:published_time" content="2026-10-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-28T08:22:42.718Z">
+<meta property="article:author" content="Ducklinger">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ducklinger.top/....%5Cimages%5Coslab1.png">
+
+<link rel="canonical" href="https://ducklinger.top/2026/10/27/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C/">
+
+
+<script id="page-configurations">
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>操作系统实验 | Ducklinger</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ducklinger</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section">日程</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section">分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-poems">
+
+    <a href="/poems/" rel="section">诗歌</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main main-post">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ducklinger.top/2026/10/27/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          操作系统实验
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2026-10-27 00:00:00" itemprop="dateCreated datePublished" datetime="2026-10-27T00:00:00+08:00">2026-10-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-10-28 16:22:42" itemprop="dateModified" datetime="2026-10-28T16:22:42+08:00">2026-10-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="操作系统实验"><a href="#操作系统实验" class="headerlink" title="操作系统实验"></a>操作系统实验</h1><h2 id="项目基本结构"><a href="#项目基本结构" class="headerlink" title="项目基本结构"></a>项目基本结构</h2><p><strong>一、先理解 xv6 项目的整体结构</strong></p>
+<p>xv6 中有两类独立编译的程序：<strong>内核</strong>和<strong>用户程序</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kernel/ 中的代码 → 编译、链接 → kernel/kernel</span><br><span class="line">user/ 中的代码   → 编译、链接 → 各个用户程序</span><br><span class="line">用户程序再被放入 fs.img，供 xv6 启动后运行</span><br></pre></td></tr></table></figure>
+
+<p>内核与用户程序分别拥有自己的代码和地址空间。用户程序需要通过系统调用请求内核服务。</p>
+<p>理解文件关系时，要区分两件事：</p>
+<ul>
+<li><strong>编译关系</strong>：头文件提供类型、常量、函数声明；源文件提供实现；链接器把各部分连接起来。</li>
+<li><strong>运行关系</strong>：CPU 执行已经编译好的指令，发生函数调用、系统调用或中断。</li>
+</ul>
+<p>运行时不会因为调用一个函数而去打开它所在的 <code>.c</code> 文件。</p>
+<p><strong>二、重要文件分别负责什么</strong></p>
+<p><strong>1．类型、常量和声明文件</strong></p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>主要内容</th>
+<th>什么时候修改</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>kernel/types.h</code></td>
+<td><code>uint、uint64</code> 等基础类型</td>
+<td>通常直接使用</td>
+</tr>
+<tr>
+<td><code>kernel/riscv.h</code></td>
+<td>RISC-V 寄存器操作、PTE 标志、页表类型、地址转换宏</td>
+<td>增加硬件相关定义，例如 <code>PTE_A</code></td>
+</tr>
+<tr>
+<td><code>kernel/memlayout.h</code></td>
+<td>内存布局，例如 <code>KERNBASE、TRAMPOLINE、TRAPFRAME</code></td>
+<td>新增固定映射地址，例如 <code>USYSCALL</code></td>
+</tr>
+<tr>
+<td><code>kernel/proc.h</code></td>
+<td><code>struct proc</code>、<code>struct trapframe</code> 等结构</td>
+<td>给每个进程新增状态或资源指针</td>
+</tr>
+<tr>
+<td><code>kernel/defs.h</code></td>
+<td>内核中跨文件使用的函数声明</td>
+<td>新增供其他内核文件调用的函数</td>
+</tr>
+<tr>
+<td><code>kernel/syscall.h</code></td>
+<td>系统调用编号 <code>SYS_xxx</code></td>
+<td>新增系统调用时分配唯一编号</td>
+</tr>
+<tr>
+<td><code>kernel/param.h</code></td>
+<td>进程数、文件数等配置限制</td>
+<td>修改系统容量或相关限制</td>
+</tr>
+<tr>
+<td><code>user/user.h</code></td>
+<td>用户可以调用的系统调用和库函数声明</td>
+<td>新增用户接口，例如 <code>pgaccess()</code>、<code>ugetpid()</code></td>
+</tr>
+</tbody></table>
+<p>其中，<code>riscv.h</code> 和 <code>memlayout.h</code> 很容易混淆：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PTE_A 是页表项中的硬件标志位 → riscv.h</span><br><span class="line">USYSCALL 是 xv6 选择的映射地址 → memlayout.h</span><br></pre></td></tr></table></figure>
+
+<p><strong>2．系统调用和用户库文件</strong></p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>主要职责</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>user/usys.pl</code></td>
+<td>生成用户系统调用入口的汇编代码</td>
+</tr>
+<tr>
+<td><code>user/usys.S</code></td>
+<td>生成后的入口，设置编号并执行 <code>ecall</code></td>
+</tr>
+<tr>
+<td><code>kernel/syscall.c</code></td>
+<td>取参数的辅助函数、系统调用分发表、统一分发函数</td>
+</tr>
+<tr>
+<td><code>kernel/sysproc.c</code></td>
+<td>进程相关系统调用处理，例如 <code>sys_getpid()</code>、<code>sys_sbrk()</code></td>
+</tr>
+<tr>
+<td><code>kernel/sysfile.c</code></td>
+<td>文件相关系统调用处理，例如打开、读写文件</td>
+</tr>
+<tr>
+<td><code>user/ulib.c</code></td>
+<td>用户库函数，例如字符串操作、<code>sbrk()</code> 封装、<code>ugetpid()</code></td>
+</tr>
+<tr>
+<td><code>user/umalloc.c</code></td>
+<td>用户态 <code>malloc()</code>、<code>free()</code>，通过 <code>sbrk()</code> 获取更多内存</td>
+</tr>
+<tr>
+<td><code>user/printf.c</code></td>
+<td>用户态格式化输出，最终通过 <code>write()</code> 输出</td>
+</tr>
+<tr>
+<td><code>kernel/printf.c</code></td>
+<td>内核格式化输出，供内核代码打印信息</td>
+</tr>
+</tbody></table>
+<p><code>usys.S</code> 是自动生成的，通常修改 <code>usys.pl</code>，由构建过程重新生成。</p>
+<p>用户和内核可以分别拥有同名函数，例如 <code>printf()</code>，因为它们被链接到不同的可执行文件中。</p>
+<p><strong>3．进程和内存管理文件</strong></p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>主要职责</th>
+<th>常见函数或内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>kernel/proc.c</code></td>
+<td>创建、调度、回收进程，管理进程资源</td>
+<td><code>allocproc()</code>、<code>freeproc()</code>、<code>growproc()</code>、<code>proc_pagetable()</code></td>
+</tr>
+<tr>
+<td><code>kernel/vm.c</code></td>
+<td>创建、查询、修改、释放页表及用户地址空间</td>
+<td><code>walk()</code>、<code>mappages()</code>、<code>uvmalloc()</code>、<code>uvmunmap()</code>、<code>copyout()</code></td>
+</tr>
+<tr>
+<td><code>kernel/kalloc.c</code></td>
+<td>分配和释放物理页</td>
+<td><code>kalloc()</code>、<code>kfree()</code></td>
+</tr>
+<tr>
+<td><code>kernel/exec.c</code></td>
+<td>加载可执行文件，建立新的用户地址空间</td>
+<td>加载代码、数据、创建用户栈、提交新页表</td>
+</tr>
+</tbody></table>
+<p>可以用一句话区分它们：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kalloc.c 提供物理页</span><br><span class="line">vm.c 建立这些页的地址映射</span><br><span class="line">proc.c 决定这些资源属于哪个进程，并管理生命周期</span><br><span class="line">exec.c 为新程序组织新的用户地址空间</span><br></pre></td></tr></table></figure>
+
+<p><strong>4．进入内核、返回用户和构建相关文件</strong></p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>主要职责</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>kernel/trampoline.S</code></td>
+<td>用户与内核切换时保存、恢复寄存器，切换页表等</td>
+</tr>
+<tr>
+<td><code>kernel/trap.c</code></td>
+<td>处理用户态异常、系统调用、中断，准备返回用户态</td>
+</tr>
+<tr>
+<td><code>kernel/kernelvec.S</code></td>
+<td>内核态发生陷阱时的汇编入口</td>
+</tr>
+<tr>
+<td><code>kernel/swtch.S</code></td>
+<td>切换内核执行上下文，支持调度</td>
+</tr>
+<tr>
+<td><code>kernel/main.c</code></td>
+<td>组织内核初始化，启动调度</td>
+</tr>
+<tr>
+<td><code>Makefile</code></td>
+<td>决定编译哪些文件、如何链接、哪些用户程序放进镜像</td>
+</tr>
+<tr>
+<td><code>user/user.ld</code>、<code>kernel/kernel.ld</code></td>
+<td>控制可执行文件的代码、数据等布局</td>
+</tr>
+<tr>
+<td><code>user/*.asm</code></td>
+<td>构建生成的反汇编，用于把异常地址对应到指令</td>
+</tr>
+</tbody></table>
+<p><strong>三、数据应该定义在哪里</strong></p>
+<p>选择位置前，先判断数据属于哪一类。</p>
+<table>
+<thead>
+<tr>
+<th>数据类别</th>
+<th>放置方式</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>当前函数临时使用</td>
+<td>函数内部的局部变量</td>
+<td><code>sys_pgaccess()</code> 中的 <code>mask</code></td>
+</tr>
+<tr>
+<td>每个进程各有一份，跨调用保存</td>
+<td><code>struct proc</code> 的成员</td>
+<td><code>trace_mask</code>、<code>usyscall</code> 指针</td>
+</tr>
+<tr>
+<td>整个内核共用一份</td>
+<td>在一个 <code>.c</code> 中定义全局变量</td>
+<td><code>vm.c</code> 中的 <code>kernel_pagetable</code></td>
+</tr>
+<tr>
+<td>多个文件需要使用的类型</td>
+<td>头文件中的结构体或类型定义</td>
+<td><code>struct usyscall</code>、<code>pagetable_t</code></td>
+</tr>
+<tr>
+<td>固定数值或位标志</td>
+<td>合适头文件中的宏</td>
+<td><code>USYSCALL</code>、<code>PTE_A</code></td>
+</tr>
+<tr>
+<td>已经由硬件结构保存的状态</td>
+<td>直接读取对应结构</td>
+<td>PTE 中的访问位 <code>A</code></td>
+</tr>
+</tbody></table>
+<p>特别注意：<strong>结构体类型、结构体成员、全局变量，是三种不同的东西。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 定义一种数据格式。</span><br><span class="line">struct usyscall &#123;</span><br><span class="line">  int pid;</span><br><span class="line">&#125;;</span><br><span class="line">// 在每个进程中保存一个指针。</span><br><span class="line">struct proc &#123;</span><br><span class="line">  // 其他字段……</span><br><span class="line">  struct usyscall *usyscall;</span><br><span class="line">&#125;;</span><br><span class="line">// 写在函数和结构体之外，会定义一个全局变量。</span><br><span class="line">struct usyscall *usyscall;</span><br></pre></td></tr></table></figure>
+
+<p>第三种写法如果放在被多个源文件包含的头文件里，就可能产生你遇到的 <code>multiple definition</code>。</p>
+<p>跨文件共享全局变量时，采用“一处定义，其他地方声明”：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// vm.c：定义，实际存在一份变量。</span><br><span class="line">pagetable_t kernel_pagetable;</span><br><span class="line">// 使用它的文件或共享头文件：声明。</span><br><span class="line">extern pagetable_t kernel_pagetable;</span><br></pre></td></tr></table></figure>
+
+<p><strong>四、头文件、函数声明和函数实现怎样连接</strong></p>
+<p>假设在 <code>vm.c</code> 实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">void</span><br><span class="line">vmprint(pagetable_t pagetable)</span><br><span class="line">&#123;</span><br><span class="line">  // 实际算法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其他内核文件要调用它，需要知道函数的参数和返回类型，所以在 <code>defs.h</code> 声明：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void vmprint(pagetable_t);</span><br></pre></td></tr></table></figure>
+
+<p><code>sysproc.c</code> 包含该头文件后，就可以调用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#include &quot;defs.h&quot;</span><br><span class="line"></span><br><span class="line">// 某个函数内部</span><br><span class="line">vmprint(kernel_pagetable);</span><br></pre></td></tr></table></figure>
+
+<p>整个过程是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">编译时：根据头文件中的声明检查调用是否合法</span><br><span class="line">链接时：找到 vm.c 编译出的函数实现，连接调用位置</span><br><span class="line">运行时：直接跳转到函数对应的机器指令</span><br></pre></td></tr></table></figure>
+
+<p>对于仅供当前文件使用的辅助函数，可以使用 <code>static</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">static void</span><br><span class="line">vmprint_level(pagetable_t pagetable, int level)</span><br><span class="line">&#123;</span><br><span class="line">  // 辅助算法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种函数通常无需放进 <code>defs.h</code>。把定义放在调用者之前，编译器就能直接看到它。</p>
+<p><strong>五、系统调用的完整执行链</strong></p>
+<p>以：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uint mask;</span><br><span class="line">int ret = pgaccess(buf, 8, &amp;mask);</span><br></pre></td></tr></table></figure>
+
+<p>为例，完整过程如下。</p>
+<p><strong>1．用户调用接口。</strong></p>
+<p><code>user/user.h</code> 提供声明：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int pgaccess(void *start, int npages, void *mask);</span><br></pre></td></tr></table></figure>
+
+<p>编译器按调用约定传递参数，前三个参数分别使用 <code>a0、a1、a2</code>。</p>
+<p><strong>2．汇编入口发出系统调用。</strong></p>
+<p><code>user/usys.pl</code> 中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">entry(&quot;pgaccess&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>生成的入口大致是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pgaccess:</span><br><span class="line">    li a7, SYS_pgaccess</span><br><span class="line">    ecall</span><br><span class="line">    ret</span><br></pre></td></tr></table></figure>
+
+<p><code>a7</code> 标识请求哪项服务，<code>ecall</code> 触发进入内核的异常。</p>
+<p><strong>3．硬件和跳板代码完成入口处理。</strong></p>
+<p>硬件记录异常原因和返回位置，切换到相应的特权级与异常入口。<code>trampoline.S</code> 中的代码保存用户寄存器、切换到内核页表等，然后进入 <code>trap.c</code> 的 <code>usertrap()</code>。</p>
+<p><strong>页表切换需要软件完成，执行 <code>ecall</code> 本身不会自动替 xv6 切换页表。</strong></p>
+<p><strong>4．<code>usertrap()</code> 识别系统调用。</strong></p>
+<p>你的版本中，用户态 <code>ecall</code> 对应：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if(r_scause() == 8)&#123;</span><br><span class="line">  // ...</span><br><span class="line">  p-&gt;trapframe-&gt;epc += 4;</span><br><span class="line">  syscall();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>epc += 4</code> 让返回用户态时从 <code>ecall</code> 后面的指令继续执行。</p>
+<p><strong>5．<code>syscall()</code> 根据编号分发。</strong></p>
+<p><code>kernel/syscall.c</code> 从保存的寄存器中取得编号：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">num = p-&gt;trapframe-&gt;a7;</span><br></pre></td></tr></table></figure>
+
+<p>验证编号后，通过分发表调用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;trapframe-&gt;a0 = syscalls[num]();</span><br></pre></td></tr></table></figure>
+
+<p>对应的表项是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[SYS_pgaccess] = sys_pgaccess,</span><br></pre></td></tr></table></figure>
+
+<p>处理函数<strong>每次请求最多执行一次</strong>；trace 日志读取已保存的返回值。这正是之前重复执行 <code>sbrk()</code> 出错的地方。</p>
+<p><strong>6．处理函数读取参数，执行工作。</strong></p>
+<p><code>kernel/sysproc.c</code> 中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line">sys_pgaccess(void)</span><br><span class="line">&#123;</span><br><span class="line">  // 通过 argaddr、argint 读取保存的用户参数。</span><br><span class="line">  // 调用 walk、copyout 等内核函数完成任务。</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>处理函数的 C 参数列表为空，是因为系统调用参数通过保存的寄存器取得。</p>
+<p><strong>7．返回用户程序。</strong></p>
+<p>处理函数返回值被保存到 <code>trapframe-&gt;a0</code>。随后由 <code>prepare_return()</code> 和跳板返回代码准备、恢复用户状态，最终通过 <code>sret</code> 回到用户态。</p>
+<p>用户入口中的 <code>ret</code> 再返回原来的 C 调用位置，用户的 <code>ret</code> 变量得到系统调用结果。</p>
+<p><strong>六、用户地址与内核地址怎样传递</strong></p>
+<p>用户传入的指针，在内核中通常先存入 <code>uint64</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uint64 addr;</span><br><span class="line">argaddr(0, &amp;addr);</span><br></pre></td></tr></table></figure>
+
+<p>这里得到的是<strong>用户虚拟地址的数值</strong>。<code>argaddr()</code> 取出参数值，本身不保证它有效。</p>
+<p>内核使用自己的页表，因此涉及用户内存内容时，通常使用以下函数：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>数据方向</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>copyin()</code></td>
+<td>用户内存 → 内核缓冲区</td>
+</tr>
+<tr>
+<td><code>copyout()</code></td>
+<td>内核缓冲区 → 用户内存</td>
+</tr>
+<tr>
+<td><code>copyinstr()</code></td>
+<td>用户字符串 → 内核缓冲区</td>
+</tr>
+</tbody></table>
+<p>你虚拟机里的 <code>copyout()</code> 使用四个参数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">copyout(用户页表, 用户目标地址, 内核源地址, 字节数);</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">copyout(p-&gt;pagetable, maskaddr,</span><br><span class="line">        (char *)&amp;mask, sizeof(mask));</span><br></pre></td></tr></table></figure>
+
+<p>内核根据用户页表找到目标物理页，再复制数据。不同 xv6 版本的函数原型可能不同，<strong>以当前项目的 <code>defs.h</code> 声明和函数定义为准</strong>。</p>
+<p><strong>七、编写内核功能时，按哪条路线修改文件</strong></p>
+<p>首先判断功能属于哪一种情况。</p>
+<table>
+<thead>
+<tr>
+<th>功能类型</th>
+<th>典型例子</th>
+<th>需要的路线</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>仅供内核调用的功能</td>
+<td>页表遍历辅助函数</td>
+<td>对应 <code>.c</code> 实现；跨文件使用时补声明</td>
+</tr>
+<tr>
+<td>用户需要请求内核执行</td>
+<td><code>pgaccess()</code></td>
+<td>增加系统调用入口、编号、分发和处理函数</td>
+</tr>
+<tr>
+<td>普通用户函数即可完成</td>
+<td><code>ugetpid()</code> 的读取部分</td>
+<td><code>ulib.c</code> 实现、<code>user.h</code> 声明</td>
+</tr>
+<tr>
+<td>新增每进程资源</td>
+<td><code>ugetpid()</code> 的共享页</td>
+<td>增加进程字段，并补齐分配、映射和回收</td>
+</tr>
+</tbody></table>
+<p>对于一个新的系统调用，通常按下面的顺序编写：</p>
+<ol>
+<li><strong>确定接口</strong>：用户传什么参数，返回什么结果，哪些输入应当失败。</li>
+<li><strong>确定数据位置</strong>：临时变量、进程字段、全局变量，或已有页表状态。</li>
+<li><strong>实现核心操作</strong>：页表算法放 <code>vm.c</code>，进程资源管理放 <code>proc.c</code> 等合适模块。</li>
+<li><strong>补跨文件声明</strong>：需要公开的内核函数写入 <code>defs.h</code>。</li>
+<li><strong>实现 <code>sys_xxx()</code></strong>：在合适的系统调用文件中取参、检查参数、调用核心功能、返回结果。</li>
+<li><strong>注册内核入口</strong>：<code>syscall.h</code> 分配唯一编号，<code>syscall.c</code> 添加声明和分发表项；你的项目还需要 trace 名称。</li>
+<li><strong>建立用户入口</strong>：<code>user.h</code> 添加声明，<code>usys.pl</code> 添加 <code>entry(&quot;xxx&quot;)</code>。</li>
+<li><strong>编写用户测试并构建运行</strong>。</li>
+</ol>
+<p><code>sys_xxx()</code> 中的工作很短时，可以直接在里面实现，例如目前的 <code>sys_pgaccess()</code>。当算法较独立、较复杂，或多个地方需要使用时，再抽到对应模块。</p>
+<p><strong>八、涉及资源时，检查整个生命周期</strong></p>
+<p>增加一个资源，不能只看正常创建过程，还要考虑失败清理、<code>fork()</code>、<code>exec()</code> 和进程回收。</p>
+<p>以共享页为例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">allocproc()：分配物理页、初始化数据</span><br><span class="line">    ↓</span><br><span class="line">proc_pagetable()：把页面映射进用户页表</span><br><span class="line">    ↓</span><br><span class="line">进程使用</span><br><span class="line">    ↓</span><br><span class="line">proc_freepagetable()：解除特殊映射</span><br><span class="line">    ↓</span><br><span class="line">freeproc()：在进程回收时释放物理页</span><br></pre></td></tr></table></figure>
+
+<p><code>exec()</code> 会更换用户页表，但进程仍然存在，因此“销毁页表”和“释放进程资源”不总是同一件事。</p>
+<p><code>uvmunmap()</code> 的最后一个参数控制是否释放物理页：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uvmunmap(pagetable, va, npages, 0); // 解除映射</span><br><span class="line">uvmunmap(pagetable, va, npages, 1); // 解除映射并释放对应物理页</span><br></pre></td></tr></table></figure>
+
+<p>选择哪一种，取决于谁负责这个物理页的生命周期，避免同一物理页被重复释放。</p>
+<p><strong>九、什么时候需要修改 Makefile</strong></p>
+<table>
+<thead>
+<tr>
+<th>修改内容</th>
+<th>是否通常需要改 Makefile</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>在已有 <code>.c</code> 中增加函数</td>
+<td>不需要</td>
+</tr>
+<tr>
+<td>修改已有头文件</td>
+<td>不需要</td>
+</tr>
+<tr>
+<td>增加系统调用入口</td>
+<td>修改 <code>usys.pl</code>，现有构建规则会生成入口</td>
+</tr>
+<tr>
+<td>新增用户程序</td>
+<td>在 <code>UPROGS</code> 中加入 <code>$U/_程序名</code></td>
+</tr>
+<tr>
+<td>新增内核 <code>.c</code> 文件</td>
+<td>在 <code>OBJS</code> 中加入对应的 <code>.o</code></td>
+</tr>
+</tbody></table>
+<p>代码保存并重新编译后，要启动新内核验证。当前正在运行的 QEMU 不会自动使用刚编译出的内核。</p>
+<h2 id="OSLab4-内存分页机制"><a href="#OSLab4-内存分页机制" class="headerlink" title="OSLab4 - 内存分页机制"></a>OSLab4 - 内存分页机制</h2><p>首先明白xv6里面是如何进行映射的</p>
+<p>当前源码里的核心原型是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">pte_t</span> *<span class="title function_">walk</span><span class="params">(<span class="type">pagetable_t</span> pagetable, uint64 va, <span class="type">int</span> alloc)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">mappages</span><span class="params">(<span class="type">pagetable_t</span> pagetable, uint64 va, uint64 size,</span></span><br><span class="line"><span class="params">             uint64 pa, <span class="type">int</span> perm)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">kvmmap</span><span class="params">(<span class="type">pagetable_t</span> kpgtbl, uint64 va, uint64 pa,</span></span><br><span class="line"><span class="params">            uint64 sz, <span class="type">int</span> perm)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>walk()</code> 沿三级页表找到某个虚拟地址的 <strong>level 0 PTE</strong>；<code>alloc=1</code> 时会按需创建中间页表，<code>alloc=0</code> 时只查询。</p>
+<h3 id="1-print-pgtbl-打印进程前-10-个和最后-10-个虚拟页"><a href="#1-print-pgtbl-打印进程前-10-个和最后-10-个虚拟页" class="headerlink" title="1. print_pgtbl() 打印进程前 10 个和最后 10 个虚拟页"></a>1. print_pgtbl() 打印进程前 10 个和最后 10 个虚拟页</h3><p><strong>简短链路</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">kernel/sysproc.c</span><br><span class="line">  实现 sys_pgpte()，调用 walk() 查询当前进程的 PTE</span><br><span class="line">        ↓</span><br><span class="line">kernel/syscall.h / kernel/syscall.c</span><br><span class="line">  分配 SYS_pgpte 编号，注册处理函数</span><br><span class="line">        ↓</span><br><span class="line">user/user.h / user/usys.pl</span><br><span class="line">  声明 pgpte()，生成系统调用入口</span><br><span class="line">        ↓</span><br><span class="line">user/pgtbltest.c</span><br><span class="line">  print_pgtbl() 遍历前后各 10 页</span><br><span class="line">  print_one_pte() 调用 pgpte()，解析并打印结果</span><br><span class="line">        ↓</span><br><span class="line">Makefile</span><br><span class="line">  将新增的 pgtbltest 加入 UPROGS</span><br></pre></td></tr></table></figure>
+
+<p>依赖已有的 <code>vm.c:walk()</code>，以及 <code>riscv.h</code> 中的 <code>PGSIZE、MAXVA、PTE2PA、PTE_FLAGS</code>。<strong>查询发生在内核，解析和打印发生在用户程序。</strong></p>
+<p>**在系统调用里面编写函数原型 kernel&#x2F;sysproc.c **</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_pgpte</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 va;</span><br><span class="line">  <span class="type">pte_t</span> *pte;</span><br><span class="line"></span><br><span class="line">  argaddr(<span class="number">0</span>, &amp;va);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (va &gt;= MAXVA)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  pte = walk(myproc()-&gt;pagetable, va, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (pte == <span class="number">0</span> || (*pte &amp; PTE_V) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> *pte;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>先写“查询并打印一个页”的函数 user&#x2F;pgtbltest.c</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/riscv.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span></span><br><span class="line"><span class="title function_">print_one_pte</span><span class="params">(uint64 va)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 pte = pgpte((<span class="type">void</span> *)va);</span><br><span class="line">  uint64 pa = (pte &amp; PTE_V) ? PTE2PA(pte) : <span class="number">0</span>;</span><br><span class="line">  uint perm = PTE_FLAGS(pte) &amp; <span class="number">0xff</span>;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;va %p pte %p pa %p perm 0x%x\n&quot;</span>,</span><br><span class="line">         (<span class="type">void</span> *)va, (<span class="type">void</span> *)pte, (<span class="type">void</span> *)pa, perm);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">print_pgtbl</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    print_one_pte((uint64)i * PGSIZE);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">10</span>; i &gt; <span class="number">0</span>; i--)</span><br><span class="line">    print_one_pte(MAXVA - (uint64)i * PGSIZE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  print_pgtbl();</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第一行调用 <code>pgpte()</code> 获得原始页表项。<code>va</code> 存储为整数，接口参数类型是 <code>void *</code>，因此需要显式转换；这里仅传递地址值，没有读取该地址中的数据。</p>
+<p>第二行提取物理页基址。<code>PTE2PA()</code> 在源码中定义为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> PTE2PA(pte) (((pte) &gt;&gt; 10) &lt;&lt; 12)</span></span><br></pre></td></tr></table></figure>
+
+<p>PTE 的低 10 位用于标志等信息，先右移 10 位取出物理页号；每页是 <code>2^12</code> 字节，再左移 12 位得到物理页基址。这里传入的 <code>va</code> 都是页起始地址，所以无需再加页内偏移。</p>
+<p>第三行解析标志：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uint perm = PTE_FLAGS(pte) &amp; <span class="number">0xff</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>PTE_FLAGS()</code> 先取出低 10 位；讲义要求观察低 8 位，所以再与 <code>0xff</code>。</p>
+<p><img src="/....%5Cimages%5Coslab1.png"></p>
+<h3 id="2-vmprint-递归打印三级页表"><a href="#2-vmprint-递归打印三级页表" class="headerlink" title="2.vmprint() 递归打印三级页表"></a>2.vmprint() 递归打印三级页表</h3><p><strong>简短链路</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">kernel/vm.c</span><br><span class="line">  实现 vmprint_level()：递归遍历</span><br><span class="line">  实现 vmprint()：打印根地址，启动递归</span><br><span class="line">        ↓</span><br><span class="line">kernel/defs.h</span><br><span class="line">  声明内核 vmprint(pagetable_t)</span><br><span class="line">        ↓</span><br><span class="line">kernel/sysproc.c</span><br><span class="line">  实现 sys_vmprint()，选择并传入 kernel_pagetable</span><br><span class="line">        ↓</span><br><span class="line">kernel/syscall.h / kernel/syscall.c</span><br><span class="line">  分配 SYS_vmprint 编号，注册处理函数</span><br><span class="line">        ↓</span><br><span class="line">user/user.h / user/usys.pl</span><br><span class="line">  声明用户 vmprint()，生成系统调用入口</span><br><span class="line">        ↓</span><br><span class="line">user/pgtbltest.c</span><br><span class="line">  调用 vmprint() 发出请求</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>1．先理解递归时做什么</strong></p>
+<p>一张页表有 512 个 PTE。对每个条目，先检查 <code>PTE_V</code>，无效就跳过；有效则打印索引、PTE 和物理地址，然后决定是否继续向下：</p>
+<table>
+<thead>
+<tr>
+<th>条目类型</th>
+<th>如何识别</th>
+<th><code>PTE2PA(pte)</code> 的含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>指向下一级页表</td>
+<td>正常情况下 <code>R/W/X</code> 全为 0</td>
+<td>下一张页表的物理地址</td>
+</tr>
+<tr>
+<td>叶子 PTE</td>
+<td>设置了 <code>R</code> 或 <code>X</code></td>
+<td>被映射内存区域的物理基址</td>
+</tr>
+</tbody></table>
+<p>遍历顺序是 <code>level 2 → level 1 → level 0</code>。普通 4 KB 页在 level 0 出现叶子；后续超级页实验会在 level 1 提前出现叶子，所以<strong>遇到叶子就停止向下递归</strong>。</p>
+<p>2．在 <code>kernel/vm.c</code> 中写递归辅助函数</p>
+<p><strong>遍历函数为什么写在 <code>kernel/vm.c</code>？</strong></p>
+<p>因为这个文件本来就负责页表管理，已有 <code>walk()</code>、<code>mappages()</code> 等函数。<code>vmprint()</code> 也是对页表的操作，放在这里便于集中管理。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span></span><br><span class="line"><span class="title function_">vmprint_level</span><span class="params">(<span class="type">pagetable_t</span> pagetable, <span class="type">int</span> level)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">512</span>; i++)&#123;</span><br><span class="line">    <span class="type">pte_t</span> pte = pagetable[i];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>((pte &amp; PTE_V) == <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">    uint64 pa = PTE2PA(pte);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// level 2、1、0 分别缩进 1、2、3 次。</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; <span class="number">3</span> - level; j++)</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot; ..&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d: pte %p pa %p&quot;</span>,</span><br><span class="line">           i, (<span class="type">void</span> *)pte, (<span class="type">void</span> *)pa);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(level == <span class="number">0</span> || (pte &amp; (PTE_R | PTE_X)))&#123;</span><br><span class="line">      <span class="comment">// 叶子：打印权限，结束这条分支。</span></span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot; perm 0x%lx\n&quot;</span>, PTE_FLAGS(pte) &amp; <span class="number">0xff</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// 非叶子：pa 指向下一张页表。</span></span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">      vmprint_level((<span class="type">pagetable_t</span>)pa, level - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">vmprint</span><span class="params">(<span class="type">pagetable_t</span> pagetable)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;page table %p\n&quot;</span>, (<span class="type">void</span> *)pagetable);</span><br><span class="line">  vmprint_level(pagetable, <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>pagetable[i]</code> 取出当前页表第 <code>i</code> 个条目的<strong>值</strong>；每一级九位可表示512个页表（地址），遍历这些表项</li>
+<li><code>continue</code>跳过无效表项</li>
+<li>取出物理地址</li>
+<li>保持缩进打印相关信息</li>
+<li>如果是叶子节点结束分支否则递归调用进入下一级</li>
+<li>调用的时候先打印根页表地址再从level2开始遍历</li>
+</ul>
+<p><strong>3．编写系统调用处理函数。</strong></p>
+<p>在 <code>kernel/sysproc.c</code> 中加入：</p>
+<p><strong>系统调用处理函数为什么写在 <code>kernel/sysproc.c</code>？</strong></p>
+<p>这个文件负责一组与进程有关的系统调用处理。这里的处理函数承担“选择页表，再调用打印功能”的工作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="type">pagetable_t</span> kernel_pagetable;</span><br><span class="line"></span><br><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_vmprint</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  vmprint(kernel_pagetable);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码把两件事连接起来：<code>kernel_pagetable</code> 提供数据，<code>vmprint()</code> 提供算法。将来想打印当前进程的用户页表</p>
+<p>为了让 <code>sysproc.c</code> 知道这个入口的类型，需要在 <strong><code>kernel/defs.h</code> 的页表函数声明区域</strong>加入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">vmprint</span><span class="params">(<span class="type">pagetable_t</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>sysproc.c</code> 已包含 <code>defs.h</code>，编译器因此知道如何检查这个函数调用；最终链接时，再把调用与 <code>vm.c</code> 中的实现连接起来。</p>
+<p><strong>4．把系统调用接起来</strong></p>
+<p><strong>5. 编写测试程序</strong></p>
+<p>把 <code>user/pgtbltest.c</code> 的 <code>main()</code> 改为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  print_pgtbl();</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;kernel page table:\n&quot;</span>);</span><br><span class="line">  vmprint();</span><br><span class="line"></span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../../images/oslab2.png"></p>
+<h3 id="3-pgaccess-test-：检测被访问的页"><a href="#3-pgaccess-test-：检测被访问的页" class="headerlink" title="3. pgaccess_test()：检测被访问的页"></a>3. pgaccess_test()：检测被访问的页</h3><p><strong>简短链路</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kernel/riscv.h〔定义 PTE_A〕</span><br><span class="line">→ kernel/sysproc.c〔实现 sys_pgaccess〕</span><br><span class="line">→ kernel/syscall.h / syscall.c〔注册 SYS_pgaccess〕</span><br><span class="line">→ user/user.h / user/usys.pl〔提供 pgaccess 接口〕</span><br><span class="line">→ user/pgtbltest.c〔编写 pgaccess_test〕</span><br></pre></td></tr></table></figure>
+
+<p>使用已有的 <code>walk()</code>、<code>copyout()</code>，核心算法写在 <strong><code>kernel/sysproc.c</code> 末尾</strong></p>
+<p><strong>1．先确定函数的输入和输出。</strong></p>
+<p>用户接口是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">pgaccess</span><span class="params">(<span class="type">void</span> *start, <span class="type">int</span> npages, <span class="type">void</span> *mask)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uint mask;</span><br><span class="line">int ret = pgaccess(buf, 8, &amp;mask);</span><br></pre></td></tr></table></figure>
+
+<p>这表示检查从 <code>buf</code> 所在页面开始的 8 页。<code>ret</code> 返回成功或失败，<code>mask</code> 保存访问结果，<strong>第 <code>i</code> 位对应范围中的第 <code>i</code> 页</strong>。</p>
+<p>假设只访问了第 <code>1、3、6</code> 页：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mask = (<span class="number">1U</span> &lt;&lt; <span class="number">1</span>) | (<span class="number">1U</span> &lt;&lt; <span class="number">3</span>) | (<span class="number">1U</span> &lt;&lt; <span class="number">6</span>)</span><br><span class="line">     = <span class="number">0x4A</span></span><br></pre></td></tr></table></figure>
+
+<p>查询完成后清除这些页面的访问位，下一次就能观察新的访问。</p>
+<p><strong>2．准备访问位定义。</strong></p>
+<p>在 <code>kernel/riscv.h</code> 的其他 <code>PTE_*</code> 定义旁边，确认有：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#define PTE_A (1L &lt;&lt; 6)</span><br></pre></td></tr></table></figure>
+
+<p><code>PTE_A</code> 对应 <code>0x40</code>。在本实验环境中，硬件访问页面时会设置这个标志，操作系统负责读取和清除它。</p>
+<p><strong>3．实现内核处理函数。</strong></p>
+<p>在 <code>kernel/sysproc.c</code> 末尾添加下面的独立函数；已有实现可以直接对照：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_pgaccess</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 start; <span class="comment">//查询起始页地址</span></span><br><span class="line">  uint64 maskaddr; <span class="comment">//结果写回的地址</span></span><br><span class="line">  <span class="type">int</span> npages;</span><br><span class="line">  uint mask = <span class="number">0</span>;</span><br><span class="line">  <span class="type">pte_t</span> *ptes[<span class="number">32</span>];</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">  argaddr(<span class="number">0</span>, &amp;start);</span><br><span class="line">  argint(<span class="number">1</span>, &amp;npages);</span><br><span class="line">  argaddr(<span class="number">2</span>, &amp;maskaddr);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 检查参数。</span></span><br><span class="line">  <span class="keyword">if</span>(npages &lt;= <span class="number">0</span> || npages &gt; <span class="number">32</span> || start &gt;= MAXVA)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">  start = PGROUNDDOWN(start);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>((uint64)npages &gt; (MAXVA - start) / PGSIZE)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 查询页面，生成访问位掩码。</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; npages; i++)&#123;</span><br><span class="line">    uint64 va = start + (uint64)i * PGSIZE;</span><br><span class="line">    <span class="type">pte_t</span> *pte = walk(p-&gt;pagetable, va, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(pte == <span class="number">0</span> ||</span><br><span class="line">       (*pte &amp; PTE_V) == <span class="number">0</span> ||</span><br><span class="line">       (*pte &amp; PTE_U) == <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    ptes[i] = pte;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(*pte &amp; PTE_A)</span><br><span class="line">      mask |= <span class="number">1U</span> &lt;&lt; i;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 将结果写回用户。</span></span><br><span class="line">  <span class="keyword">if</span>(copyout(p-&gt;pagetable, maskaddr,</span><br><span class="line">             (<span class="type">char</span> *)&amp;mask, <span class="keyword">sizeof</span>(mask)) &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 写回成功后，清除访问记录。</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; npages; i++)</span><br><span class="line">    *ptes[i] &amp;= ~PTE_A;</span><br><span class="line"></span><br><span class="line">  sfence_vma();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查参数结果变量 <code>mask</code> 是 32 位，因此最多记录 32 页。地址也必须位于 xv6 支持的范围内</li>
+<li><code>start = PGROUNDDOWN(start);</code>访问位属于整页，所以把地址对齐到所在页的起点。例如 <code>0x1234</code> 对齐为 <code>0x1000</code></li>
+<li><code>if((uint64)npages &gt; (MAXVA - start) / PGSIZE)</code> 右侧计算从起点到地址上界还剩多少完整页面，确保整个查询范围合法。使用这个判断也避免了直接相加检查上界时的溢出问题</li>
+<li><code>if(*pte &amp; PTE_A)</code> 循环查询npage个页面是否被访问，把<code>mask</code>结果中的对应位置为 <code>1</code></li>
+<li>调用<code>copyout</code>将内核态的数据写回用户态</li>
+<li>根据pte数组清除访问记录</li>
+<li><code>sfence_vma();</code> 使当前 CPU 后续的地址转换遵循更新后的页表状态，避免之前缓存的状态影响新一轮访问位观察</li>
+</ul>
+<h3 id="4-etpid-test-：共享页加速-getpid"><a href="#4-etpid-test-：共享页加速-getpid" class="headerlink" title="4. etpid_test()：共享页加速 getpid"></a>4. etpid_test()：共享页加速 getpid</h3><p><strong>简短链路</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kernel/memlayout.h〔共享地址、数据格式〕</span><br><span class="line">→ kernel/proc.h〔记录共享页指针〕</span><br><span class="line">→ kernel/proc.c〔分配、初始化、映射、回收〕</span><br><span class="line">→ user/ulib.c / user/user.h〔实现并声明 ugetpid〕</span><br><span class="line">→ user/pgtbltest.c〔验证〕</span><br></pre></td></tr></table></figure>
+
+<p><strong>1．核心思路：提前准备数据，用户直接读取。</strong></p>
+<p>普通 <code>getpid()</code> 每次都需要进入内核。PID 在进程生命周期中保持不变，所以可以在创建进程时写入一个页面，并映射给用户读取：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">内核地址 p-&gt;usyscall ──→ 同一个物理页 ←── 用户地址 USYSCALL</span><br><span class="line">        可写             保存 PID             只读</span><br></pre></td></tr></table></figure>
+
+<p>每个进程有自己的物理页。虽然用户地址都叫 <code>USYSCALL</code>，但不同进程的页表会将它映射到不同物理页。</p>
+<p><strong>2．确定页面的位置和内容。</strong></p>
+<p>在 <code>kernel/memlayout.h</code> 的 <code>TRAPFRAME</code> 定义后面加入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> USYSCALL (TRAPFRAME - PGSIZE)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> __ASSEMBLER__</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">usyscall</span> &#123;</span></span><br><span class="line">  <span class="type">int</span> pid;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>用户地址空间顶部的布局变成：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MAXVA</span><br><span class="line">┌─────────────────┐</span><br><span class="line">│ TRAMPOLINE      │</span><br><span class="line">├─────────────────┤</span><br><span class="line">│ TRAPFRAME       │</span><br><span class="line">├─────────────────┤</span><br><span class="line">│ USYSCALL        │</span><br><span class="line">└─────────────────┘</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>kernel/proc.h</code> 的 <strong><code>struct proc</code> 内部</strong>保存页面指针：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">usyscall</span> *<span class="title">usyscall</span>;</span>c</span><br></pre></td></tr></table></figure>
+
+<p>这只是记录位置。实际物理页需要后面通过 <code>kalloc()</code> 分配。</p>
+<p><strong>3．创建进程时，分配页面并写入 PID。</strong></p>
+<p>在 <code>kernel/proc.c</code> 的 <code>allocproc()</code> 中，放在 <strong>PID 已经赋值之后、调用 <code>proc_pagetable(p)</code> 之前</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;usyscall = (<span class="keyword">struct</span> usyscall *)kalloc();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(p-&gt;usyscall == <span class="number">0</span>)&#123;</span><br><span class="line">  freeproc(p);</span><br><span class="line">  release(&amp;p-&gt;lock);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">memset</span>(p-&gt;usyscall, <span class="number">0</span>, PGSIZE);</span><br><span class="line">p-&gt;usyscall-&gt;pid = p-&gt;pid;</span><br></pre></td></tr></table></figure>
+
+<p>这里的算法很直接：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">申请一个物理页</span><br><span class="line">    → 检查是否成功</span><br><span class="line">    → 清零整个页面</span><br><span class="line">    → 将当前进程 PID 写入页面开头</span><br></pre></td></tr></table></figure>
+
+<p>虽然结构体只有一个 <code>int</code>，仍要分配完整页面，因为分页映射以页为单位。清零整个页面也能避免把旧数据暴露给用户。</p>
+<p>这时已经有物理页，但用户还不能通过 <code>USYSCALL</code> 访问它，下一步需要建立映射。</p>
+<p><strong>4．在用户页表中建立只读映射。</strong></p>
+<p>在 <code>kernel/proc.c</code> 的 <code>proc_pagetable()</code> 中，已有 <code>TRAMPOLINE</code> 和 <code>TRAPFRAME</code> 映射成功之后、<code>return pagetable;</code> 之前加入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(mappages(pagetable, USYSCALL, PGSIZE,</span><br><span class="line">            (uint64)p-&gt;usyscall, PTE_R | PTE_U) &lt; <span class="number">0</span>)&#123;</span><br><span class="line">  uvmunmap(pagetable, TRAPFRAME, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">  uvmunmap(pagetable, TRAMPOLINE, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">  uvmfree(pagetable, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参数对应关系是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mappages(</span><br><span class="line">  pagetable,              <span class="comment">// 要修改的用户页表</span></span><br><span class="line">  USYSCALL,               <span class="comment">// 用户虚拟地址</span></span><br><span class="line">  PGSIZE,                 <span class="comment">// 映射一页</span></span><br><span class="line">  (uint64)p-&gt;usyscall,     <span class="comment">// 物理页地址，来自内核直接映射区</span></span><br><span class="line">  PTE_R | PTE_U           <span class="comment">// 用户可读</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p><code>mappages()</code> 自动补上 <code>PTE_V</code>，因此初始标志为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PTE_V | PTE_R | PTE_U = <span class="number">0x13</span></span><br></pre></td></tr></table></figure>
+
+<p>这里需要特别记住两个权限：</p>
+<ul>
+<li><code>PTE_U</code>：允许用户态访问；缺少它就会出现你之前的读取页故障。</li>
+<li><code>PTE_W</code>：这次不设置，从而禁止用户修改共享页。</li>
+</ul>
+<p>内核仍可通过自己的可写映射初始化该物理页。<strong>权限属于映射，同一个物理页在不同映射下可以有不同权限。</strong></p>
+<p><strong>5．用户函数只需要读取这个固定地址。</strong></p>
+<p>在 <code>user/ulib.c</code> 顶部确认包含：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/riscv.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/memlayout.h&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>在文件末尾添加：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">ugetpid</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">usyscall</span> *<span class="title">u</span> =</span> (<span class="keyword">struct</span> usyscall *)USYSCALL;</span><br><span class="line">  <span class="keyword">return</span> u-&gt;pid;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>user/user.h</code> 声明：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">ugetpid</span><span class="params">(<span class="type">void</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>执行到 <code>u-&gt;pid</code> 时，CPU 根据当前用户页表翻译 <code>USYSCALL</code>，随后读取共享页中的 PID。整个过程没有 <code>ecall</code>。</p>
+<p><strong>6．销毁页表时，解除共享页映射。</strong></p>
+<p>在 <code>kernel/proc.c</code> 的 <code>proc_freepagetable()</code> 中，其他特殊页解除映射附近加入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uvmunmap(pagetable, USYSCALL, <span class="number">1</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>它必须发生在最终释放页表结构的 <code>uvmfree()</code> 之前。</p>
+<p>最后一个参数使用 <code>0</code>，表示只解除映射。这是因为 <strong><code>exec()</code> 会销毁旧用户页表，但进程仍然存在，共享物理页还要继续使用</strong>。</p>
+<p><strong>7．回收进程时，释放共享物理页。</strong></p>
+<p>在 <code>kernel/proc.c</code> 的 <code>freeproc()</code> 中，原有用户页表释放逻辑之后加入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if(p-&gt;usyscall)&#123;</span><br><span class="line">  kfree((void *)p-&gt;usyscall);</span><br><span class="line">  p-&gt;usyscall = 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这时才真正结束该页面的生命周期。把指针清零，也方便后续复用进程槽位和处理创建失败的情况。</p>
+<p>整套生命周期是：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>共享页怎样处理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>创建进程</td>
+<td>分配一页，写入 PID</td>
+</tr>
+<tr>
+<td>创建用户页表</td>
+<td>将该页映射到 <code>USYSCALL</code></td>
+</tr>
+<tr>
+<td><code>fork()</code></td>
+<td>子进程通过 <code>allocproc()</code> 获得自己的页面，保存自己的 PID</td>
+</tr>
+<tr>
+<td><code>exec()</code></td>
+<td>新页表重新映射当前进程已有的页面</td>
+</tr>
+<tr>
+<td>销毁旧页表</td>
+<td>解除映射，保留物理页</td>
+</tr>
+<tr>
+<td>最终回收进程</td>
+<td>释放物理页</td>
+</tr>
+</tbody></table>
+<p>普通堆也应止于 <code>USYSCALL</code> 之前；这一点由前面已经添加到 <code>growproc()</code> 和 <code>sys_sbrk()</code> 延迟分配分支中的上界检查保证。</p>
+<h3 id="5-ksuper-test-：内核超级页"><a href="#5-ksuper-test-：内核超级页" class="headerlink" title="5. ksuper_test()：内核超级页"></a>5. ksuper_test()：内核超级页</h3><p>目的：修改内核页表，使用 2MB 超级页代替大量 4KB 页，减少页表内存占用和 TLB miss。<br>• RISC-V 支持 2MB 超级页。普通页在 level 0 建立叶子 PTE，超级页则在 level 1 直接建立叶子 PTE，跳过 level 0 页表。 要点：在 level 1 PTE 上设置 PTE_V 和 PTE_R，PPN 指向 2MB 对齐的物理区域，硬件识别为叶子，翻译时跳过 level 0。超级页映射的是内核的连续物理区域（内核代码、数据、设备区），不由kalloc 逐页分配复制 mappages 专给 kvmmap 用，满足 2MB 对齐且 ≥2MB 时用超级页，不满足部分回退 4KB；原 mappages 不变，用户页表仍用 4KB 页</p>
+<p><strong>简短链路</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kernel/riscv.h〔定义超级页大小〕</span><br><span class="line">→ kernel/vm.c〔增加内核专用映射算法，修改 kvmmap〕</span><br><span class="line">→ 现有 vmprint〔观察叶子所在层级〕</span><br><span class="line">→ user/pgtbltest.c〔运行验证〕</span><br></pre></td></tr></table></figure>
+
+<p><strong>1．先理解映射结构怎样变化。</strong></p>
+<p>普通 4 KB 页需要走到 level 0：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">level 2：指向下一级</span><br><span class="line">    ↓</span><br><span class="line">level 1：指向下一级</span><br><span class="line">    ↓</span><br><span class="line">level 0：叶子 PTE → 4 KB 物理页</span><br></pre></td></tr></table></figure>
+
+<p>2 MB 超级页在 level 1 就结束：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">level 2：指向下一级</span><br><span class="line">    ↓</span><br><span class="line">level 1：叶子 PTE → 2 MB 物理区域</span><br></pre></td></tr></table></figure>
+
+<p>一个 2 MB 区域包含 512 个 4 KB 页。使用超级页后，这个区域可以省掉一张 level 0 页表，并让一个 TLB 条目覆盖更大的范围。</p>
+<p><strong>页大小由叶子所在层级决定，不需要增加“超级页标志位”。</strong> 在 level 1 的 PTE 中设置正常的读、写、执行权限，硬件就会将它识别为超级页叶子。</p>
+<p><strong>2．什么时候可以使用超级页？</strong></p>
+<p>一次映射中的某一段，必须同时满足：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">虚拟地址按 2 MB 对齐</span><br><span class="line">物理地址按 2 MB 对齐</span><br><span class="line">当前剩余长度至少为 2 MB</span><br><span class="line">这段区域使用一致的权限</span><br></pre></td></tr></table></figure>
+
+<p>前三项可以直接检查。权限由本次映射的 <code>perm</code> 参数统一指定；内核代码段和数据段原本就分开调用映射函数，因此不能为了凑够 2 MB 而跨越调用所指定的边界。</p>
+<p>不满足条件时，继续使用 4 KB 页：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">起始零碎部分：4 KB 页</span><br><span class="line">中间对齐部分：2 MB 超级页</span><br><span class="line">末尾不足部分：4 KB 页</span><br></pre></td></tr></table></figure>
+
+<p><strong>3．先定义超级页大小。</strong></p>
+<p>在 <code>kernel/riscv.h</code> 的 <code>PGSIZE</code> 附近加入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> SUPERPGSIZE (1L &lt;&lt; 21)</span></span><br></pre></td></tr></table></figure>
+
+<p>因为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">4 KB  = 2^12 字节</span><br><span class="line">2 MB  = 2^21 字节</span><br></pre></td></tr></table></figure>
+
+<p>判断地址是否对齐，可以使用：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">va % SUPERPGSIZE == <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>4．增加一个可以停在指定层级的页表查找函数。</strong></p>
+<p>原来的 <code>walk()</code> 总是走到 level 0，不能直接用它创建 level 1 叶子。因此新增一个内核映射专用的辅助函数。</p>
+<p>打开 <strong><code>kernel/vm.c</code></strong>，把下面函数放在现有 <code>kvmmap()</code> 定义之前：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">pte_t</span> *</span><br><span class="line"><span class="title function_">kvmwalk</span><span class="params">(<span class="type">pagetable_t</span> pagetable, uint64 va, <span class="type">int</span> target)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">if</span>(va &gt;= MAXVA)</span><br><span class="line">    panic(<span class="string">&quot;kvmwalk&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> level = <span class="number">2</span>; level &gt; target; level--)&#123;</span><br><span class="line">    <span class="type">pte_t</span> *pte = &amp;pagetable[PX(level, va)];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(*pte &amp; PTE_V)&#123;</span><br><span class="line">      <span class="comment">// 叶子已经映射了内存，不能把它当作下一级页表。</span></span><br><span class="line">      <span class="keyword">if</span>(*pte &amp; (PTE_R | PTE_W | PTE_X))</span><br><span class="line">        panic(<span class="string">&quot;kvmwalk: leaf&quot;</span>);</span><br><span class="line"></span><br><span class="line">      pagetable = (<span class="type">pagetable_t</span>)PTE2PA(*pte);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="type">pagetable_t</span> next = (<span class="type">pagetable_t</span>)kalloc();</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span>(next == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">      <span class="built_in">memset</span>(next, <span class="number">0</span>, PGSIZE);</span><br><span class="line"></span><br><span class="line">      *pte = PA2PTE(next) | PTE_V;</span><br><span class="line">      pagetable = next;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &amp;pagetable[PX(target, va)];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>PX(level, va)</code> 找出当前层的索引，取得当前level的页表索引地址</li>
+<li><code>*pte &amp; (PTE_R | PTE_W | PTE_X)</code>如果当前层级以及映射了内存纳闷就不能往下查了</li>
+<li><code>pagetable = (pagetable_t)PTE2PA(*pte);</code> 如果不是子叶就把地址取出进入下一轮查询</li>
+<li>如果无效地址就创建一个页表</li>
+<li><code>*pte = PA2PTE(next) | PTE_V;</code>随后，把新页表连接到父页表</li>
+<li>循环结束后，返回目标层的条目地址</li>
+</ul>
+<p>参数 <code>target</code> 决定停在哪一层：</p>
+<table>
+<thead>
+<tr>
+<th><code>target</code></th>
+<th>返回什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>0</code></td>
+<td>level 0 的 PTE 指针，用于建立 4 KB 映射</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>level 1 的 PTE 指针，用于建立 2 MB 映射</td>
+</tr>
+</tbody></table>
+<p>这里的关键变化是循环条件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">level &gt; target</span><br></pre></td></tr></table></figure>
+
+<p>例如 <code>target == 1</code>，循环只处理 level 2，然后返回 level 1 中对应条目的地址。</p>
+<p>另外，向下走之前必须确认当前条目不是叶子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(*pte &amp; (PTE_R | PTE_W | PTE_X))</span><br><span class="line">  panic(<span class="string">&quot;kvmwalk: leaf&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>否则可能把普通数据或代码区域误当成页表读取。遇到这种情况，说明新的映射请求与已有叶子映射发生了冲突。</p>
+<p>函数中的 <code>kalloc()</code> 仍然只分配 <strong>4 KB 的页表页</strong>。它没有分配被超级页映射的那块 2 MB 内存。</p>
+<p><strong>5．增加混合使用两种页大小的映射函数。</strong></p>
+<p>紧接着 <code>kvmwalk()</code>，继续放在 <code>kvmmap()</code> 之前：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span></span><br><span class="line"><span class="title function_">kvm_mappages</span><span class="params">(<span class="type">pagetable_t</span> pagetable, uint64 va,</span></span><br><span class="line"><span class="params">             uint64 size, uint64 pa, <span class="type">int</span> perm)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">if</span>(size == <span class="number">0</span> ||</span><br><span class="line">     va % PGSIZE != <span class="number">0</span> ||</span><br><span class="line">     pa % PGSIZE != <span class="number">0</span> ||</span><br><span class="line">     size % PGSIZE != <span class="number">0</span>)</span><br><span class="line">    panic(<span class="string">&quot;kvm_mappages: alignment&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(va &gt;= MAXVA || size &gt; MAXVA - va)</span><br><span class="line">    panic(<span class="string">&quot;kvm_mappages: range&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span>(size &gt; <span class="number">0</span>)&#123;</span><br><span class="line">    uint64 step = PGSIZE;</span><br><span class="line">    <span class="type">int</span> level = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 满足条件时，选择 level 1 的 2 MB 叶子。</span></span><br><span class="line">    <span class="keyword">if</span>(va % SUPERPGSIZE == <span class="number">0</span> &amp;&amp;</span><br><span class="line">       pa % SUPERPGSIZE == <span class="number">0</span> &amp;&amp;</span><br><span class="line">       size &gt;= SUPERPGSIZE)&#123;</span><br><span class="line">      step = SUPERPGSIZE;</span><br><span class="line">      level = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">pte_t</span> *pte = kvmwalk(pagetable, va, level);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(pte == <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(*pte &amp; PTE_V)</span><br><span class="line">      panic(<span class="string">&quot;kvm_mappages: remap&quot;</span>);</span><br><span class="line"></span><br><span class="line">    *pte = PA2PTE(pa) | perm | PTE_V;</span><br><span class="line"></span><br><span class="line">    va += step;</span><br><span class="line">    pa += step;</span><br><span class="line">    size -= step;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查是否满足创建超级页的条件，如果满足就创建超级页否则就用普通页</li>
+</ul>
+<p><strong>6．让 <code>kvmmap()</code> 使用新算法。</strong></p>
+<p>找到 <code>kernel/vm.c</code> 中已有的 <code>kvmmap()</code>，将内部调用改为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kvmmap</span><span class="params">(<span class="type">pagetable_t</span> kpgtbl, uint64 va, uint64 pa,</span></span><br><span class="line"><span class="params">       uint64 sz, <span class="type">int</span> perm)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">if</span>(kvm_mappages(kpgtbl, va, sz, pa, perm) != <span class="number">0</span>)</span><br><span class="line">    panic(<span class="string">&quot;kvmmap&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意两个函数的参数顺序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ckvmmap(..., va, pa, sz, perm)</span><br><span class="line">kvm_mappages(..., va, size, pa, perm)</span><br></pre></td></tr></table></figure>
+
+<p>这里按 <code>va, sz, pa</code> 传给新的映射函数。</p>
+<p>现在内核初始化时的路径变成：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kvmmake()</span><br><span class="line">    → kvmmap()</span><br><span class="line">    → kvm_mappages()</span><br><span class="line">    → 根据对齐和长度选择 level <span class="number">0</span> 或 level <span class="number">1</span></span><br><span class="line">    → kvmwalk() 找到目标 PTE</span><br></pre></td></tr></table></figure>
+
+<p>原来的 <code>walk()</code> 和 <code>mappages()</code> 保留，用户页表仍沿用原来的 4 KB 映射路径。新增的两个辅助函数都是 <code>static</code>，所以无需修改 <code>defs.h</code>。</p>
+<p><strong>7．理解一个实际映射例子。</strong></p>
+<p>假设内核正在映射一段直接映射区域：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">va = pa = <span class="number">0x80200000</span></span><br><span class="line">size = <span class="number">0x400000</span>，也就是 <span class="number">4</span> MB</span><br></pre></td></tr></table></figure>
+
+<p>这两个地址都按 2 MB 对齐：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">第一轮：</span><br><span class="line">level <span class="number">1</span> 叶子 → 映射 <span class="number">0x80200000</span> 开始的 <span class="number">2</span> MB</span><br><span class="line"></span><br><span class="line">第二轮：</span><br><span class="line">level <span class="number">1</span> 叶子 → 映射 <span class="number">0x80400000</span> 开始的 <span class="number">2</span> MB</span><br></pre></td></tr></table></figure>
+
+<p>整个 4 MB 区域只需要两个 level 1 叶子。若用普通页，则需要 1024 个 level 0 叶子，以及对应的下级页表。</p>
+<p>对于 2 MB 叶子，地址翻译时的页内偏移是低 21 位：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">物理地址 = 物理区域基址 + 虚拟地址低 <span class="number">21</span> 位</span><br></pre></td></tr></table></figure>
+
+<p>这也是物理基址必须按 2 MB 对齐的原因。</p>
+<p><strong>8．使用已经写好的 <code>vmprint()</code> 验证。</strong></p>
+<p>你的递归打印函数已经能够识别 level 1 的叶子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(level == <span class="number">0</span> || (pte &amp; (PTE_R | PTE_X)))</span><br></pre></td></tr></table></figure>
+
+<p>因此它会在超级页处打印权限并停止递归。</p>
+<p>可以让 <code>pgtbltest.c</code> 的 <code>main()</code> 暂时执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  vmprint();</span><br><span class="line">  pgaccess_test();</span><br><span class="line">  ugetpid_test();</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../../images/oslab3.png"></p>
+<h3 id="6-superpg-fork-superpg-free-——-用户超级页（选做）"><a href="#6-superpg-fork-superpg-free-——-用户超级页（选做）" class="headerlink" title="6. superpg_fork&#x2F;superpg_free —— 用户超级页（选做）"></a>6. superpg_fork&#x2F;superpg_free —— 用户超级页（选做）</h3><hr>
+<h2 id="OSLab5-中断机制"><a href="#OSLab5-中断机制" class="headerlink" title="OSLab5 - 中断机制"></a>OSLab5 - 中断机制</h2><p><strong>1．先区分普通函数调用和 Trap。</strong></p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>怎样触发</th>
+<th>返回位置主要保存在哪里</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>普通函数调用</td>
+<td><code>jal</code>、<code>jalr</code> 等调用指令</td>
+<td><code>ra</code>，必要时由函数保存到栈</td>
+</tr>
+<tr>
+<td>系统调用</td>
+<td>用户执行 <code>ecall</code></td>
+<td>硬件记录到 <code>sepc</code>，随后由内核保存</td>
+</tr>
+<tr>
+<td>设备中断</td>
+<td>设备或定时器产生中断</td>
+<td>硬件记录到 <code>sepc</code>，随后保存现场</td>
+</tr>
+<tr>
+<td>同步异常</td>
+<td>当前指令执行发生问题，例如页故障</td>
+<td>同样通过陷阱机制记录和处理</td>
+</tr>
+</tbody></table>
+<p>普通函数调用通常保持当前特权级；Trap 可能发生在用户态，也可能发生在内核态。因此讲义中“所有 Trap 都从用户态切到内核态”的说法需要限定：<strong>内核执行期间发生的 Trap，也可以在内核态处理。</strong></p>
+<p>本项先研究普通函数调用。后面的 Alarm 还要处理“程序在任意执行位置被中断”的情况，所以保存的现场会更完整。</p>
+<p><strong>2．理解这几个寄存器。</strong></p>
+<table>
+<thead>
+<tr>
+<th>寄存器</th>
+<th>本实验中的用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>a0～a7</code></td>
+<td>传递前几个适合放入整数寄存器的函数参数</td>
+</tr>
+<tr>
+<td><code>a0</code></td>
+<td>保存常见整数或指针返回值</td>
+</tr>
+<tr>
+<td><code>ra</code></td>
+<td>返回地址</td>
+</tr>
+<tr>
+<td><code>sp</code></td>
+<td>当前栈指针</td>
+</tr>
+<tr>
+<td><code>s0</code>，也叫 <code>fp</code></td>
+<td>编译器使用帧指针时，作为当前栈帧的定位基准</td>
+</tr>
+</tbody></table>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">printf(&quot;%d %d\n&quot;, 12, 13);</span><br></pre></td></tr></table></figure>
+
+<p>调用前通常对应：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a0 = 格式字符串的地址</span><br><span class="line">a1 = 12</span><br><span class="line">a2 = 13</span><br></pre></td></tr></table></figure>
+
+<p>格式字符串也是第一个参数，所以数字 <code>13</code> 对应第三个参数，放在 <code>a2</code>。</p>
+<p><strong>3．理解调用与返回。</strong></p>
+<p>典型的调用指令会同时完成两件事：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">保存返回地址到 ra</span><br><span class="line">跳转到被调用函数</span><br></pre></td></tr></table></figure>
+
+<p><code>ret</code> 则根据 <code>ra</code> 返回。返回地址通常是调用指令后面的下一条指令地址，具体数值需要根据实际反汇编确定。</p>
+<p>如果一个函数还要调用其他函数，新的调用会修改 <code>ra</code>。为了以后能够返回自己的调用者，它通常需要先把原来的返回地址保存到栈中。<code>backtrace()</code> 就会利用栈里保存的信息寻找调用链。</p>
+<p><strong>4．理解 C 代码为什么不一定对应一次真实调用。</strong></p>
+<p>假设：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int g(int x)</span><br><span class="line">&#123;</span><br><span class="line">  return x + 3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其他函数调用 <code>g(8)</code> 时，编译器可能直接计算出结果 <code>11</code>，也可能把函数体展开到调用位置。因此在汇编中不一定能找到对应的调用指令。</p>
+<p>分析时需要区分：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">源代码中写了函数调用</span><br><span class="line">实际汇编中是否产生了跳转调用</span><br></pre></td></tr></table></figure>
+
+<p>同样，内联、叶子函数等情况也会影响栈帧布局，所以后面会以你实际生成的汇编为准。</p>
+<h3 id="1-call-c-的分析"><a href="#1-call-c-的分析" class="headerlink" title="1. call.c 的分析"></a>1. call.c 的分析</h3><p>官方 <code>call.c</code> 的核心代码是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">g</span><span class="params">(<span class="type">int</span> x)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">return</span> x + <span class="number">3</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">f</span><span class="params">(<span class="type">int</span> x)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">return</span> g(x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;%d %d\n&quot;</span>, f(<span class="number">8</span>) + <span class="number">1</span>, <span class="number">13</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>1．加入构建列表</strong></p>
+<p>在 <code>Makefile</code> 的 <code>UPROGS</code> 中加入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$U/_call\</span><br></pre></td></tr></table></figure>
+
+<p><strong>2．生成并查看汇编</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line">user/_call：     文件格式 elf64-littleriscv</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Disassembly of section .text:</span><br><span class="line"></span><br><span class="line">0000000000000000 &lt;g&gt;:</span><br><span class="line">#include &quot;kernel/stat.h&quot;</span><br><span class="line">#include &quot;user/user.h&quot;</span><br><span class="line"></span><br><span class="line">int</span><br><span class="line">g(int x)</span><br><span class="line">&#123;</span><br><span class="line">   0:   1141                    addi    sp,sp,-16</span><br><span class="line">   2:   e422                    sd      s0,8(sp)</span><br><span class="line">   4:   0800                    addi    s0,sp,16</span><br><span class="line">  return x + 3;</span><br><span class="line">&#125;</span><br><span class="line">   6:   250d                    addiw   a0,a0,3</span><br><span class="line">   8:   6422                    ld      s0,8(sp)</span><br><span class="line">   a:   0141                    addi    sp,sp,16</span><br><span class="line">   c:   8082                    ret</span><br><span class="line"></span><br><span class="line">000000000000000e &lt;f&gt;:</span><br><span class="line"></span><br><span class="line">int</span><br><span class="line">f(int x)</span><br><span class="line">&#123;</span><br><span class="line">   e:   1141                    addi    sp,sp,-16</span><br><span class="line">  10:   e422                    sd      s0,8(sp)</span><br><span class="line">  12:   0800                    addi    s0,sp,16</span><br><span class="line">  return g(x);</span><br><span class="line">&#125;</span><br><span class="line">  14:   250d                    addiw   a0,a0,3</span><br><span class="line">  16:   6422                    ld      s0,8(sp)</span><br><span class="line">  18:   0141                    addi    sp,sp,16</span><br><span class="line">  1a:   8082                    ret</span><br><span class="line"></span><br><span class="line">000000000000001c &lt;main&gt;:</span><br><span class="line"></span><br><span class="line">void</span><br><span class="line">main(void)</span><br><span class="line">&#123;</span><br><span class="line">  1c:   1141                    addi    sp,sp,-16</span><br><span class="line">  1e:   e406                    sd      ra,8(sp)</span><br><span class="line">  20:   e022                    sd      s0,0(sp)</span><br><span class="line">  22:   0800                    addi    s0,sp,16</span><br><span class="line">  printf(&quot;%d %d\n&quot;, f(8) + 1, 13);</span><br><span class="line">  24:   4635                    li      a2,13</span><br><span class="line">  26:   45b1                    li      a1,12</span><br><span class="line">  28:   00001517                auipc   a0,0x1</span><br><span class="line">  2c:   8d850513                addi    a0,a0,-1832 # 900 &lt;malloc+0x102&gt;</span><br><span class="line">  30:   71a000ef                jal     74a &lt;printf&gt;</span><br><span class="line">  exit(0);</span><br><span class="line">  34:   4501                    li      a0,0</span><br><span class="line">  36:   2b0000ef                jal     2e6 &lt;exit&gt;</span><br><span class="line"></span><br><span class="line">000000000000003a &lt;start&gt;:</span><br><span class="line">//</span><br><span class="line">// wrapper so that it&#x27;s OK if main() does not call exit().</span><br><span class="line">//</span><br><span class="line">void</span><br><span class="line">start()</span><br><span class="line">&#123;</span><br><span class="line">  3a:   1141                    addi    sp,sp,-16</span><br><span class="line">  3c:   e406                    sd      ra,8(sp)</span><br><span class="line">  3e:   e022                    sd      s0,0(sp)</span><br><span class="line">  40:   0800                    addi    s0,sp,16</span><br><span class="line">  extern int main();</span><br><span class="line">  main();</span><br><span class="line">  42:   fdbff0ef                jal     1c &lt;main&gt;</span><br><span class="line">  exit(0);</span><br><span class="line">  46:   4501                    li      a0,0</span><br><span class="line">  48:   29e000ef                jal     2e6 &lt;exit&gt;</span><br><span class="line"></span><br><span class="line">000000000000004c &lt;strcpy&gt;:</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">char*</span><br><span class="line">strcpy(char *s, const char *t)</span><br><span class="line">&#123;</span><br><span class="line">  4c:   1141                    addi    sp,sp,-16</span><br><span class="line">  4e:   e422                    sd      s0,8(sp)</span><br><span class="line">  50:   0800                    addi    s0,sp,16</span><br><span class="line">  char *os;</span><br><span class="line"></span><br><span class="line">  os = s;</span><br><span class="line">  while((*s++ = *t++) != 0)</span><br><span class="line">  52:   87aa                    mv      a5,a0</span><br><span class="line">  54:   0585                    addi    a1,a1,1</span><br><span class="line">  56:   0785                    addi    a5,a5,1</span><br><span class="line">  58:   fff5c703                lbu     a4,-1(a1)</span><br><span class="line">  5c:   fee78fa3                sb      a4,-1(a5)</span><br><span class="line">  60:   fb75                    bnez    a4,54 &lt;strcpy+0x8&gt;</span><br><span class="line">    ;</span><br><span class="line">  return os;</span><br><span class="line">&#125;</span><br><span class="line">  62:   6422                    ld      s0,8(sp)</span><br><span class="line">  64:   0141                    addi    sp,sp,16</span><br><span class="line">  66:   8082                    ret</span><br><span class="line"></span><br><span class="line">0000000000000068 &lt;strcmp&gt;:</span><br><span class="line"></span><br><span class="line">int</span><br><span class="line">strcmp(const char *p, const char *q)</span><br><span class="line">&#123;</span><br><span class="line">  68:   1141                    addi    sp,sp,-16</span><br><span class="line">  6a:   e422                    sd      s0,8(sp)</span><br><span class="line">  6c:   0800                    addi    s0,sp,16</span><br><span class="line">  while(*p &amp;&amp; *p == *q)</span><br><span class="line">  6e:   00054783                lbu     a5,0(a0)</span><br><span class="line">  72:   cb91                    beqz    a5,86 &lt;strcmp+0x1e&gt;</span><br><span class="line">  74:   0005c703                lbu     a4,0(a1)</span><br><span class="line">  78:   00f71763                bne     a4,a5,86 &lt;strcmp+0x1e&gt;</span><br><span class="line">    p++, q++;</span><br><span class="line">  7c:   0505                    addi    a0,a0,1</span><br><span class="line">  7e:   0585                    addi    a1,a1,1</span><br><span class="line">  while(*p &amp;&amp; *p == *q)</span><br><span class="line">  80:   00054783                lbu     a5,0(a0)</span><br><span class="line">  84:   fbe5                    bnez    a5,74 &lt;strcmp+0xc&gt;</span><br><span class="line">  return (uchar)*p - (uchar)*q;</span><br><span class="line">  86:   0005c503                lbu     a0,0(a1)</span><br><span class="line">&#125;</span><br><span class="line">  8a:   40a7853b                subw    a0,a5,a0</span><br><span class="line">  8e:   6422                    ld      s0,8(sp)</span><br><span class="line">  90:   0141                    addi    sp,sp,16</span><br><span class="line">  92:   8082                    ret</span><br><span class="line"></span><br><span class="line">0000000000000094 &lt;strlen&gt;:</span><br><span class="line"></span><br><span class="line">uint</span><br><span class="line">strlen(const char *s)</span><br><span class="line">&#123;</span><br><span class="line">  94:   1141                    addi    sp,sp,-16</span><br><span class="line">  96:   e422                    sd      s0,8(sp)</span><br><span class="line">  98:   0800                    addi    s0,sp,16</span><br><span class="line">  int n;</span><br><span class="line"></span><br><span class="line">  for(n = 0; s[n]; n++)</span><br><span class="line">  9a:   00054783                lbu     a5,0(a0)</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>1．函数参数使用哪些寄存器？<code>13</code> 放在哪里？</strong></td>
+<td>常见整数、指针参数依次通过 <code>a0～a7</code> 传递。调用 <code>printf</code> 时，<code>a0</code> 保存格式字符串地址，<code>a1=12</code>，<strong><code>a2=13</code></strong>。</td>
+</tr>
+<tr>
+<td><strong>2．<code>main</code> 中调用 <code>f</code>、<code>g</code> 的指令在哪里？</strong></td>
+<td>没有对应的实际调用。编译器进行了内联和常量计算，将 <code>f(8)+1</code> 直接计算为 <code>12</code>，生成 <code>li a1,12</code>。独立的 <code>f</code> 中也直接执行加 3，没有调用 <code>g</code>。</td>
+</tr>
+<tr>
+<td><strong>3．<code>printf</code> 的地址是多少？</strong></td>
+<td><strong><code>0x74a</code></strong>，依据反汇编中的 <code>000000000000074a &lt;printf&gt;:</code>。</td>
+</tr>
+<tr>
+<td><strong>4．调用 <code>printf</code> 后，<code>ra</code> 是多少？</strong></td>
+<td><strong><code>0x34</code></strong>。实际调用指令位于 <code>0x30</code>，是一条 4 字节的 <code>jal</code>，因此返回地址是下一条指令 <code>0x34</code>。</td>
+</tr>
+<tr>
+<td><strong>5．字节序代码输出什么？改成大端时如何修改？</strong></td>
+<td><code>i=0x00646c72</code> 在小端内存中为 <code>72 6c 64 00</code>，对应 <code>&quot;rld&quot;</code>；<code>57616</code> 的十六进制为 <code>e110</code>。使用 xv6 常见的大写十六进制输出时，结果为 <strong><code>HE110 World</code></strong>。大端机器上应将 <code>i</code> 改成 <strong><code>0x726c6400</code></strong>，<code>57616</code> 保持不变。</td>
+</tr>
+<tr>
+<td><strong>6．<code>printf(&quot;x=%d y=%d&quot;, 3)</code> 中的 <code>y</code> 是多少？</strong></td>
+<td><strong>没有确定答案，属于未定义行为。</strong> 格式要求两个整数，实际只提供一个；<code>printf</code> 尝试读取未提供的第二个参数。</td>
+</tr>
+</tbody></table>
+<h3 id="2-backtrace-内核态回溯功能实现"><a href="#2-backtrace-内核态回溯功能实现" class="headerlink" title="2. backtrace 内核态回溯功能实现"></a>2. backtrace 内核态回溯功能实现</h3><p><strong>简短链路</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kernel/riscv.h〔读取帧指针 s0〕</span><br><span class="line">→ kernel/<span class="built_in">printf</span>.c〔实现 backtrace〕</span><br><span class="line">→ kernel/defs.h〔声明函数〕</span><br><span class="line">→ kernel/sysproc.c〔在 sys_pause 中调用〕</span><br><span class="line">→ user/bttest.c / Makefile〔运行验证〕</span><br></pre></td></tr></table></figure>
+
+<p>这次使用已有的 <code>pause()</code> 系统调用，不新增系统调用编号。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">fp - <span class="number">8</span> : ra 保存返回地址</span><br><span class="line">fp - <span class="number">16</span> : 保存上一层帧地址</span><br><span class="line">    </span><br><span class="line">## 算法思路</span><br><span class="line">读取当前 fp</span><br><span class="line">    ↓</span><br><span class="line">读取并打印 *(fp - <span class="number">8</span>)</span><br><span class="line">    ↓</span><br><span class="line">读取上一层 fp = *(fp - <span class="number">16</span>)</span><br><span class="line">    ↓</span><br><span class="line">重复，直到到达当前内核栈页的边界</span><br></pre></td></tr></table></figure>
+
+<p><strong>1. 在 <code>kernel/printf.c</code> 末尾实现回溯函数</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">backtrace</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 fp = r_fp();</span><br><span class="line">  uint64 bottom = PGROUNDDOWN(fp);</span><br><span class="line">  uint64 top = bottom + PGSIZE;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;backtrace:\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span>(fp &gt;= bottom + <span class="number">16</span> &amp;&amp; fp &lt; top)&#123;</span><br><span class="line">    <span class="comment">// 正常调用约定下，帧指针按 16 字节对齐。</span></span><br><span class="line">    <span class="keyword">if</span>(fp % <span class="number">16</span> != <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">    uint64 ra = *(uint64 *)(fp - <span class="number">8</span>);</span><br><span class="line">    uint64 previous_fp = *(uint64 *)(fp - <span class="number">16</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%p\n&quot;</span>, (<span class="type">void</span> *)ra);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 沿调用链向上，帧指针应朝高地址移动。</span></span><br><span class="line">    <span class="keyword">if</span>(previous_fp &lt;= fp)</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">    fp = previous_fp;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>bottom = PGROUNDDOWN(fp);</code> 限制读取边界，每个进程内核栈使用一个页对齐的页面</li>
+<li>循环读取栈中内容，<code>ra(fp - 8) / pre_fp(fp - 16)</code></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fp - <span class="number">8</span>              算出返回地址存放的位置</span><br><span class="line">(uint64 *)(fp - <span class="number">8</span>)   把这个数值转换为指针</span><br><span class="line">*(uint64 *)(fp - <span class="number">8</span>)  从该位置读取 <span class="number">8</span> 字节</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查方向是否正确</li>
+</ul>
+<p><strong>在 <code>kernel/defs.h</code> 中添加声明</strong></p>
+<p><strong>在 <code>sys_pause()</code> 中加入一次调用</strong></p>
+<p><img src="/../../images/oslab4.png"></p>
+<h3 id="Alarm：按进程消耗的时钟-tick，定期执行一个用户处理函数，然后恢复原程序"><a href="#Alarm：按进程消耗的时钟-tick，定期执行一个用户处理函数，然后恢复原程序" class="headerlink" title="Alarm：按进程消耗的时钟 tick，定期执行一个用户处理函数，然后恢复原程序"></a>Alarm：按进程消耗的时钟 tick，定期执行一个用户处理函数，然后恢复原程序</h3><p><strong>简短链路</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kernel/proc.h / proc.c〔保存并初始化 Alarm 状态〕</span><br><span class="line">→ kernel/sysproc.c〔实现 sigalarm、sigreturn〕</span><br><span class="line">→ kernel/trap.c〔时钟中断计数、保存现场、改变返回位置〕</span><br><span class="line">→ kernel/exec.c〔成功加载新程序时清除旧 Alarm〕</span><br><span class="line">→ syscall.h / syscall.c / user.h / usys.pl〔接口接线〕</span><br><span class="line">→ user/alarmtest.c / Makefile〔测试〕</span><br></pre></td></tr></table></figure>
+
+<p><strong>1. 执行过程</strong></p>
+<p>用户程序注册：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sigalarm(<span class="number">2</span>, handler);</span><br></pre></td></tr></table></figure>
+
+<p>表示按该进程在用户态运行时收到的时钟中断计数，每累计 2 个 tick，触发一次 <code>handler</code>。</p>
+<p>执行过程是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">用户程序运行</span><br><span class="line">    ↓ 时钟中断，累计到指定次数</span><br><span class="line">内核备份被中断程序的现场</span><br><span class="line">    ↓</span><br><span class="line">将返回用户态的位置改为 handler</span><br><span class="line">    ↓</span><br><span class="line">用户态执行 handler</span><br><span class="line">    ↓ handler 调用 sigreturn()</span><br><span class="line">内核恢复原现场</span><br><span class="line">    ↓</span><br><span class="line">继续被中断的程序</span><br></pre></td></tr></table></figure>
+
+<p>这里的关键是：<strong>内核通过修改返回用户态的位置，使用户执行 handler。</strong> 不要在内核 C 代码里直接调用这个函数指针，否则就变成了在内核态调用用户代码</p>
+<p><strong>2．在 <code>kernel/proc.h</code> 中增加进程状态</strong></p>
+<p>在 <strong><code>struct proc</code> 内部</strong>加入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> alarm_interval;            <span class="comment">// 每隔多少个 tick 触发</span></span><br><span class="line"><span class="type">int</span> alarm_elapsed;             <span class="comment">// 已累计多少个 tick</span></span><br><span class="line">uint64 alarm_handler;          <span class="comment">// 用户处理函数地址</span></span><br><span class="line"><span class="type">int</span> alarm_active;              <span class="comment">// 当前是否正在执行处理函数</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">trapframe</span> <span class="title">alarm_saved</span>;</span>  <span class="comment">// 被中断时的现场备份</span></span><br></pre></td></tr></table></figure>
+
+<p>这次直接把备份结构体放在进程结构中，无需额外调用 <code>kalloc()</code>。</p>
+<p>尤其要区分：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;trapframe       <span class="comment">// 当前用于进入、离开内核的现场</span></span><br><span class="line">p-&gt;alarm_saved    <span class="comment">// Alarm 触发前的现场备份</span></span><br></pre></td></tr></table></figure>
+
+<p>handler 自己也会发起系统调用，继续使用 <code>p-&gt;trapframe</code>。所以必须有独立备份，原现场才能保留下来。</p>
+<p><strong>3．在 <code>allocproc()</code> 中初始化</strong></p>
+<p>在 <code>kernel/proc.c</code> 的 <code>allocproc()</code> 中，进程槽位已经选定、设置 PID 和进程状态的位置附近加入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;alarm_interval = <span class="number">0</span>;</span><br><span class="line">p-&gt;alarm_elapsed = <span class="number">0</span>;</span><br><span class="line">p-&gt;alarm_handler = <span class="number">0</span>;</span><br><span class="line">p-&gt;alarm_active = <span class="number">0</span>;</span><br><span class="line"><span class="built_in">memset</span>(&amp;p-&gt;alarm_saved, <span class="number">0</span>, <span class="keyword">sizeof</span>(p-&gt;alarm_saved));</span><br></pre></td></tr></table></figure>
+
+<p>新进程默认不启用 Alarm。这里也确保进程槽位被重复使用时，不会继承之前的状态。</p>
+<p><strong>4．在 <code>kernel/sysproc.c</code> 实现注册函数</strong></p>
+<p>在文件末尾加入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_sigalarm</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> interval;</span><br><span class="line">  uint64 handler;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">  argint(<span class="number">0</span>, &amp;interval);</span><br><span class="line">  argaddr(<span class="number">1</span>, &amp;handler);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(interval &lt; <span class="number">0</span> || handler &gt;= MAXVA)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">  p-&gt;alarm_interval = interval;</span><br><span class="line">  p-&gt;alarm_handler = handler;</span><br><span class="line">  p-&gt;alarm_elapsed = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>系统调用函数，获取用户输入参数，初始化进程p参数</li>
+<li>没有初始化 <code>alarm_active</code> 原因：转到<code>handler</code>处理的时候，会先调用<code>sigalarm(0, 0)</code>清零<code>active</code>，此时再调用<code>sigreturn</code>会被拒绝</li>
+</ul>
+<p><strong>5．在 <code>kernel/trap.c</code> 中处理到期事件</strong></p>
+<p>打开 <code>usertrap()</code>，找到末尾已有的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(which_dev == <span class="number">2</span>)</span><br><span class="line">  yield();</span><br></pre></td></tr></table></figure>
+
+<p>将这段替换为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(which_dev == <span class="number">2</span>)&#123;</span><br><span class="line">  <span class="keyword">if</span>(p-&gt;alarm_interval &gt; <span class="number">0</span> &amp;&amp; !p-&gt;alarm_active)&#123;</span><br><span class="line">    p-&gt;alarm_elapsed++;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(p-&gt;alarm_elapsed &gt;= p-&gt;alarm_interval)&#123;</span><br><span class="line">      p-&gt;alarm_elapsed = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 先保存原程序的完整现场。</span></span><br><span class="line">      p-&gt;alarm_saved = *p-&gt;trapframe;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 标记处理函数正在运行，防止重复进入。</span></span><br><span class="line">      p-&gt;alarm_active = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 下次返回用户态时，从 handler 开始执行。</span></span><br><span class="line">      p-&gt;trapframe-&gt;epc = p-&gt;alarm_handler;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  yield();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>which_dev == 2</code>表示判断是时钟中断</li>
+<li><code>p-&gt;alarm_interval &gt; 0 &amp;&amp; !p-&gt;alarm_active</code>检查<code>alarm</code>已开启并且当前没有正在执行的<code>handler</code></li>
+<li>累计达到相应间隔后复制整个现场</li>
+<li><code>sepc</code> 保存的是这个进程返回用户态时使用的指令地址。</li>
+</ul>
+<p><strong>6．实现 <code>sys_sigreturn()</code> 恢复现场</strong></p>
+<p>在 <code>kernel/sysproc.c</code> 末尾继续加入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_sigreturn</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(!p-&gt;alarm_active)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">  *p-&gt;trapframe = p-&gt;alarm_saved;</span><br><span class="line"></span><br><span class="line">  p-&gt;alarm_active = <span class="number">0</span>;</span><br><span class="line">  p-&gt;alarm_elapsed = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> p-&gt;trapframe-&gt;a0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>恢复后，<code>epc</code> 又变回中断发生时的位置，其他用户寄存器也恢复原值。正常的返回用户态流程会据此继续原程序。</p>
+<p><strong>7．成功执行 <code>exec()</code> 后清除旧配置</strong></p>
+<p>打开 <code>kernel/exec.c</code>，找到成功提交新用户地址空间的位置，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;pagetable = pagetable;</span><br><span class="line">p-&gt;sz = sz;</span><br><span class="line">p-&gt;trapframe-&gt;epc = elf.entry;</span><br><span class="line">p-&gt;trapframe-&gt;sp = sp;</span><br></pre></td></tr></table></figure>
+
+<p>在这里加入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;alarm_interval = 0;</span><br><span class="line">p-&gt;alarm_elapsed = 0;</span><br><span class="line">p-&gt;alarm_handler = 0;</span><br><span class="line">p-&gt;alarm_active = 0;</span><br></pre></td></tr></table></figure>
+
+<p>旧 handler 地址属于旧程序，新程序加载成功后就不能继续使用它。清理应放在成功提交的位置，避免 <code>exec()</code> 失败时意外改变仍在运行的旧程序状态。</p>
+<p><strong>8．接好两个系统调用</strong></p>
+<p><strong>9. test程序运行过程分析</strong></p>
+<p><strong>1．先看多个测试共用的 <code>periodic()</code>。</strong></p>
+<p>它的核心代码是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">periodic</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  s11_var = ~S11_CHECKVAL;</span><br><span class="line">  count = count + <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;alarm!\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">  sigreturn();</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;oops, sigreturn returned!\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它先故意修改 <code>s11</code>，再增加全局计数 <code>count</code>，最后调用 <code>sigreturn()</code> 恢复原程序。</p>
+<p>这里有两个关键观察点：</p>
+<ul>
+<li><strong>恢复的是寄存器现场，不会回滚用户内存。</strong> 因此 <code>count++</code> 的结果保留下来，原程序能看到计数增加。</li>
+<li><code>sigreturn()</code> 成功后，用户程序会回到被中断的位置，<strong>不会继续执行 handler 中紧随其后的 <code>printf()</code></strong>。如果出现 <code>oops, sigreturn returned!</code>，说明恢复流程有问题。</li>
+</ul>
+<p>虽然内核的 <code>sys_sigreturn()</code> 会返回给系统调用分发器，但用户态的恢复位置已经被改回原程序，这与普通函数调用返回不同。</p>
+<p><strong>2．<code>test0</code>：验证能否触发一次 Alarm。</strong></p>
+<p>主要流程是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">test0</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> i;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;test0 start\n&quot;</span>);</span><br><span class="line">  count = <span class="number">0</span>;</span><br><span class="line">  sigalarm(<span class="number">2</span>, periodic);</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">1000</span> * <span class="number">500000</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> ((i % <span class="number">1000000</span>) == <span class="number">0</span>)</span><br><span class="line">      write(<span class="number">2</span>, <span class="string">&quot;.&quot;</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (count &gt; <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  sigalarm(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">if</span> (count &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;test0 passed\n&quot;</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\ntest0 failed: the kernel never called the alarm handler\n&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>注册 <code>interval = 2, elapsed = 0</code> </li>
+<li>进入循环第一次时钟中断<code>elapsed=1</code>继续原循环，第二次时钟中断<code>elapsed </code>达到 2</li>
+<li>备份 <code>trapframe</code>，<code>active=1</code>，<code>epc</code> 改为 <code>periodic</code> 地址</li>
+<li><code>periodic</code> 执行 <code>count = 1</code> 打印 <code>alarm</code></li>
+<li><code>sigreturn</code>恢复现场 <code>active=0</code></li>
+<li>退出循环后执行<code>sigalarm(0, 0)</code></li>
+</ul>
+<p><strong>3．<code>test1</code>：验证重复触发和完整恢复</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">test1</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> i;</span><br><span class="line">  <span class="type">int</span> j;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;test1 start\n&quot;</span>);</span><br><span class="line">  s11_var = S11_CHECKVAL;</span><br><span class="line">  count = <span class="number">0</span>;</span><br><span class="line">  j = <span class="number">0</span>;</span><br><span class="line">  sigalarm(<span class="number">2</span>, periodic);</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">500000000</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (count &gt;= <span class="number">10</span>)</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">if</span> (foo(i, &amp;j) != A0_CHECKVAL) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;\ntest1 failed: a0 not preserved\n&quot;</span>);</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (s11_var != S11_CHECKVAL) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;\ntest1 failed: register s11 not preserved\n&quot;</span>);</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (count &lt; <span class="number">10</span>) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\ntest1 failed: too few calls to the handler\n&quot;</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (i != j) &#123;</span><br><span class="line">    <span class="comment">// the loop should have called foo() i times, and foo() should</span></span><br><span class="line">    <span class="comment">// have incremented j once per call, so j should equal i.</span></span><br><span class="line">    <span class="comment">// once possible source of errors is that the handler may</span></span><br><span class="line">    <span class="comment">// return somewhere other than where the timer interrupt</span></span><br><span class="line">    <span class="comment">// occurred; another is that that registers may not be</span></span><br><span class="line">    <span class="comment">// restored correctly, causing i or j or the address ofj</span></span><br><span class="line">    <span class="comment">// to get an incorrect value.</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\ntest1 failed: foo() executed fewer times than it was called\n&quot;</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;test1 passed\n&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>执行<code>foo()</code>会把返回值保存在A0寄存器，执行<code>handler</code>会修改s11寄存器，所以这个测试主要检测是不是把寄存器的值也恢复了</li>
+</ul>
+<p>关键在于这两次结构体复制</p>
+<p>触发 Alarm 时：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;alarm_saved = *p-&gt;trapframe;</span><br></pre></td></tr></table></figure>
+
+<p>handler 调用 <code>sigreturn()</code> 时：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*p-&gt;trapframe = p-&gt;alarm_saved;</span><br></pre></td></tr></table></figure>
+
+<p>第一句保存中断前的完整现场，第二句恢复它。备份内容包括：</p>
+<table>
+<thead>
+<tr>
+<th>保存的内容</th>
+<th>解决的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>epc</code></td>
+<td>回到原来被中断的位置，避免重复或跳过指令</td>
+</tr>
+<tr>
+<td><code>sp</code></td>
+<td>恢复原程序的栈位置</td>
+</tr>
+<tr>
+<td><code>a0</code></td>
+<td>保留函数返回值等临时计算结果</td>
+</tr>
+<tr>
+<td><code>s11</code></td>
+<td>保留测试故意检查的寄存器值</td>
+</tr>
+<tr>
+<td>其他通用寄存器</td>
+<td>保留循环计数、指针和其他计算状态</td>
+</tr>
+</tbody></table>
+<p>例如，<code>foo()</code> 刚返回：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a0 = <span class="number">1337</span></span><br></pre></td></tr></table></figure>
+
+<p>这时发生 Alarm，备份中就记录了：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alarm_saved.a0 = <span class="number">1337</span></span><br></pre></td></tr></table></figure>
+
+<p>handler 内部即使把 <code>a0</code> 改成其他值，恢复时仍会重新得到 <code>1337</code>。同理，handler 故意修改的 <code>s11</code> 也会恢复为原来的 <code>6181</code>。</p>
+<p>这里必须保存<strong>结构体副本</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;alarm_saved = *p-&gt;trapframe;</span><br></pre></td></tr></table></figure>
+
+<p>如果只是另外保存一个指向 <code>p-&gt;trapframe</code> 的指针，两者仍指向同一份数据。handler 后续进入内核时会更新这份数据，原现场就保不住了。</p>
+<p>还有一个执行层面的细节：上述 C 代码先恢复的是<strong>内存中的现场</strong>。之后跳板汇编从 <code>trapframe</code> 中重新加载用户寄存器，返回流程把 <code>epc</code> 写入 <code>sepc</code>，最后通过 <code>sret</code> 继续原程序。</p>
+<p><strong>4. test2 防止重入</strong></p>
+<p>子进程注册的 <code>slow_handler()</code> 大致是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">count++;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(count &gt; <span class="number">1</span>)&#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;test2 failed: alarm handler called more than once\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(...很长的循环...)&#123;</span><br><span class="line">  <span class="keyword">asm</span> <span class="title function_">volatile</span><span class="params">(<span class="string">&quot;nop&quot;</span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sigalarm(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">sigreturn();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>目的就是在第一次<code>handler</code>还没有执行完成的时候中断又来了</li>
+</ul>
+<p>触发 handler 时设置：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;alarm_active = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>后续时钟中断必须通过这个条件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(p-&gt;alarm_interval &gt; <span class="number">0</span> &amp;&amp; !p-&gt;alarm_active)</span><br></pre></td></tr></table></figure>
+
+<p>handler 执行期间，<code>alarm_active == 1</code>，所以条件不成立。这样就不会再次修改 <code>epc</code> 跳入 handler，也不会再次覆盖 <code>alarm_saved</code>。</p>
+<p>完成现场恢复后才清零：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;alarm_active = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>因此状态变化为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">普通程序运行：active=<span class="number">0</span>，允许触发</span><br><span class="line">触发 handler：active=<span class="number">1</span>，禁止再次触发</span><br><span class="line">完成恢复：    active=<span class="number">0</span>，再次允许触发</span><br></pre></td></tr></table></figure>
+
+<p><code>slow_handler()</code> 中还有：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sigalarm(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">sigreturn();</span><br></pre></td></tr></table></figure>
+
+<p>所以 <code>sys_sigalarm()</code> 只修改间隔、入口和计数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;alarm_interval = interval;</span><br><span class="line">p-&gt;alarm_handler = handler;</span><br><span class="line">p-&gt;alarm_elapsed = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>它保留 <code>alarm_active</code>，让紧随其后的 <code>sigreturn()</code> 能完成当前这次恢复。若提前清零，下面的检查就会拒绝恢复：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!p-&gt;alarm_active)</span><br><span class="line">  <span class="keyword">return</span> <span class="number">-1</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>5．<code>test3</code>：怎样保证恢复后的 <code>a0</code> 不再被覆盖？</strong></p>
+<p>完整的恢复函数是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_sigreturn</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(!p-&gt;alarm_active)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">  *p-&gt;trapframe = p-&gt;alarm_saved;</span><br><span class="line"></span><br><span class="line">  p-&gt;alarm_active = <span class="number">0</span>;</span><br><span class="line">  p-&gt;alarm_elapsed = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> p-&gt;trapframe-&gt;a0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后一句是这个测试的关键：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> p-&gt;trapframe-&gt;a0;</span><br></pre></td></tr></table></figure>
+
+<p>因为处理函数执行完后，<code>kernel/syscall.c</code> 还要执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;trapframe-&gt;a0 = syscalls[num]();</span><br></pre></td></tr></table></figure>
+
+<p>执行对应的系统调用处理函数，再把它的返回值保存下来，准备交给用户程序。</p>
+<p><strong>执行完这个恢复函数之后，内核会把这个恢复函数的返回值赋给a0，所以恢复函数返回值要是原来保存的a0，也就是<code>return p-&gt;trapframe-&gt;a0</code></strong></p>
+<p>假设原来的 <code>a0</code> 是测试设置的 <code>0xAC</code>：</p>
+<table>
+<thead>
+<tr>
+<th>执行步骤</th>
+<th>正确实现中的 <code>a0</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>从备份恢复 <code>trapframe</code></td>
+<td><code>0xAC</code></td>
+</tr>
+<tr>
+<td><code>sys_sigreturn()</code> 返回原来的 <code>a0</code></td>
+<td>返回 <code>0xAC</code></td>
+</tr>
+<tr>
+<td>分发器把返回值写入 <code>trapframe-&gt;a0</code></td>
+<td>仍然是 <code>0xAC</code></td>
+</tr>
+<tr>
+<td>跳板汇编恢复用户寄存器</td>
+<td>用户 <code>a0</code> 得到 <code>0xAC</code></td>
+</tr>
+</tbody></table>
+<p>如果最后写成 <code>return 0</code>，第三步就会把已经恢复的 <code>a0</code> 覆盖为 <code>0</code>，导致 <code>test3</code> 失败。</p>
+<p>而 <code>alarm_elapsed = 0</code> 和 <code>alarm_active = 0</code> 还让下一轮计时能够重新开始，从而满足 <code>test1</code> 要求的多次触发。</p>
+<p>假设 <code>sys_sigreturn()</code> 错误地这样写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_sigreturn</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  *p-&gt;trapframe = p-&gt;alarm_saved;  <span class="comment">// 假设恢复后的 a0 是 172</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>外面的分发器随后相当于执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uint64 result = sys_sigreturn();  <span class="comment">// 函数内部恢复了 172，但返回值是 0</span></span><br><span class="line">p-&gt;trapframe-&gt;a0 = result;        <span class="comment">// 又把刚恢复的 172 覆盖成了 0</span></span><br></pre></td></tr></table></figure>
+
+<p>所以正确写法是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*p-&gt;trapframe = p-&gt;alarm_saved;</span><br><span class="line"><span class="keyword">return</span> p-&gt;trapframe-&gt;a0;</span><br></pre></td></tr></table></figure>
+
+<p>这时分发器得到的返回值也是 <code>172</code>，再次赋值仍然是 <code>172</code>，就不会破坏原程序的寄存器值。</p>
+
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------到底咯QAQ嘎嘎-------------</div>
+    
+</div>
+      </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="jachinzhang1/jachinzhang1.github.io"
+        data-repo-id="R_kgDONy_q0w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONy_q084Cmo0P"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/10/05/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="prev" title="计算机网络">
+      <i class="fa fa-chevron-left"></i> 计算机网络
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-circle"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">山河辽阔，人间烟火 | 记录生活与思考的碎片</span>
+</div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/js/site-interactions.js"></script>
+<script>
+  (function() {
+    var overlay = document.createElement('div');
+    overlay.className = 'page-transition-overlay';
+    document.body.appendChild(overlay);
+
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a');
+      if (!link || !link.href) return;
+      if (link.target === '_blank') return;
+      if (link.host !== window.location.host) return;
+      if (link.getAttribute('download') != null) return;
+      if (link.hash && link.pathname === window.location.pathname) return;
+      if (e.metaKey || e.ctrlKey) return;
+
+      e.preventDefault();
+      document.body.classList.add('page-exiting');
+      setTimeout(function() {
+        window.location = link.href;
+      }, 260);
+    });
+
+    // Keep overlay hidden when navigating back via bfcache.
+    window.addEventListener('pageshow', function(e) {
+      document.body.classList.remove('page-exiting');
+    });
+  })();
+</script>
+
+</body>
+</html>

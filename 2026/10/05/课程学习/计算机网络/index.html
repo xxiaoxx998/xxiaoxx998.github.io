@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-50x50.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-50x50.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="theme-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ducklinger.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="计算机网络：前两章复习笔记 依据上传的《计算机网络（第8版）》第 1、2 章及本次讲解整理。重点是原理、公式、易错点；教材中的历史统计数据、产品性能和标准版本不作为现状引用。 **公式格式：**采用普通文本，不依赖数学插件。log₂(x) 是以 2 为底的对数；10^(-3) 表示 10 的负三次方；· 表示向量内积。 **复习顺序：**先看“一页速览”建立框架，再读章节重点；做题时查“公式索引”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络">
+<meta property="og:url" content="https://ducklinger.top/2026/10/05/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/index.html">
+<meta property="og:site_name" content="Ducklinger">
+<meta property="og:description" content="计算机网络：前两章复习笔记 依据上传的《计算机网络（第8版）》第 1、2 章及本次讲解整理。重点是原理、公式、易错点；教材中的历史统计数据、产品性能和标准版本不作为现状引用。 **公式格式：**采用普通文本，不依赖数学插件。log₂(x) 是以 2 为底的对数；10^(-3) 表示 10 的负三次方；· 表示向量内积。 **复习顺序：**先看“一页速览”建立框架，再读章节重点；做题时查“公式索引”">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-05T06:20:38.723Z">
+<meta property="article:author" content="Ducklinger">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://ducklinger.top/2026/10/05/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
+
+
+<script id="page-configurations">
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>计算机网络 | Ducklinger</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ducklinger</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section">首页</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section">日程</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section">分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section">标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section">归档</a>
+
+  </li>
+        <li class="menu-item menu-item-poems">
+
+    <a href="/poems/" rel="section">诗歌</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main main-post">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ducklinger.top/2026/10/05/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Ducklinger">
+      <meta itemprop="description" content="分享日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ducklinger">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机网络
+        </h1>
+
+        <div class="post-meta">
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-10-05 00:00:00 / 修改时间：14:20:38" itemprop="dateCreated datePublished" datetime="2026-10-05T00:00:00+08:00">2026-10-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="计算机网络：前两章复习笔记"><a href="#计算机网络：前两章复习笔记" class="headerlink" title="计算机网络：前两章复习笔记"></a>计算机网络：前两章复习笔记</h1><blockquote>
+<p>依据上传的《计算机网络（第8版）》第 1、2 章及本次讲解整理。重点是原理、公式、易错点；教材中的历史统计数据、产品性能和标准版本不作为现状引用。</p>
+<p>**公式格式：**采用普通文本，不依赖数学插件。<code>log₂(x)</code> 是以 2 为底的对数；<code>10^(-3)</code> 表示 10 的负三次方；<code>·</code> 表示向量内积。</p>
+<p>**复习顺序：**先看“一页速览”建立框架，再读章节重点；做题时查“公式索引”，理解卡住时看各节的“理解模型”。</p>
+</blockquote>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="#%E4%B8%80%E9%A1%B5%E9%80%9F%E8%A7%88">一页速览</a></li>
+<li><a href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%E6%A6%82%E8%BF%B0">第一章：概述</a></li>
+<li><a href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%E7%89%A9%E7%90%86%E5%B1%82">第二章：物理层</a></li>
+<li><a href="#%E5%85%AC%E5%BC%8F%E7%B4%A2%E5%BC%95%E4%B8%8E%E8%AE%A1%E7%AE%97%E6%A3%80%E6%9F%A5">公式索引与计算检查</a></li>
+<li><a href="#%E6%9C%AC%E6%AC%A1%E5%AD%A6%E4%B9%A0%E7%9A%84%E9%87%8D%E7%82%B9%E7%BA%A0%E9%94%99">本次学习的重点纠错</a></li>
+<li><a href="#%E5%BF%AB%E9%80%9F%E8%87%AA%E6%A3%80">快速自检</a></li>
+</ol>
+<h2 id="一页速览"><a href="#一页速览" class="headerlink" title="一页速览"></a>一页速览</h2><p><strong>第一章解决“整个网络怎样协作”，第二章解决“最底层怎样把比特传出去”。</strong></p>
+<table>
+<thead>
+<tr>
+<th>主线</th>
+<th>必须抓住的结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>网络与互联网</td>
+<td>网络连接设备；互联网把许多网络互连。Web 只是互联网应用之一</td>
+</tr>
+<tr>
+<td>边缘与核心</td>
+<td>端系统运行应用、产生和使用数据；中间网络提供连接与转发</td>
+</tr>
+<tr>
+<td>通信角色</td>
+<td>客户请求服务，服务器提供服务；角色首先针对进程，不由机器档次决定</td>
+</tr>
+<tr>
+<td>分组交换</td>
+<td>报文拆成分组，逐个存储转发；共享灵活，可流水线传输，但可能排队、丢包</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>带宽是能力，吞吐量是实际量；发送时延与传播时延必须分开</td>
+</tr>
+<tr>
+<td>分层</td>
+<td>应用业务 → 进程传送 → 跨网络传送 → 当前链路交付 → 比特传送</td>
+</tr>
+<tr>
+<td>信号表示</td>
+<td>数据是信息的表示；信号是承载数据的物理表现</td>
+</tr>
+<tr>
+<td>码元与比特</td>
+<td>一个码元可对应多个比特；比特率不一定等于波特率</td>
+</tr>
+<tr>
+<td>编码与调制</td>
+<td>编码设计信号表示和同步线索；带通调制利用载波适应信道</td>
+</tr>
+<tr>
+<td>容量限制</td>
+<td>奈氏准则关注带宽与无码间串扰；香农公式还考虑噪声</td>
+</tr>
+<tr>
+<td>媒体与复用</td>
+<td>媒体决定传播条件；复用让多路通信有规则地共享资源</td>
+</tr>
+<tr>
+<td>接入</td>
+<td>ADSL 利用电话铜线，HFC 混合光纤和同轴，FTTx 将光纤延伸至不同位置</td>
+</tr>
+</tbody></table>
+<p><strong>最重要的区别：</strong></p>
+<ul>
+<li>**bit&#x2F;s：**每秒发送多少数据；**m&#x2F;s：**信号每秒传播多远。</li>
+<li>**网络层：**跨网络送向哪里；**链路层：**当前一段怎样交付帧；**物理层：**怎样传送比特。</li>
+<li>**协议：**对等层遵守的规则；**服务：**下层提供给上层的能力。</li>
+<li>**“相互重叠”不一定等于“码间串扰”：**关键是在判决时刻是否受到其他码元干扰。</li>
+</ul>
+<h2 id="第一章：概述"><a href="#第一章：概述" class="headerlink" title="第一章：概述"></a>第一章：概述</h2><h3 id="1-1-网络的作用与基本组成"><a href="#1-1-网络的作用与基本组成" class="headerlink" title="1.1 网络的作用与基本组成"></a>1.1 网络的作用与基本组成</h3><p>网络支持<strong>连通性与资源共享</strong>：交换消息、访问文件、数据库、远程计算资源等。</p>
+<ul>
+<li>**节点：**网络中的设备，如计算机、交换机、路由器。</li>
+<li>**链路：**节点之间的连接。</li>
+<li>**主机&#x2F;端系统：**运行应用、作为通信端点的设备，如电脑、手机、服务器。</li>
+<li>**路由器：**连接不同网络，转发分组。</li>
+</ul>
+<p>**有物理连接不等于能通信。**双方还必须遵守信号表示、数据格式和行为顺序等规则。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>互连网 internet</td>
+<td>多个网络互连形成的系统，一般概念</td>
+</tr>
+<tr>
+<td>互联网 Internet</td>
+<td>全球性特定互连网，以 TCP&#x2F;IP 协议族为基础</td>
+</tr>
+<tr>
+<td>万维网 Web</td>
+<td>互联网支持的应用系统之一，不等于整个互联网</td>
+</tr>
+</tbody></table>
+<p>**理解模型：**同一局域网可以在未接入互联网时正常通信。局域网内部通信通常由交换机、无线接入点等支持，不一定经过路由功能。</p>
+<h3 id="1-2-互联网结构、发展与标准化【了解】"><a href="#1-2-互联网结构、发展与标准化【了解】" class="headerlink" title="1.2 互联网结构、发展与标准化【了解】"></a>1.2 互联网结构、发展与标准化【了解】</h3><p>教材概括的发展主线：</p>
+<ol>
+<li>从 ARPANET 单个分组交换网络，走向网络互连。</li>
+<li>形成主干网、地区网、校园网等三级结构。</li>
+<li>形成多层次 ISP 互连的互联网。</li>
+</ol>
+<ul>
+<li>**ISP：**互联网服务提供商，提供接入或网络互连服务。</li>
+<li>**IXP：**互联网交换点，帮助不同网络交换流量。</li>
+<li>互联网由许多组织共同建设和运营，不是单一组织拥有的“一台中央机器”。</li>
+<li>标准化使不同厂商、不同网络能够互通；<strong>RFC 文档不全部都是互联网标准</strong>。</li>
+<li>教材给出的我国重要历史节点：<strong>1994 年 4 月 20 日正式接入互联网</strong>。</li>
+</ul>
+<h3 id="1-3-边缘、核心与应用通信方式【重点】"><a href="#1-3-边缘、核心与应用通信方式【重点】" class="headerlink" title="1.3 边缘、核心与应用通信方式【重点】"></a>1.3 边缘、核心与应用通信方式【重点】</h3><table>
+<thead>
+<tr>
+<th>部分</th>
+<th>主要工作</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>边缘</td>
+<td>运行应用，产生和使用数据</td>
+<td>浏览器所在电脑、网站服务器</td>
+</tr>
+<tr>
+<td>核心</td>
+<td>提供网络互连和分组转发</td>
+<td>中间网络及路由器</td>
+</tr>
+</tbody></table>
+<p>**“边缘”按功能划分，不表示规模小或不重要。**大型网站服务器仍是应用通信的端系统。</p>
+<p>严格地说，应用通信发生在<strong>不同主机上的进程之间</strong>。数据既要到正确主机，也要交给正确应用进程。</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>角色关系</th>
+<th>易错点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C&#x2F;S</td>
+<td>客户请求服务，服务器提供服务</td>
+<td>双方都可收发数据；服务器不只向客户发送</td>
+</tr>
+<tr>
+<td>P2P</td>
+<td>参与者既可请求，也可提供资源</td>
+<td>对等是应用角色关系，不等于两台机器物理直连</td>
+</tr>
+</tbody></table>
+<p>一台电脑可运行多个程序，同时承载客户和服务器角色。</p>
+<h3 id="1-4-三种交换方式【重点】"><a href="#1-4-三种交换方式【重点】" class="headerlink" title="1.4 三种交换方式【重点】"></a>1.4 三种交换方式【重点】</h3><p>交换的核心问题：<strong>怎样分配通信资源，让数据经过中间网络到达目的地？</strong></p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>基本过程</th>
+<th>优点</th>
+<th>主要代价</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>电路交换</td>
+<td>建立连接、预留资源 → 传送 → 释放</td>
+<td>连接建立后有相对稳定的传输条件</td>
+<td>无数据时预留资源可能闲置</td>
+</tr>
+<tr>
+<td>报文交换</td>
+<td>整个报文收齐后再向下一站转发</td>
+<td>无须端到端预留专用资源</td>
+<td>大报文需要较多存储，后续链路启动较晚</td>
+</tr>
+<tr>
+<td>分组交换</td>
+<td>报文拆小，每个分组分别存储转发</td>
+<td>共享灵活，可流水线传输</td>
+<td>首部开销、排队、丢包；普通分组服务不保证固定带宽</td>
+</tr>
+</tbody></table>
+<p>**存储转发：**在本教材模型中，中间节点先收齐当前转发单位，再发送。报文交换的单位是整个报文，分组交换的单位是一个分组。</p>
+<p>**TCP 连接不等于电路交换连接：**TCP 维护端点协议状态，通常不沿途预留专用电路。</p>
+<h4 id="理解模型：流水线为什么缩短时间？"><a href="#理解模型：流水线为什么缩短时间？" class="headerlink" title="理解模型：流水线为什么缩短时间？"></a>理解模型：流水线为什么缩短时间？</h4><p>总数据 6 Mbit，两条链路均为 2 Mbit&#x2F;s，忽略其他时延和首部开销。</p>
+<ul>
+<li>报文交换：每条链路发送整份数据需要 3 s，总计 <strong>6 s</strong>。</li>
+<li>拆成 3 个等长分组：每个分组在一条链路上发送需要 1 s。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>第一条链路</th>
+<th>第二条链路</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0～1 s</td>
+<td>分组 1</td>
+<td>等待</td>
+</tr>
+<tr>
+<td>1～2 s</td>
+<td>分组 2</td>
+<td>分组 1</td>
+</tr>
+<tr>
+<td>2～3 s</td>
+<td>分组 3</td>
+<td>分组 2</td>
+</tr>
+<tr>
+<td>3～4 s</td>
+<td>结束</td>
+<td>分组 3</td>
+</tr>
+</tbody></table>
+<p>分组交换用 <strong>4 s</strong> 完成。<strong>不是链路变快，而是不同链路能够重叠工作。</strong></p>
+<p>等速链路、等长分组、无额外时延时：设总报文长 <code>L</code>，链路数 <code>h</code>，分组数 <code>n</code>，链路速率 <code>R</code>：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">报文交换时间 = h × L / R</span><br><span class="line">分组交换时间 = (h + n − 1) × L / (n × R)</span><br></pre></td></tr></table></figure>
+
+<p>分组过小会增加首部和处理开销，<strong>不是越小越好</strong>。</p>
+<h3 id="1-5-网络分类【识记】"><a href="#1-5-网络分类【识记】" class="headerlink" title="1.5 网络分类【识记】"></a>1.5 网络分类【识记】</h3><table>
+<thead>
+<tr>
+<th>分类角度</th>
+<th>类型</th>
+<th>理解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>作用范围</td>
+<td>PAN、LAN、MAN、WAN</td>
+<td>个人附近、局部区域、城市、跨地区；范围不是绝对硬边界</td>
+</tr>
+<tr>
+<td>使用者</td>
+<td>公用网、专用网</td>
+<td>面向符合条件的公众使用，或面向特定组织业务</td>
+</tr>
+<tr>
+<td>接入功能</td>
+<td>接入网 AN</td>
+<td>将用户端系统接入 ISP 的网络设施</td>
+</tr>
+</tbody></table>
+<p>局域网不等于互联网，专用网也不等于一种特定传输媒体。</p>
+<h3 id="1-6-网络性能【重点】"><a href="#1-6-网络性能【重点】" class="headerlink" title="1.6 网络性能【重点】"></a>1.6 网络性能【重点】</h3><h4 id="能力与实际量"><a href="#能力与实际量" class="headerlink" title="能力与实际量"></a>能力与实际量</h4><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>含义</th>
+<th>单位&#x2F;关键点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>速率</td>
+<td>数据发送速率</td>
+<td>bit&#x2F;s；标称速率不等于实际吞吐量</td>
+</tr>
+<tr>
+<td>带宽</td>
+<td>本章语境中的最高数据传送能力</td>
+<td>bit&#x2F;s；物理层频率带宽用 Hz</td>
+</tr>
+<tr>
+<td>吞吐量</td>
+<td>单位时间实际通过的数量</td>
+<td>通常 bit&#x2F;s，应明确测量范围</td>
+</tr>
+<tr>
+<td>利用率</td>
+<td>观察期内资源被使用的比例</td>
+<td>无量纲或百分比</td>
+</tr>
+</tbody></table>
+<p>**瓶颈模型：**路径依次经过 100、20、100 Mbit&#x2F;s 链路，其他条件理想时，持续吞吐量受 20 Mbit&#x2F;s 链路限制。缓冲区只能暂时容纳积压，不能提高输出能力。</p>
+<h4 id="四种时延"><a href="#四种时延" class="headerlink" title="四种时延"></a>四种时延</h4><table>
+<thead>
+<tr>
+<th>时延</th>
+<th>做什么</th>
+<th>计算&#x2F;影响因素</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>发送时延</td>
+<td>把整个分组送入链路</td>
+<td><code>t_s=L/R</code></td>
+</tr>
+<tr>
+<td>传播时延</td>
+<td>信号走完链路</td>
+<td><code>t_p=d/v</code></td>
+</tr>
+<tr>
+<td>处理时延</td>
+<td>分析首部、检查、查表等</td>
+<td>设备和处理任务</td>
+</tr>
+<tr>
+<td>排队时延</td>
+<td>等待处理或发送</td>
+<td>到达流量、负载、调度</td>
+</tr>
+</tbody></table>
+<p>沿途总时延需累计相关节点与链路上的各项时延。单链路、忽略处理和排队时：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">收齐时间 = L / R + d / v</span><br></pre></td></tr></table></figure>
+
+<p>**理解模型：入口与走廊。**发送速率像入口每秒放行多少人；传播速率像人在走廊中走多快。入口变宽，不会使人在同一走廊中自动走得更快。</p>
+<table>
+<thead>
+<tr>
+<th>改变条件</th>
+<th>发送时延</th>
+<th>传播时延</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>分组长度增大</td>
+<td>增大</td>
+<td>不因此改变</td>
+</tr>
+<tr>
+<td>发送速率增大</td>
+<td>减小</td>
+<td>不因此改变</td>
+</tr>
+<tr>
+<td>链路距离增大</td>
+<td>不因此改变</td>
+<td>增大</td>
+</tr>
+</tbody></table>
+<p>**收发可以同时进行。**若发送需 2 ms、传播需 3 ms：开头约在 3 ms 到达，最后部分在 5 ms 到达。</p>
+<h4 id="RTT、时延带宽积与等待"><a href="#RTT、时延带宽积与等待" class="headerlink" title="RTT、时延带宽积与等待"></a>RTT、时延带宽积与等待</h4><ul>
+<li>**RTT：**一次往返交互的时间。实际 RTT 可包含传播、排队、处理及相关发送时间；不普遍等于两倍传播时延。</li>
+<li><strong>本教材的链路时延带宽积：</strong><code>B t_p</code>，单位 bit，表示按带宽连续发送时的在途数据量，不是路由器缓冲容量。</li>
+<li>**<code>B × RTT</code>：**描述一个往返时间内可发送的数据量，与未确认数据和窗口设计有关；不要与单程传播带宽积混淆。</li>
+</ul>
+<p>**停止等待模型：**每发一份数据，必须等其确认才发下一份。设发完后等待时间为 <code>T_w</code>，忽略确认发送和其他开销：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">有效数据率 = L / (t_s + T_w)</span><br><span class="line">利用率 U = t_s / (t_s + T_w)</span><br><span class="line">有效数据率 = R × U</span><br></pre></td></tr></table></figure>
+
+<p>例：发送 1 ms、等待 20 ms，<code>U=1/21</code>；速率翻倍后，发送 0.5 ms，<code>U=1/41</code>。</p>
+<p>**提高发送速率后，有效速率可略增，利用率却下降。**原因是分母基数（链路能力）增大，而等待限制仍存在。</p>
+<p>对于随机、突发流量，负载接近容量时，排队时延往往明显上升。教材简化模型：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">D = D_0 / (1 − U)</span><br></pre></td></tr></table></figure>
+
+<p>这是有条件的趋势模型，不是任何网络的通用精确公式，也不能据此认为高利用率必然有严重排队。</p>
+<h4 id="非性能特征【了解】"><a href="#非性能特征【了解】" class="headerlink" title="非性能特征【了解】"></a>非性能特征【了解】</h4><p>费用、质量、标准化、可靠性、可扩展性与可升级性、易管理和维护。评价网络不能只看速率。</p>
+<h3 id="1-7-网络体系结构【重点】"><a href="#1-7-网络体系结构【重点】" class="headerlink" title="1.7 网络体系结构【重点】"></a>1.7 网络体系结构【重点】</h3><p>**分层的目的：**拆分复杂任务，复用通用能力；在服务与接口兼容的前提下，允许下层实现变化，便于标准化、实现和维护。</p>
+<table>
+<thead>
+<tr>
+<th>五层</th>
+<th>主要任务</th>
+<th>常见信息&#x2F;例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>应用层</td>
+<td>表达和处理具体网络业务</td>
+<td>HTTP、DNS；应用报文</td>
+</tr>
+<tr>
+<td>运输层</td>
+<td>为进程提供通用传送服务</td>
+<td>TCP、UDP；端口</td>
+</tr>
+<tr>
+<td>网络层</td>
+<td>跨网络的主机间分组传送</td>
+<td>IP、目的 IP 地址、路由与转发</td>
+</tr>
+<tr>
+<td>数据链路层</td>
+<td>当前链路范围内组织、交付帧</td>
+<td>帧边界、链路控制、差错检测</td>
+</tr>
+<tr>
+<td>物理层</td>
+<td>利用信号传送比特</td>
+<td>信号表示、定时、接口特性</td>
+</tr>
+</tbody></table>
+<p>**理解模型：**访问网页时，HTTP 说明请求的业务含义；运输层服务应用进程；IP 帮助跨网络前进；链路层解决当前一段；物理层实际传送比特。</p>
+<h4 id="协议、服务、实体和接口"><a href="#协议、服务、实体和接口" class="headerlink" title="协议、服务、实体和接口"></a>协议、服务、实体和接口</h4><ul>
+<li>**协议：**对等实体间通信的规则，包含语法（格式）、语义（含义和动作）、同步（顺序与时序）。</li>
+<li>**服务：**本层向上层提供的能力。协议是逻辑上的“水平关系”，服务是“垂直关系”。</li>
+<li>**实体：**参与发送、接收和处理的硬件或软件过程。</li>
+<li>**SAP：**服务访问点，相邻层交互的逻辑接口点，不要直接等同物理插口。</li>
+<li>**体系结构：**层次及协议的集合，是抽象的功能组织；实现是具体软硬件。</li>
+</ul>
+<p>**HTTP 是规则，不是被添加到数据中的一件物品。**应说“按照协议构造报文、添加控制信息”。</p>
+<h4 id="封装与解封装"><a href="#封装与解封装" class="headerlink" title="封装与解封装"></a>封装与解封装</h4><p>简化的 TCP&#x2F;IP 封装过程（忽略分段等细节）：</p>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>基本结构</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>应用层</td>
+<td>应用报文</td>
+</tr>
+<tr>
+<td>运输层</td>
+<td>TCP 首部 + 应用数据</td>
+</tr>
+<tr>
+<td>网络层</td>
+<td>IP 首部 + TCP 报文段</td>
+</tr>
+<tr>
+<td>数据链路层</td>
+<td>帧首部 + IP 数据报 + 必要的帧尾</td>
+</tr>
+<tr>
+<td>物理层</td>
+<td>用信号传送上述比特</td>
+</tr>
+</tbody></table>
+<ul>
+<li>**首部&#x2F;数据是相对概念：**TCP 首部对 TCP 有控制意义，对 IP 则属于承载的数据。</li>
+<li>普通路由器接收帧后处理到 IP 层，作转发决定，再按下一段链路重新封装；通常无须理解网页。</li>
+<li>链路层封装会逐段变化，IP 首部某些字段也会更新；不要认为整份分组逐位保持不变。</li>
+<li>对等层“通信”是逻辑描述，实际信息仍通过下层传送。</li>
+</ul>
+<p>术语补充：<strong>PDU</strong> 是本层协议数据单元；<strong>SDU</strong> 是服务接口交付的数据。二者不保证一一对应，可能发生分段或合并。</p>
+<h4 id="三种层次模型【识记】"><a href="#三种层次模型【识记】" class="headerlink" title="三种层次模型【识记】"></a>三种层次模型【识记】</h4><ul>
+<li>**OSI 七层（自下而上）：**物理、数据链路、网络、运输、会话、表示、应用。</li>
+<li>**TCP&#x2F;IP 四层：**网络接口、网际、运输、应用。</li>
+<li>**教材五层：**物理、数据链路、网络、运输、应用。</li>
+</ul>
+<p>它们是不同划分方式，实际技术不必严格符合一个教学模型。TCP&#x2F;IP 通常指协议族，不仅是两个协议。</p>
+<h2 id="第二章：物理层"><a href="#第二章：物理层" class="headerlink" title="第二章：物理层"></a>第二章：物理层</h2><h3 id="2-1-物理层的任务与接口特性"><a href="#2-1-物理层的任务与接口特性" class="headerlink" title="2.1 物理层的任务与接口特性"></a>2.1 物理层的任务与接口特性</h3><p>**任务：**规定怎样在媒体上传送比特，尽量向上屏蔽不同媒体和通信手段的差异。传输媒体本身不等于物理层协议。</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>要回答的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>机械</td>
+<td>接头形状、尺寸、引脚排列等</td>
+</tr>
+<tr>
+<td>电气</td>
+<td>电压范围等电气条件</td>
+</tr>
+<tr>
+<td>功能</td>
+<td>信号或引脚承担什么功能</td>
+</tr>
+<tr>
+<td>过程</td>
+<td>信号和操作按什么顺序发生</td>
+</tr>
+</tbody></table>
+<p>**位同步 ≠ 帧同步：**前者找准比特&#x2F;码元判决时刻，后者识别完整帧的边界。</p>
+<h3 id="2-2-数据通信基础【重点】"><a href="#2-2-数据通信基础【重点】" class="headerlink" title="2.2 数据通信基础【重点】"></a>2.2 数据通信基础【重点】</h3><h4 id="系统、数据、信号与方向"><a href="#系统、数据、信号与方向" class="headerlink" title="系统、数据、信号与方向"></a>系统、数据、信号与方向</h4><p>系统模型：源点产生数据 → 发送器生成信号 → 传输系统 → 接收器恢复数据 → 终点使用数据。</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据</td>
+<td>信息的一种表示，如字符对应的比特序列</td>
+</tr>
+<tr>
+<td>信号</td>
+<td>数据的电气、电磁等物理表现</td>
+</tr>
+<tr>
+<td>模拟信号</td>
+<td>表示信息的参数连续取值</td>
+</tr>
+<tr>
+<td>数字信号</td>
+<td>用可区分的离散状态表示信息，不必只有两种状态</td>
+</tr>
+<tr>
+<td>信道</td>
+<td>按方向等规则讨论的信息传送通道，不简单等于一根物理线</td>
+</tr>
+</tbody></table>
+<p>数字数据可以通过连续载波的数字调制传送。数据类型与信号形式不要机械绑定。</p>
+<table>
+<thead>
+<tr>
+<th>通信方式</th>
+<th>方向关系</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单工</td>
+<td>单向传送</td>
+</tr>
+<tr>
+<td>半双工</td>
+<td>双向交替</td>
+</tr>
+<tr>
+<td>全双工</td>
+<td>双向同时</td>
+</tr>
+</tbody></table>
+<p>**上行：**用户到网络；**下行：**网络到用户。能双向交换应用消息，不代表每段底层链路都全双工。</p>
+<h4 id="码元、波特率、比特率"><a href="#码元、波特率、比特率" class="headerlink" title="码元、波特率、比特率"></a>码元、波特率、比特率</h4><ul>
+<li>**码元：**按规定时长传送的一个基本信号单位。</li>
+<li>**码元速率 <code>R_s</code>：**每秒码元数，单位 Baud。</li>
+<li>**比特率 <code>R_b</code>：**每秒传送的数据比特数，单位 bit&#x2F;s。</li>
+</ul>
+<p>若每码元有 <code>M=2^k</code> 种可区分状态，采用直接映射且不考虑编码冗余：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">每码元比特数 k = log₂(M)</span><br><span class="line">比特率 R_b = 码元速率 R_s × log₂(M)</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>状态数 <code>M</code></th>
+<th align="right">每码元比特数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>4</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td>8</td>
+<td align="right">3</td>
+</tr>
+<tr>
+<td>16</td>
+<td align="right">4</td>
+</tr>
+</tbody></table>
+<p>例：1200 Baud、8 种状态 → <strong>3600 bit&#x2F;s</strong>。连续码元可处于相同状态，码元数不等于跳变次数。</p>
+<h4 id="编码与调制"><a href="#编码与调制" class="headerlink" title="编码与调制"></a>编码与调制</h4><p>**编码的作用：**安排数据对应的波形，并考虑定时、频谱等要求。长串相同电平不利于从信号本身持续恢复时钟。</p>
+<table>
+<thead>
+<tr>
+<th>编码</th>
+<th>本教材的基本规则</th>
+<th>重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>不归零 NRZ</td>
+<td>正电平为 1，负电平为 0，位内不特意回零</td>
+<td>简单，但长串相同比特缺少定时线索</td>
+</tr>
+<tr>
+<td>归零 RZ</td>
+<td>正&#x2F;负脉冲表示 1&#x2F;0，随后回零电平</td>
+<td>增加波形变化，通常需要更多带宽</td>
+</tr>
+<tr>
+<td>曼彻斯特</td>
+<td>位中心低→高为 0，高→低为 1</td>
+<td>中心跳变方向表示数据，并提供同步线索</td>
+</tr>
+<tr>
+<td>差分曼彻斯特</td>
+<td>位开始有跳变为 0，无跳变为 1；位中心总跳变</td>
+<td>开始处是否跳变表示数据，中心变化用于同步</td>
+</tr>
+</tbody></table>
+<p><strong>0&#x2F;1 约定可能反过来，做题以题目为准。</strong>“归零”指零电平，不是数据 0。</p>
+<p>**理解模型：**普通曼彻斯特看“中心跳向哪边”；差分曼彻斯特看“开始有没有跳”。不要混用判据。</p>
+<p>**带通调制：**利用载波，把数据映射到适合信道的信号形式。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>改变的载波特征</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>调幅 &#x2F; 数字幅移键控</td>
+<td>振幅</td>
+</tr>
+<tr>
+<td>调频 &#x2F; 数字频移键控</td>
+<td>频率</td>
+</tr>
+<tr>
+<td>调相 &#x2F; 数字相移键控</td>
+<td>相位</td>
+</tr>
+<tr>
+<td>QAM</td>
+<td>振幅与相位组合</td>
+</tr>
+</tbody></table>
+<p>码元状态不一定是不同电平，也可以是不同相位等信号特征。</p>
+<h3 id="2-3-信道极限容量【重点】"><a href="#2-3-信道极限容量【重点】" class="headerlink" title="2.3 信道极限容量【重点】"></a>2.3 信道极限容量【重点】</h3><h4 id="奈氏准则：带宽与无码间串扰"><a href="#奈氏准则：带宽与无码间串扰" class="headerlink" title="奈氏准则：带宽与无码间串扰"></a>奈氏准则：带宽与无码间串扰</h4><p>理想低通信道、忽略噪声、逐码元无码间串扰模型，带宽为 <code>W</code> Hz：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">最高码元速率 = 2 × W（Baud）</span><br></pre></td></tr></table></figure>
+
+<p>若每码元使用 <code>M</code> 种状态，直接映射时：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">最高比特率 = 2 × W × log₂(M)（bit/s）</span><br></pre></td></tr></table></figure>
+
+<p><strong>为什么有“2”？——理想脉冲零点模型。</strong></p>
+<p>带宽为 <code>W</code> 的理想 sinc 脉冲可以写成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p(t) = sin(2 × π × W × t) / (2 × π × W × t)</span><br></pre></td></tr></table></figure>
+
+<p>其中心值为 1，其他零点在 <code>t=n/(2W)</code>（非零整数 <code>n</code>）。将码元中心按 <code>T=1/(2W)</code> 间隔排列，判决当前码元时，其他脉冲恰好为零，因此可以无码间串扰。</p>
+<p>**波形可以重叠，判决点不能被其他码元干扰。**这个构造说明 <code>2W</code> 可以达到；其上限性质来自完整的奈氏频域条件，不能仅凭“正弦波有两个半周期”作为一般证明。</p>
+<h4 id="香农公式：加入噪声限制"><a href="#香农公式：加入噪声限制" class="headerlink" title="香农公式：加入噪声限制"></a>香农公式：加入噪声限制</h4><p>带限高斯白噪声信道模型：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">信道容量 C = W × log₂(1 + S/N)（bit/s）</span><br></pre></td></tr></table></figure>
+
+<p><code>S/N</code> 是信号与噪声的平均功率比。速率低于容量时，理论上可通过适当编码使错误概率任意小；不是承诺实际有限传输绝对零错误。</p>
+<p>信噪比的分贝表示：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">信噪比 γ_dB = 10 × log₁₀(S/N)</span><br><span class="line">功率比 S/N = 10^(γ_dB / 10)</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>dB</th>
+<th align="right">功率比 <code>S/N</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>10</td>
+<td align="right">10</td>
+</tr>
+<tr>
+<td>20</td>
+<td align="right">100</td>
+</tr>
+<tr>
+<td>30</td>
+<td align="right">1000</td>
+</tr>
+</tbody></table>
+<p>**不能把 dB 值直接代入香农公式。**0 dB 表示信号与噪声功率相等。</p>
+<h4 id="两种限制怎样一起看？"><a href="#两种限制怎样一起看？" class="headerlink" title="两种限制怎样一起看？"></a>两种限制怎样一起看？</h4><p>例：<code>W=4000</code> Hz，<code>S/N=63</code>：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C = 4000 × log₂(64) = 4000 × 6 = 24000 bit/s = 24 kbit/s</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>每码元状态数</th>
+<th align="right">奈氏上界</th>
+<th align="right">香农容量</th>
+<th>较严格限制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>4</td>
+<td align="right">16 kbit&#x2F;s</td>
+<td align="right">24 kbit&#x2F;s</td>
+<td>奈氏</td>
+</tr>
+<tr>
+<td>16</td>
+<td align="right">32 kbit&#x2F;s</td>
+<td align="right">24 kbit&#x2F;s</td>
+<td>香农</td>
+</tr>
+</tbody></table>
+<p>**只在两种模型条件都适用时，取较小值作为不能超过的上界；不保证实际方案能达到该值。**增加状态数不能突破既定带宽、信噪比下的容量。</p>
+<h3 id="2-4-传输媒体"><a href="#2-4-传输媒体" class="headerlink" title="2.4 传输媒体"></a>2.4 传输媒体</h3><blockquote>
+<p>对应教材 2.3 节。本笔记把“容量”单列为上一节，便于复习。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>媒体</th>
+<th>原理&#x2F;结构</th>
+<th>主要特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>双绞线</td>
+<td>两根绝缘铜线绞合，配合差分传送</td>
+<td>绞合改善抗干扰和串扰；成本、施工较方便，仍受距离与线路质量限制</td>
+</tr>
+<tr>
+<td>同轴电缆</td>
+<td>中心导体、绝缘层、外导体屏蔽、保护层</td>
+<td>有屏蔽结构，常见于教材介绍的有线电视网络</td>
+</tr>
+<tr>
+<td>光纤</td>
+<td>光信号在纤芯、包层形成的导波结构中传播</td>
+<td>容量高、合适波段损耗低、不受普通电磁干扰；仍有损耗与色散</td>
+</tr>
+<tr>
+<td>无线</td>
+<td>信号在空间传播</td>
+<td>便于移动和跨越难布线区域；受障碍、干扰、多径等影响</td>
+</tr>
+</tbody></table>
+<p>导引型：双绞线、同轴、光纤；非导引型：无线电、微波、红外等空间传送。</p>
+<p>**理解模型：双绞线抗干扰。**绞合使两根线受到更接近的外部影响；差分接收比较两线差值，有助于抑制共同干扰。</p>
+<p><strong>理解模型：光纤脉冲展宽。</strong></p>
+<ul>
+<li>多模光纤：多个空间模式可具有不同传播时间，形成模间色散，脉冲展宽。</li>
+<li>单模光纤：避免模间色散，适合较长距离高速传送；不等于完全没有其他色散。</li>
+<li>发送过密时，展宽可能干扰后续码元的判决。</li>
+<li>单模不等于只能承载一路业务，仍可使用波分复用。</li>
+</ul>
+<p>**无线多径：**同一信号经不同路径、不同延迟到达，叠加后可能增强、减弱或失真。</p>
+<p>**卫星时延模型：**同步轨道卫星距地面约 36,000 km，地面→卫星→地面粗算传播时间为 <code>72000/300000 ≈ 0.24</code> s；这是单程两段路径的估算，不含其他时延。不同轨道不能一概而论。</p>
+<h3 id="2-5-信道复用【重点】"><a href="#2-5-信道复用【重点】" class="headerlink" title="2.5 信道复用【重点】"></a>2.5 信道复用【重点】</h3><blockquote>
+<p>对应教材 2.4 节。</p>
+</blockquote>
+<p><strong>复用器合并，分用器分离；必须有规则让接收方知道每路信号的归属。</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>区分依据</th>
+<th>核心特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FDM 频分</td>
+<td>不同频带</td>
+<td>同时发送，占用不同频率资源；可能需保护频带</td>
+</tr>
+<tr>
+<td>TDM 时分</td>
+<td>固定时隙位置</td>
+<td>固定周期轮流；无数据时对应时隙可能空闲</td>
+</tr>
+<tr>
+<td>STDM 统计时分</td>
+<td>动态时隙与标识</td>
+<td>跳过空闲输入，提高资源使用灵活性；需标识、缓冲与调度</td>
+</tr>
+<tr>
+<td>WDM 波分</td>
+<td>不同光波长</td>
+<td>光领域的频分复用，一根光纤承载多路波长</td>
+</tr>
+<tr>
+<td>CDM&#x2F;CDMA 码分</td>
+<td>不同码序列的相关性</td>
+<td>可同时间、同频带传送，用码匹配提取目标数据</td>
+</tr>
+</tbody></table>
+<p>例：8 Mbit&#x2F;s 线路平均给四路固定时隙，每路 2 Mbit&#x2F;s。只有 A 有数据时，普通固定 TDM 不自动把全部能力给 A；STDM 可以安排更多发送机会，但存在开销。</p>
+<p>**统计共享不创造容量：**如果总到达速率持续超过输出能力，缓冲会积压甚至溢出。</p>
+<p>TDM 的复用帧不直接等同于数据链路层帧。FDM&#x2F;FDMA、TDM&#x2F;TDMA：复用强调资源组织，多址强调多个用户接入。</p>
+<h4 id="CDMA-的小模型【难点】"><a href="#CDMA-的小模型【难点】" class="headerlink" title="CDMA 的小模型【难点】"></a>CDMA 的小模型【难点】</h4><p>每个数据比特扩展为 <code>m</code> 个码片。用户发 1 时发送自己的码序列，发 0 时发送反码；无发送在理想模型中为零贡献。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">A = (1, 1, −1, −1)</span><br><span class="line">B = (1, −1, 1, −1)</span><br></pre></td></tr></table></figure>
+
+<p>两码正交：<code>A · B=0</code>；自内积为 4。</p>
+<p>若 A 发 1，B 发 0：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">X = A − B = (0, 2, −2, 0)</span><br></pre></td></tr></table></figure>
+
+<p>接收端匹配：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(X · A) / 4 = +1 → A 发送数据 1</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(X · B) / 4 = −1 → B 发送数据 0</span><br></pre></td></tr></table></figure>
+
+<p>**理解模型：**用 A 的码匹配，自身贡献保留，其他正交码贡献抵消。码仅仅不同不够，还需要适当相关性。</p>
+<ul>
+<li>内积：对应位置相乘，再求和；规范化内积再除以 <code>m</code>。</li>
+<li>判决：理想等幅模型下，<code>+1</code> 为数据 1，<code>-1</code> 为数据 0，0 为无相应贡献。</li>
+<li>码片速率为 <code>m</code> 倍数据比特率；扩展的是信号表示，不是应用信息量。</li>
+<li>精确分离依赖同步等条件；实际需考虑功率差、多径和噪声，不能说任何条件下互不干扰。</li>
+</ul>
+<h3 id="2-6-数字传输系统【了解】"><a href="#2-6-数字传输系统【了解】" class="headerlink" title="2.6 数字传输系统【了解】"></a>2.6 数字传输系统【了解】</h3><blockquote>
+<p>对应教材 2.5 节。</p>
+</blockquote>
+<ul>
+<li>**再生思想：**正确判决后重新生成数字信号，减少噪声、失真沿途累积；误判不会自动被修复。</li>
+<li>模拟业务可经采样、量化、编码转为数字数据，再利用统一传输设施。</li>
+<li>**SONET、SDH：**组织数字传输的标准体系，规定同步、速率等级和帧结构，便于复用、互通与管理。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th align="right">线路速率</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SONET STS-1 &#x2F; OC-1</td>
+<td align="right">51.84 Mbit&#x2F;s</td>
+</tr>
+<tr>
+<td>SDH STM-1</td>
+<td align="right">155.52 Mbit&#x2F;s</td>
+</tr>
+<tr>
+<td>SDH STM-4</td>
+<td align="right">622.08 Mbit&#x2F;s</td>
+</tr>
+</tbody></table>
+<p>线路速率包括系统开销，不全是用户有效数据率。</p>
+<h3 id="2-7-宽带接入【重点理解，名称识记】"><a href="#2-7-宽带接入【重点理解，名称识记】" class="headerlink" title="2.7 宽带接入【重点理解，名称识记】"></a>2.7 宽带接入【重点理解，名称识记】</h3><blockquote>
+<p>对应教材 2.6 节。</p>
+</blockquote>
+<p>**接入网解决用户如何连接 ISP。**电脑到家庭 Wi-Fi 的连接，与家庭到 ISP 的接入是不同部分。</p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>利用什么设施</th>
+<th>原理与限制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ADSL</td>
+<td>电话用户铜线</td>
+<td>电话与数据分配不同频率资源；DMT 使用多个子信道；上&#x2F;下行非对称，速率受距离与线路质量影响</td>
+</tr>
+<tr>
+<td>HFC</td>
+<td>光纤与同轴混合网络</td>
+<td>较远段使用光纤，近用户段用同轴；相应接入段由多个用户共享</td>
+</tr>
+<tr>
+<td>FTTx</td>
+<td>光纤延伸到不同位置</td>
+<td>H&#x3D;家庭，B&#x3D;建筑物，C&#x3D;路边；终止位置决定剩余连接方式</td>
+</tr>
+</tbody></table>
+<p>ADSL 的某段用户铜线专用，不等于端到端网络不共享。FTTH 也不等于每户独占全程光纤容量。</p>
+<h4 id="PON：把光纤与复用组合起来"><a href="#PON：把光纤与复用组合起来" class="headerlink" title="PON：把光纤与复用组合起来"></a>PON：把光纤与复用组合起来</h4><ul>
+<li>**OLT：**运营商侧光线路终端。</li>
+<li>**ODN：**光配线网络，包含光纤、分光器等。</li>
+<li>**ONU：**用户侧光网络单元。</li>
+<li>**无源：**中间配线部分不依赖有源供电设备；两端设备仍需电源。</li>
+</ul>
+<p>典型共享 PON：</p>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>组织方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>下行</td>
+<td>OLT 数据经分光器送向多个 ONU，按标识等规则处理归属</td>
+</tr>
+<tr>
+<td>上行</td>
+<td>ONU 共享路径，OLT 安排发送时段，避免随意同时发送造成冲突</td>
+</tr>
+<tr>
+<td>双向分离</td>
+<td>可使用不同波长分离上、下行</td>
+</tr>
+</tbody></table>
+<p>**理解模型：**PON 将光传送、分光、标识和时间调度组合起来。接入光纤只是获得连接，不意味着随时独占共享资源。</p>
+<h2 id="公式索引与计算检查"><a href="#公式索引与计算检查" class="headerlink" title="公式索引与计算检查"></a>公式索引与计算检查</h2><table>
+<thead>
+<tr>
+<th>用途</th>
+<th>公式</th>
+<th>最容易遗漏的条件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>发送时延</td>
+<td><code>L/R</code></td>
+<td><code>L</code> 用 bit，<code>R</code> 用 bit&#x2F;s</td>
+</tr>
+<tr>
+<td>传播时延</td>
+<td><code>d/v</code></td>
+<td>距离与速度单位一致</td>
+</tr>
+<tr>
+<td>单链路收齐时间</td>
+<td><code>L/R+d/v</code></td>
+<td>忽略处理、排队等</td>
+</tr>
+<tr>
+<td>等长分组流水线</td>
+<td><code>(h + n − 1) × L / (n × R)</code></td>
+<td>等速链路、等长分组、无其他开销</td>
+</tr>
+<tr>
+<td>链路时延带宽积</td>
+<td><code>Bt_p</code></td>
+<td>单程传播时间；结果为 bit</td>
+</tr>
+<tr>
+<td>停止等待有效速率</td>
+<td><code>L/(t_s+T_w)</code></td>
+<td><code>T_w</code> 明确为发完后的等待时间</td>
+</tr>
+<tr>
+<td>停止等待利用率</td>
+<td><code>t_s/(t_s+T_w)</code></td>
+<td>不等于吞吐量本身</td>
+</tr>
+<tr>
+<td>码元与比特率</td>
+<td><code>R_b = R_s × log₂(M)</code></td>
+<td>直接映射，不含额外编码冗余</td>
+</tr>
+<tr>
+<td>奈氏最高码元速率</td>
+<td><code>2W</code></td>
+<td>理想低通、无码间串扰模型</td>
+</tr>
+<tr>
+<td>奈氏比特率上界</td>
+<td><code>2 × W × log₂(M)</code></td>
+<td>状态数与模型条件</td>
+</tr>
+<tr>
+<td>香农容量</td>
+<td><code>W × log₂(1 + S/N)</code></td>
+<td><code>W</code> 为 Hz，<code>S/N</code> 为功率比</td>
+</tr>
+<tr>
+<td>分贝换成功率比</td>
+<td><code>S/N = 10^(γ_dB / 10)</code></td>
+<td>先转换，再代入香农公式</td>
+</tr>
+<tr>
+<td>CDMA 规范化内积</td>
+<td><code>Σ(X_i × A_i) / m</code></td>
+<td>按对应位置相乘；对齐与模型假设</td>
+</tr>
+</tbody></table>
+<p><strong>单位检查：</strong></p>
+<ul>
+<li><code>1 B=8 bit</code>；<code>1 ms=10^(-3) s</code>；<code>1 km=10^3 m</code>。</li>
+<li>数据率中的 k、M、G 通常按 <code>10^3、10^6、10^9</code> 换算。</li>
+<li>文件大小要看约定；教材部分题目按 <code>2^(20)</code> 字节计算“MB”，不要不加判断地套用。</li>
+<li><code>log₂(4)=2</code>，<code>log₂(8)=3</code>，<code>log₂(16)=4</code>，<code>log₂(32)=5</code>，<code>log₂(64)=6</code>。</li>
+</ul>
+<h2 id="本次学习的重点纠错"><a href="#本次学习的重点纠错" class="headerlink" title="本次学习的重点纠错"></a>本次学习的重点纠错</h2><table>
+<thead>
+<tr>
+<th>容易混淆的说法</th>
+<th>正确判断</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>同一局域网通信必须经过路由器</td>
+<td>不一定；可由交换机、接入点等支持</td>
+</tr>
+<tr>
+<td>Wi-Fi 换有线主要是网络层改变</td>
+<td>媒体与链路技术主要涉及物理层、链路层；IP 配置也可能随环境改变</td>
+</tr>
+<tr>
+<td>帧如何交付属于物理层</td>
+<td>帧级组织与交付主要是链路层；其比特通过信号传送属于物理层</td>
+</tr>
+<tr>
+<td>分组排队意味着整个路由器停了</td>
+<td>是相关分组等待，其他处理和接口可继续工作</td>
+</tr>
+<tr>
+<td>丢包就是应用数据永久损失</td>
+<td>可靠协议可能重传，但有时间和流量代价</td>
+</tr>
+<tr>
+<td>带宽翻倍，时延必然减半</td>
+<td>仅直接缩短发送时延；传播、处理、排队要分别分析</td>
+</tr>
+<tr>
+<td>提速后停止等待利用率会略增</td>
+<td>同样数据、等待不变时，利用率下降，有效速率可略增</td>
+</tr>
+<tr>
+<td>差分曼彻斯特中心跳变能判断 0&#x2F;1</td>
+<td>中心总跳变；本教材规定开始有跳变为 0，无跳变为 1</td>
+</tr>
+<tr>
+<td><code>log₂(64)=64</code></td>
+<td>应为 6，因为 <code>2^6=64</code></td>
+</tr>
+<tr>
+<td><code>W=4000</code>、<code>S/N=63</code>，香农容量 64k</td>
+<td>应为 <code>4000 × 6=24</code> kbit&#x2F;s</td>
+</tr>
+<tr>
+<td>状态数增大就能无限提速</td>
+<td>更难可靠区分，仍受噪声和容量限制</td>
+</tr>
+<tr>
+<td>单模光纤只能传一路数据</td>
+<td>“模”是空间传播模式，仍可通过波分等方式承载多路</td>
+</tr>
+<tr>
+<td>光纤到户意味着独占全部容量</td>
+<td>典型 PON 仍共享资源并进行调度</td>
+</tr>
+</tbody></table>
+<h2 id="快速自检"><a href="#快速自检" class="headerlink" title="快速自检"></a>快速自检</h2><p>复习时先遮住答案，尝试用一句话解释。</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案要点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>为什么分组交换能缩短整份报文的传送时间？</td>
+<td>小分组使后续链路更早启动，形成流水线</td>
+</tr>
+<tr>
+<td>2000 B、8 Mbit&#x2F;s、600 km、传播速度 <code>2 × 10^8</code> m&#x2F;s，单链路收齐多久？</td>
+<td>发送 2 ms + 传播 3 ms &#x3D; 5 ms</td>
+</tr>
+<tr>
+<td>上题发送速率改为 80 Mbit&#x2F;s 呢？</td>
+<td>0.2 ms + 3 ms &#x3D; 3.2 ms</td>
+</tr>
+<tr>
+<td>20 Mbit&#x2F;s、传播 10 ms，时延带宽积？</td>
+<td><code>2 × 10^5</code> bit，连续满速发送的单程在途量</td>
+</tr>
+<tr>
+<td>1200 Baud、8 种状态，比特率？</td>
+<td>3600 bit&#x2F;s</td>
+</tr>
+<tr>
+<td>差分曼彻斯特开始无跳变、中心有跳变？</td>
+<td>按本教材规则为数据 1</td>
+</tr>
+<tr>
+<td>4000 Hz、4 种状态，奈氏上界？</td>
+<td>8000 Baud、16000 bit&#x2F;s</td>
+</tr>
+<tr>
+<td>4000 Hz、功率比 63，香农容量？</td>
+<td>24000 bit&#x2F;s；状态数改为 16 后香农限制更严格</td>
+</tr>
+<tr>
+<td>统计时分为什么要标识？</td>
+<td>固定时隙归属不再成立，必须说明数据属于谁</td>
+</tr>
+<tr>
+<td>CDMA 中两码正交有什么作用？</td>
+<td>匹配目标码时，其他码的理想贡献抵消</td>
+</tr>
+<tr>
+<td>下载慢一定是家中线路问题吗？</td>
+<td>还可能是服务器、沿途瓶颈、共享竞争、拥塞或协议等待</td>
+</tr>
+</tbody></table>
+<h2 id="资料说明"><a href="#资料说明" class="headerlink" title="资料说明"></a>资料说明</h2><ul>
+<li>主要依据：上传教材第 1 章《概述》、第 2 章《物理层》（书内页码 1—69），结合本次讲解与纠错。</li>
+<li>本笔记将容量、媒体等主题单独编号，<strong>小节编号不完全对应教材</strong>；相关位置已注明。</li>
+<li>奈氏脉冲理解补充：<a target="_blank" rel="noopener" href="https://ocw.mit.edu/courses/6-450-principles-of-digital-communications-i-fall-2006/5f9666b5e49cd75306f0c6006f101e75_skW0oXoAU0M.pdf">MIT 通信课程：无码间串扰与理想奈氏脉冲</a>。</li>
+<li>本笔记中的数值示例均采用所注明的简化条件；实际网络性能还需要结合具体系统分析。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;">-------------到底咯QAQ嘎嘎-------------</div>
+    
+</div>
+      </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="jachinzhang1/jachinzhang1.github.io"
+        data-repo-id="R_kgDONy_q0w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONy_q084Cmo0P"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/09/25/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2026/10/27/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C/" rel="next" title="操作系统实验">
+      操作系统实验 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-circle"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">山河辽阔，人间烟火 | 记录生活与思考的碎片</span>
+</div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/js/site-interactions.js"></script>
+<script>
+  (function() {
+    var overlay = document.createElement('div');
+    overlay.className = 'page-transition-overlay';
+    document.body.appendChild(overlay);
+
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a');
+      if (!link || !link.href) return;
+      if (link.target === '_blank') return;
+      if (link.host !== window.location.host) return;
+      if (link.getAttribute('download') != null) return;
+      if (link.hash && link.pathname === window.location.pathname) return;
+      if (e.metaKey || e.ctrlKey) return;
+
+      e.preventDefault();
+      document.body.classList.add('page-exiting');
+      setTimeout(function() {
+        window.location = link.href;
+      }, 260);
+    });
+
+    // Keep overlay hidden when navigating back via bfcache.
+    window.addEventListener('pageshow', function(e) {
+      document.body.classList.remove('page-exiting');
+    });
+  })();
+</script>
+
+</body>
+</html>
