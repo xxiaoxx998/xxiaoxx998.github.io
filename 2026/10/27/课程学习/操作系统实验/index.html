@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://ducklinger.top/images/oslab3.png">
 <meta property="og:image" content="https://ducklinger.top/images/oslab4.png">
 <meta property="article:published_time" content="2026-10-26T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-10-28T08:22:42.718Z">
+<meta property="article:modified_time" content="2026-11-08T10:45:09.077Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://ducklinger.top/....%5Cimages%5Coslab1.png">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-10-28 16:22:42" itemprop="dateModified" datetime="2026-10-28T16:22:42+08:00">2026-10-28</time>
+                <time title="修改时间：2026-11-08 18:45:09" itemprop="dateModified" datetime="2026-11-08T18:45:09+08:00">2026-11-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1337,6 +1337,464 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*p-&gt;trapframe = p-&gt;alarm_saved;</span><br><span class="line"><span class="keyword">return</span> p-&gt;trapframe-&gt;a0;</span><br></pre></td></tr></table></figure>
 
 <p>这时分发器得到的返回值也是 <code>172</code>，再次赋值仍然是 <code>172</code>，就不会破坏原程序的寄存器值。</p>
+<h2 id="OSLab6-缺页机制"><a href="#OSLab6-缺页机制" class="headerlink" title="OSLab6 -缺页机制"></a>OSLab6 -缺页机制</h2><h3 id="1-COW"><a href="#1-COW" class="headerlink" title="1. COW"></a>1. COW</h3><h4 id="1-代码编写"><a href="#1-代码编写" class="headerlink" title="1. 代码编写"></a>1. 代码编写</h4><p>这次实验的任务是<strong>为 xv6 的 <code>fork()</code> 实现写时复制（Copy-on-Write，COW）</strong>，让父子进程先共享物理内存，等某一方真正写入时再复制，同时保证它们的数据互不影响。</p>
+<p>原来的 <code>fork()</code> 会立即把父进程的用户内存复制一份给子进程。比如父进程用了 80 MB，创建子进程时又要分配约 80 MB 并复制内容。如果子进程随后马上调用 <code>exec()</code> 加载新程序，这些刚复制的数据很快就被丢弃。</p>
+<p>我们要实现的行为可以用变量 <code>x</code> 来理解。假设父进程中 <code>x = 7</code>，它位于物理页 A：</p>
+<table>
+<thead>
+<tr>
+<th>时刻</th>
+<th>父进程</th>
+<th>子进程</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>fork()</code> 前</td>
+<td>使用 A，读到 <code>x=7</code></td>
+<td>尚未创建</td>
+</tr>
+<tr>
+<td><code>fork()</code> 后</td>
+<td>共享 A，读到 <code>7</code></td>
+<td>共享 A，读到 <code>7</code></td>
+</tr>
+<tr>
+<td>子进程执行 <code>x=9</code> 后</td>
+<td>仍使用 A，读到 <code>7</code></td>
+<td>使用复制出来的 B，读到 <code>9</code></td>
+</tr>
+</tbody></table>
+<p>为了做到这一点，我们实际完成了四项工作：</p>
+<ol>
+<li><strong>创建子进程时共享物理页。</strong> 修改 <code>uvmcopy()</code>，让父子页表指向同一个物理页。对原本可写的用户页，清除双方的 <code>PTE_W</code> 并设置 <code>PTE_COW</code>。</li>
+<li><strong>写入时才复制。</strong> 父或子写 COW 页会触发缺页异常。<code>vmfault()</code> 为写入方分配新页、复制原内容、更新映射并恢复写权限，然后让原写指令重新执行。原本只读的代码页仍然禁止写入。</li>
+<li><strong>正确回收共享页。</strong> 用引用计数记录物理页的使用情况。一个进程释放引用时，其他进程仍使用的页必须保留，最后一个引用消失后才能回收。</li>
+<li><strong>覆盖内核写用户内存的情况。</strong> <code>copyout()</code> 遇到 COW 页也要先完成私有化，保证 <code>read()</code> 等系统调用不会通过用户缓冲区破坏父子共享的数据。</li>
+</ol>
+<p>对于第 4 点的解释：</p>
+<p>你可能会想，A 不是已经被标成只读了吗？为什么没触发 COW 异常？因为这里的内核通过<strong>内核页表中可写的映射</strong>访问 A。父子用户页表里的 <code>PTE_W=0</code>，并不会让内核的这条写入自动触发用户页的 COW 处理。</p>
+<p>所以 <code>copyout()</code> 要在写入前，主动检查并处理：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((*pte &amp; PTE_W) == <span class="number">0</span>) &#123;</span><br><span class="line">  pa0 = vmfault(pagetable, va0, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">if</span> (pa0 == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于合法 COW 页，<code>vmfault()</code> 会完成这些操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">① 分配新物理页 B，把 A 的 <span class="string">&quot;hello&quot;</span> 复制过去</span><br><span class="line">② 修改子进程页表，让子进程的 buf 指向 B</span><br><span class="line">③ 返回 B 的物理地址，交给 pa0</span><br><span class="line">④ copyout() 把 <span class="string">&quot;ABC&quot;</span> 写进 B</span><br></pre></td></tr></table></figure>
+
+<p>这就是“<strong>先完成私有化</strong>”的意思——先让子进程拥有自己的物理页，再往里面写。父进程继续使用 A，因此它的 <code>&quot;hello&quot;</code> 保持不变。</p>
+<p>这次实验实现的是 <strong>COW Fork，也就是写时复制</strong>。核心目标是让 <code>fork()</code> 创建子进程时先共享物理页，等父或子真正写入时再复制，同时保证进程之间的数据隔离和物理页的正确回收。下面按你这次实际修改的三参数 <code>vmfault()</code> 版本讲解，代码片段聚焦修改部分。</p>
+<p><strong>一、先把整个机制串起来</strong></p>
+<p>假设父进程有变量 <code>x=7</code>，它位于物理页 A。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>父进程的映射</th>
+<th>子进程的映射</th>
+<th>物理页状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>fork()</code> 前</td>
+<td>指向 A，可写</td>
+<td>尚未创建</td>
+<td>A 的引用计数为 1</td>
+</tr>
+<tr>
+<td><code>fork()</code> 后</td>
+<td>指向 A，只读、COW</td>
+<td>指向 A，只读、COW</td>
+<td>A 的引用计数为 2</td>
+</tr>
+<tr>
+<td>子进程执行 <code>x=9</code> 后</td>
+<td>仍指向 A</td>
+<td>改为指向 B，可写</td>
+<td>A 中是 7，B 中是 9，各有一个引用</td>
+</tr>
+<tr>
+<td>父进程也放弃 A 后</td>
+<td>解除映射</td>
+<td>仍使用 B</td>
+<td>A 的计数归零，可以回收</td>
+</tr>
+</tbody></table>
+<p>父子各有自己的页表。共享的是物理页，两张页表中的 PTE 可以分别修改。因此，子进程切换到 B 时，父进程仍然使用 A。</p>
+<p>本次涉及的文件如下，路径都相对于虚拟机中的 <code>~/xv6-lab3</code>。</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>修改</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>kernel/riscv.h</code></td>
+<td>定义 <code>PTE_COW</code></td>
+</tr>
+<tr>
+<td><code>kernel/kalloc.c</code></td>
+<td>增加引用计数，修改分配、释放和初始化，新增 <code>kaddref()</code></td>
+</tr>
+<tr>
+<td><code>kernel/defs.h</code></td>
+<td>声明 <code>kaddref()</code></td>
+</tr>
+<tr>
+<td><code>kernel/vm.c</code></td>
+<td>修改 <code>uvmcopy()</code>、<code>vmfault()</code>、<code>copyout()</code>，纠正 <code>copyin()</code> 的读写参数</td>
+</tr>
+<tr>
+<td><code>user/cowtest.c</code></td>
+<td>引入 COW 专项测试</td>
+</tr>
+<tr>
+<td><code>Makefile</code></td>
+<td>确保测试加入 <code>UPROGS</code></td>
+</tr>
+<tr>
+<td><code>user/usertests.c</code></td>
+<td>调整 <code>lazy_copy()</code> 对实验四 <code>USYSCALL</code> 页的预期</td>
+</tr>
+</tbody></table>
+<p>现有 <code>proc.c</code> 和 <code>trap.c</code> 提供创建进程、处理异常、回收进程的调用入口。</p>
+<p><strong>二、<code>PTE_COW</code> 为什么必须单独定义</strong></p>
+<p>在 <code>kernel/riscv.h</code> 中增加：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> PTE_COW (1L &lt;&lt; 8)</span></span><br></pre></td></tr></table></figure>
+
+<p>CPU 检查用户写入权限时，主要看 <code>PTE_W</code>。我们清除它，就能让用户写入触发异常。但内核收到异常后，还要知道“这张页为什么只读”。</p>
+<table>
+<thead>
+<tr>
+<th>页面</th>
+<th><code>PTE_W</code></th>
+<th><code>PTE_COW</code></th>
+<th>用户写入后的处理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>普通只读代码页</td>
+<td>0</td>
+<td>0</td>
+<td>拒绝写入</td>
+</tr>
+<tr>
+<td>因 COW 共享而暂时只读的数据页</td>
+<td>0</td>
+<td>1</td>
+<td>复制后允许写入</td>
+</tr>
+<tr>
+<td>普通可写私有页</td>
+<td>1</td>
+<td>0</td>
+<td>正常写入</td>
+</tr>
+</tbody></table>
+<p>第 8 位属于 RISC-V PTE 的软件保留位。<strong>CPU 根据 <code>PTE_W</code> 产生异常，内核根据 <code>PTE_COW</code> 决定能否修复。</strong></p>
+<p>单纯看到 <code>PTE_W=0</code> 就恢复写权限，会让用户程序能够修改原本只读的代码页。</p>
+<p><strong>三、引用计数怎样保证共享页的生命周期</strong></p>
+<p>普通 xv6 在释放用户页时，可以直接把页放回空闲链表。COW 后，一张页可能被多个进程引用，必须等最后一个引用消失才能回收。</p>
+<p>在 <code>kernel/kalloc.c</code> 中增加：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> NPAGES       ((PHYSTOP - KERNBASE) / PGSIZE)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PAGE_IDX(pa)  (((uint64)(pa) - KERNBASE) / PGSIZE)</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">spinlock</span> <span class="title">lock</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">freelist</span>;</span></span><br><span class="line">  <span class="type">int</span> refs[NPAGES];</span><br><span class="line">&#125; kmem;</span><br></pre></td></tr></table></figure>
+
+<p><code>NPAGES</code> 是这段物理内存包含的页数。<code>PAGE_IDX()</code> 把物理页地址转换为数组下标。例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">物理页地址    <span class="number">0x80003000</span></span><br><span class="line">减去 KERNBASE <span class="number">0x80000000</span></span><br><span class="line">得到偏移      <span class="number">0x3000</span></span><br><span class="line">除以 PGSIZE   <span class="number">0x1000</span></span><br><span class="line">数组下标      <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>所以该页的引用计数位于 <code>kmem.refs[3]</code>。</p>
+<p>这里的计数覆盖分配器管理的页面。<code>kalloc()</code> 分配出来的页可能作为用户数据页，也可能作为页表或内核栈，分配时都先记为一个引用。</p>
+<p><code>kalloc()</code> 从链表拿出一页时增加了计数初始化：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">acquire(&amp;kmem.lock);</span><br><span class="line">r = kmem.freelist;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (r) &#123;</span><br><span class="line">  kmem.freelist = r-&gt;next;</span><br><span class="line">  kmem.refs[PAGE_IDX(r)] = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">release(&amp;kmem.lock);</span><br></pre></td></tr></table></figure>
+
+<p>调用者拿到页，就已经持有它，因此设为 <code>1</code>。后面的填充操作继续执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (r)</span><br><span class="line">  <span class="built_in">memset</span>((<span class="type">char</span> *)r, <span class="number">5</span>, PGSIZE);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> (<span class="type">void</span> *)r;</span><br></pre></td></tr></table></figure>
+
+<p>填充 <code>5</code> 是 xv6 用来帮助发现未初始化使用的调试方式。调用者需要零页时，会再调用 <code>memset(..., 0, ...)</code>。</p>
+<p>共享时新增 <code>kaddref()</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kaddref</span><span class="params">(<span class="type">void</span> *pa)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 idx = PAGE_IDX(pa);</span><br><span class="line"></span><br><span class="line">  acquire(&amp;kmem.lock);</span><br><span class="line">  <span class="keyword">if</span> (kmem.refs[idx] &lt; <span class="number">1</span>)</span><br><span class="line">    panic(<span class="string">&quot;kaddref&quot;</span>);</span><br><span class="line">  kmem.refs[idx]++;</span><br><span class="line">  release(&amp;kmem.lock);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>父进程仍持有的页，计数至少应为 <code>1</code>。子进程新增一个映射，就加一。</p>
+<p>锁保护“读取旧计数、计算、写回”的整个过程。否则两个 CPU 同时把计数从 <code>1</code> 加一，可能都写回 <code>2</code>，丢掉一次增加。</p>
+<p><code>kfree()</code> 则改为先减少引用，再决定是否回收：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">uint64 idx = PAGE_IDX(pa);</span><br><span class="line"></span><br><span class="line">acquire(&amp;kmem.lock);</span><br><span class="line"><span class="keyword">if</span> (kmem.refs[idx] &lt; <span class="number">1</span>)</span><br><span class="line">  panic(<span class="string">&quot;kfree: bad refcount&quot;</span>);</span><br><span class="line"></span><br><span class="line">kmem.refs[idx]--;</span><br><span class="line"><span class="keyword">if</span> (kmem.refs[idx] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">  release(&amp;kmem.lock);</span><br><span class="line">  <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">memset</span>(pa, <span class="number">1</span>, PGSIZE);</span><br><span class="line">r = (<span class="keyword">struct</span> run *)pa;</span><br><span class="line">r-&gt;next = kmem.freelist;</span><br><span class="line">kmem.freelist = r;</span><br><span class="line">release(&amp;kmem.lock);</span><br></pre></td></tr></table></figure>
+
+<p>这里保留了函数原来的物理地址合法性检查。核心变化是 <strong><code>memset()</code> 必须放在计数归零之后</strong>。如果 A 仍被父进程使用，子进程释放引用时只能让计数从 <code>2 → 1</code>，不能覆盖 A 中的数据。</p>
+<p>开机初始化的 <code>freerange()</code> 也要配合：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (; p + PGSIZE &lt;= (<span class="type">char</span> *)pa_end; p += PGSIZE) &#123;</span><br><span class="line">  kmem.refs[PAGE_IDX(p)] = <span class="number">1</span>;</span><br><span class="line">  kfree(p);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这些页从未经过 <code>kalloc()</code>，计数最初是 <code>0</code>。先设为 <code>1</code>，再调用 <code>kfree()</code> 减到 <code>0</code>，就能统一加入空闲链表。</p>
+<p>最后在 <code>kernel/defs.h</code> 增加：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">kaddref</span><span class="params">(<span class="type">void</span> *)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这样 <code>vm.c</code> 才能通过声明调用另一个文件中实现的函数。</p>
+<p><strong>四、<code>fork()</code> 如何进入我们的共享逻辑</strong></p>
+<p>用户程序执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> pid = fork();</span><br></pre></td></tr></table></figure>
+
+<p>调用链是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fork → ecall → usertrap → syscall → sys_fork → kfork</span><br></pre></td></tr></table></figure>
+
+<p><code>kfork()</code> 先创建子进程，再调用 <code>uvmcopy()</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">np = allocproc();</span><br><span class="line">uvmcopy(p-&gt;pagetable, np-&gt;pagetable, p-&gt;sz);</span><br><span class="line">np-&gt;sz = p-&gt;sz;</span><br></pre></td></tr></table></figure>
+
+<p><code>allocproc()</code> 已经给子进程建立自己的页表。其中 <code>proc_pagetable()</code> 调用 <code>uvmcreate()</code> 分配根页表，再建立跳板页、陷阱帧等特殊映射。随后 <code>uvmcopy()</code> 补上用户代码、数据、栈和堆等区域的映射。</p>
+<p>因此：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">old = p-&gt;pagetable;     <span class="comment">// 父页表</span></span><br><span class="line">new = np-&gt;pagetable;    <span class="comment">// 子页表</span></span><br></pre></td></tr></table></figure>
+
+<p>接着 <code>kfork()</code> 为子进程复制寄存器现场：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*(np-&gt;trapframe) = *(p-&gt;trapframe);</span><br><span class="line">np-&gt;trapframe-&gt;a0 = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>子进程返回用户态时，<code>a0=0</code>，所以用户变量 <code>pid</code> 得到 <code>0</code>。父进程的系统调用返回值则是子进程的真实 PID。两边才能通过 <code>if (pid == 0)</code> 执行不同代码。</p>
+<p><strong>五、<code>uvmcopy()</code> 怎样让父子共享物理页</strong></p>
+<p>原实现对每个已分配的用户页执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mem = kalloc();</span><br><span class="line">memmove(mem, (<span class="type">char</span> *)pa, PGSIZE);</span><br><span class="line">mappages(new, i, PGSIZE, (uint64)mem, flags);</span><br></pre></td></tr></table></figure>
+
+<p>这会立即分配、复制。我们将其改为直接映射父进程原来的物理页：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; sz; i += PGSIZE) &#123;</span><br><span class="line">  pte = walk(old, i, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">if</span> (pte == <span class="number">0</span> || (*pte &amp; PTE_V) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">  pa = PTE2PA(*pte);</span><br><span class="line">  flags = PTE_FLAGS(*pte);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> ((flags &amp; PTE_U) &amp;&amp; (flags &amp; PTE_W))</span><br><span class="line">    flags = (flags &amp; ~PTE_W) | PTE_COW;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (mappages(new, i, PGSIZE, pa, flags) != <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">goto</span> err;</span><br><span class="line"></span><br><span class="line">  kaddref((<span class="type">void</span> *)pa);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>逐页来看：</p>
+<ul>
+<li><code>walk(old, i, 0)</code> 找到父进程对应的 PTE。最后的 <code>0</code> 表示查询时不创建下级页表。</li>
+<li>未建立映射的页直接跳过，保留原有懒分配行为。</li>
+<li><code>PTE2PA()</code> 取物理地址，<code>PTE_FLAGS()</code> 取权限和软件标记。</li>
+<li>原本可写的用户页变为只读 COW 页。</li>
+<li><code>mappages()</code> 让子进程同一虚拟地址指向相同 <code>pa</code>。</li>
+<li>映射成功后，引用计数加一。</li>
+</ul>
+<p>原本只读的代码页也会共享并增加引用，但不会被标成 COW。已经带有 COW 标记的页则保留标记，支持连续 <code>fork()</code>。</p>
+<p>第二遍循环修改父进程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; sz; i += PGSIZE) &#123;</span><br><span class="line">  pte = walk(old, i, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">if</span> (pte == <span class="number">0</span> || (*pte &amp; PTE_V) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> ((*pte &amp; PTE_U) &amp;&amp; (*pte &amp; PTE_W))</span><br><span class="line">    *pte = (*pte &amp; ~PTE_W) | PTE_COW;</span><br><span class="line">&#125;</span><br><span class="line">sfence_vma();</span><br></pre></td></tr></table></figure>
+
+<p><strong>父进程同样要失去直接写权限。</strong> 否则父进程先写，就会直接改变双方共享的数据。</p>
+<p>分两遍也方便失败回滚。如果第一遍中途失败：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">err:</span><br><span class="line">  uvmunmap(new, <span class="number">0</span>, i / PGSIZE, <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">-1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>撤销子进程已经建立的映射，会通过 <code>kfree()</code> 减回引用计数。第二遍尚未执行，父进程权限也还没有改变。</p>
+<p><strong>六、写缺页如何进入 <code>vmfault()</code></strong></p>
+<p>父子页变为只读后，用户执行写指令，CPU 发现权限不足，产生 Store Page Fault。</p>
+<p>相关寄存器的意义是：</p>
+<table>
+<thead>
+<tr>
+<th>寄存器</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>scause</code></td>
+<td>异常类型，写缺页为 15</td>
+</tr>
+<tr>
+<td><code>stval</code></td>
+<td>引起异常的虚拟地址</td>
+</tr>
+<tr>
+<td><code>sepc</code></td>
+<td>发生异常的指令地址</td>
+</tr>
+</tbody></table>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vmfault(p-&gt;pagetable, r_stval(), r_scause() == <span class="number">13</span>);</span><br></pre></td></tr></table></figure>
+
+<p>读缺页 <code>scause=13</code> 时，最后一个参数为 <code>1</code>。写缺页 <code>scause=15</code> 时为 <code>0</code>。</p>
+<p>COW 处理成功后，必须重试原来的写指令。因而这条异常路径保留原指令地址。处理 <code>ecall</code> 时会跳过系统调用指令，缺页处理不能照搬那项操作。</p>
+<p><strong>七、<code>vmfault()</code> 如何完成写时复制</strong></p>
+<p>函数原型是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">vmfault</span><span class="params">(<span class="type">pagetable_t</span> pagetable, uint64 va, <span class="type">int</span> read)</span></span><br></pre></td></tr></table></figure>
+
+<p>先进行地址范围检查和页对齐：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (va &gt;= p-&gt;sz)</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">va = PGROUNDDOWN(va);</span><br></pre></td></tr></table></figure>
+
+<p>原来的 <code>vmfault()</code> 主要处理懒分配，遇到已映射页就返回失败。但 COW 页已有物理映射，因此增加下面的分支：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">pte_t</span> *pte = walk(pagetable, va, <span class="number">0</span>);</span><br><span class="line"><span class="keyword">if</span> (pte != <span class="number">0</span> &amp;&amp; (*pte &amp; PTE_V)) &#123;</span><br><span class="line">  uint flags = PTE_FLAGS(*pte);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (read || !(flags &amp; PTE_U) ||</span><br><span class="line">      (flags &amp; PTE_W) || !(flags &amp; PTE_COW))</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  uint64 oldpa = PTE2PA(*pte);</span><br><span class="line">  mem = (uint64)kalloc();</span><br><span class="line">  <span class="keyword">if</span> (mem == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  memmove((<span class="type">void</span> *)mem, (<span class="type">void</span> *)oldpa, PGSIZE);</span><br><span class="line">  flags = (flags | PTE_W) &amp; ~PTE_COW;</span><br><span class="line">  *pte = PA2PTE(mem) | flags;</span><br><span class="line">  sfence_vma();</span><br><span class="line">  kfree((<span class="type">void</span> *)oldpa);</span><br><span class="line">  <span class="keyword">return</span> mem;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第一项判断要求它同时满足“写入、用户页、当前不可写、带 COW 标记”。</p>
+<p>随后以子进程写 A 为例：</p>
+<ol>
+<li>保存 A 的地址到 <code>oldpa</code>。</li>
+<li><code>kalloc()</code> 分配新页 B，计数为 <code>1</code>。</li>
+<li>把 A 的全部内容复制到 B。</li>
+<li>给 B 设置写权限，清除 COW 标记。</li>
+<li>修改当前进程的 PTE，让原虚拟地址指向 B。</li>
+<li>刷新地址转换缓存。</li>
+<li>放弃当前进程对 A 的引用。</li>
+<li>返回 B 的物理地址。</li>
+</ol>
+<p><code>*pte = ...</code> 改的是当前进程页表中的一项，其他进程的映射不受影响。</p>
+<p>对未映射的合法懒分配页，函数仍执行原来的分配零页逻辑：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mem = (uint64)kalloc();</span><br><span class="line"><span class="keyword">if</span> (mem == <span class="number">0</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">memset</span>((<span class="type">void</span> *)mem, <span class="number">0</span>, PGSIZE);</span><br><span class="line"><span class="keyword">if</span> (mappages(pagetable, va, PGSIZE, mem,</span><br><span class="line">             PTE_W | PTE_U | PTE_R) != <span class="number">0</span>) &#123;</span><br><span class="line">  kfree((<span class="type">void</span> *)mem);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> mem;</span><br></pre></td></tr></table></figure>
+
+<p>这里使用传入的 <code>pagetable</code>，与前面的查询和 COW 更新保持一致。我们的实现对合法 COW 写入都会申请新页，没有增加“计数为 1 时直接恢复写权限”的优化。</p>
+<p><strong>八、<code>copyout()</code> 为什么也需要修改</strong></p>
+<p>用户写指令通过用户页表访问内存，会触发写权限检查。而 <code>copyout()</code> 将用户地址翻译为物理地址后，通过内核映射复制数据，因此需要主动处理 COW。</p>
+<p>例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">read(fd, buf, <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+
+<p>内核从文件或管道读取数据后，要把内容写进用户的 <code>buf</code>。如果它还在父子共享的页上，必须先私有化。</p>
+<p>原代码遇到只读页就直接失败：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((*pte &amp; PTE_W) == <span class="number">0</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="number">-1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>现在改为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pte = walk(pagetable, va0, <span class="number">0</span>);</span><br><span class="line"><span class="keyword">if</span> ((*pte &amp; PTE_W) == <span class="number">0</span>) &#123;</span><br><span class="line">  pa0 = vmfault(pagetable, va0, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">if</span> (pa0 == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>vmfault()</code> 会分辨合法 COW 页和普通只读页。成功后返回新物理地址，<code>copyout()</code> 再执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">n = PGSIZE - (dstva - va0);</span><br><span class="line"><span class="keyword">if</span> (n &gt; len)</span><br><span class="line">  n = len;</span><br><span class="line"></span><br><span class="line">memmove((<span class="type">void</span> *)(pa0 + (dstva - va0)), src, n);</span><br></pre></td></tr></table></figure>
+
+<p><code>dstva - va0</code> 是页内偏移，<code>pa0</code> 是物理页首地址，两者相加得到实际写入位置。</p>
+<p><strong>必须接住 <code>vmfault()</code> 返回的新 <code>pa0</code>。</strong> 页表改为指向 B 后，旧局部变量如果仍指向 A，<code>memmove()</code> 还是会破坏共享页。</p>
+<p>循环按页推进，因此跨页缓冲区中的每张页都会分别检查和处理。</p>
+<p><strong>九、<code>copyin()</code> 与 <code>copyout()</code> 的区别</strong></p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>数据方向</th>
+<th>调用 <code>vmfault()</code> 时的 <code>read</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>copyin()</code></td>
+<td>用户内存 → 内核</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>copyout()</code></td>
+<td>内核 → 用户内存</td>
+<td>0</td>
+</tr>
+</tbody></table>
+<p>你在 <code>copyin()</code> 中将调用纠正为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vmfault(pagetable, va0, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>读取已映射的 COW 页本来就合法，通常通过 <code>walkaddr()</code> 即可获得物理地址，无需复制。只有地址翻译失败时才会进入缺页处理。</p>
+<p>注意系统调用名字与访问用户缓冲区的方向：</p>
+<figure class="highlight cc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">read</span>(fd, buf, n);   <span class="comment">// 内核向 buf 写入，使用 copyout</span></span><br><span class="line"><span class="built_in">write</span>(fd, buf, n);  <span class="comment">// 内核从 buf 读取，使用 copyin</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-测试代码分析"><a href="#2-测试代码分析" class="headerlink" title="2. 测试代码分析"></a>2. 测试代码分析</h4><p>按 <strong><code>user/cowtest.c</code> 的 <code>main()</code> 执行顺序</strong>来看</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">  simpletest();</span><br><span class="line">  simpletest();</span><br><span class="line"></span><br><span class="line">  threetest();</span><br><span class="line">  threetest();</span><br><span class="line">  threetest();</span><br><span class="line"></span><br><span class="line">  filetest();</span><br><span class="line">  forkforktest();</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;ALL COW TESTS PASSED\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>1．<code>simpletest()</code>——内存不够复制一份时，<code>fork()</code> 能不能成功</strong></p>
+<p>首先计算申请大小：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">uint64 phys_size = PHYSTOP - KERNBASE;</span><br><span class="line"><span class="type">int</span> sz = (phys_size / <span class="number">3</span>) * <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;simple: &quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">char</span> *p = sbrk(sz);</span><br><span class="line"><span class="keyword">if</span> (p == (<span class="type">char</span> *)<span class="number">0xffffffffffffffffL</span>) &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;sbrk(%d) failed\n&quot;</span>, sz);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>PHYSTOP - KERNBASE</code> 得到 xv6 使用的物理内存范围大小，<code>sz</code> 取约三分之二。<code>sbrk(sz)</code> 扩大进程的内存区域，返回新增区域的起始地址 <code>p</code>。<code>(char *)-1</code> 表示申请失败，这里的长十六进制写法表达相同的值。</p>
+<p>接着每页写一次：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">char</span> *q = p; q &lt; p + sz; q += <span class="number">4096</span>)</span><br><span class="line">  *(<span class="type">int</span> *)q = getpid();</span><br></pre></td></tr></table></figure>
+
+<p><code>q += 4096</code> 每次移动一页，在页开头写入父进程 PID。这样这片区域里的页面确实被访问，若涉及懒分配，也会触发实际分配。</p>
+<p>然后测试的关键操作发生：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> pid = fork();</span><br><span class="line"><span class="keyword">if</span> (pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;fork() failed\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>父进程已经占用了约三分之二内存，剩余空间容纳不下同样大小的完整副本。</p>
+<ul>
+<li>原版 <code>uvmcopy()</code> 每页 <code>kalloc() + memmove()</code>，很容易因内存不足失败。</li>
+<li>修改后的 <code>uvmcopy()</code> 共享物理页，只额外分配页表等管理数据，因此能够成功。</li>
+</ul>
+<p>这里主要检验<strong>共享是否真正发生</strong>。测试无需打印物理地址，能在这种内存条件下完成 <code>fork()</code>，就是重要证据。</p>
+<p>最后释放内存：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (pid == <span class="number">0</span>)</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">wait(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (sbrk(-sz) == (<span class="type">char</span> *)<span class="number">0xffffffffffffffffL</span>) &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;sbrk(-%d) failed\n&quot;</span>, sz);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;ok\n&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>子进程直接退出，父进程 <code>wait(0)</code> 回收它，然后缩小自己的地址空间。对仍共享的页来说，引用计数经历：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">父进程独占       <span class="number">1</span></span><br><span class="line">fork 后共享      <span class="number">2</span></span><br><span class="line">子进程被回收     <span class="number">1</span></span><br><span class="line">父进程释放       <span class="number">0</span> → 回到空闲链表</span><br></pre></td></tr></table></figure>
+
+<p><code>main()</code> 紧接着再运行一次 <code>simpletest()</code>，就是检查上一轮释放是否充分。如果页面一直没被真正回收，第二次大内存申请可能失败。</p>
+<p><strong>2．<code>threetest()</code>——三个进程写相同虚拟地址，能不能各自保留自己的数据</strong></p>
+<p>这个测试先申请约四分之一物理内存：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> sz = phys_size / <span class="number">4</span>;</span><br><span class="line"><span class="type">char</span> *p = sbrk(sz);</span><br></pre></td></tr></table></figure>
+
+<p>然后创建父、子、孙三代：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">pid1 = fork();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (pid1 == <span class="number">0</span>) &#123;</span><br><span class="line">  pid2 = fork();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (pid2 == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// 孙进程</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 子进程</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 父进程</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的第二次 <code>fork()</code> 很关键。子进程继承的页面可能已经带有 <code>PTE_COW</code>，它再创建孙进程时，需要继续共享这些页，并正确增加引用计数。</p>
+<p>孙进程写前约五分之四的区域：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">char</span> *q = p; q &lt; p + (sz / <span class="number">5</span>) * <span class="number">4</span>; q += <span class="number">4096</span>)</span><br><span class="line">  *(<span class="type">int</span> *)q = getpid();</span><br></pre></td></tr></table></figure>
+
+<p>然后逐页检查：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">char</span> *q = p; q &lt; p + (sz / <span class="number">5</span>) * <span class="number">4</span>; q += <span class="number">4096</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (*(<span class="type">int</span> *)q != getpid()) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;wrong content\n&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">exit</span>(<span class="number">-1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>孙进程希望读到的始终是自己的 PID。如果父或子进程仍能直接改它使用的物理页，这个比较就可能失败。</p>
+<p>子进程写前一半：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">char</span> *q = p; q &lt; p + (sz / <span class="number">2</span>); q += <span class="number">4096</span>)</span><br><span class="line">  *(<span class="type">int</span> *)q = <span class="number">9999</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">exit</span>(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>它写入显眼的固定值 <code>9999</code>，使共享数据被错误修改时容易被其他进程发现。</p>
+<p>父进程则写整个区域：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">char</span> *q = p; q &lt; p + sz; q += <span class="number">4096</span>)</span><br><span class="line">  *(<span class="type">int</span> *)q = getpid();</span><br><span class="line"></span><br><span class="line">wait(<span class="number">0</span>);</span><br><span class="line">pause(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>随后父进程检查：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">char</span> *q = p; q &lt; p + sz; q += <span class="number">4096</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (*(<span class="type">int</span> *)q != getpid()) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;wrong content\n&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>假设父 PID 为 <code>10</code>、子 PID 为 <code>11</code>、孙 PID 为 <code>12</code>，重叠区域的正确结果是：</p>
+<table>
+<thead>
+<tr>
+<th>谁读取自己的那段虚拟地址</th>
+<th>应读到的内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>父进程</td>
+<td><code>10</code></td>
+</tr>
+<tr>
+<td>子进程写入的内容</td>
+<td><code>9999</code></td>
+</tr>
+<tr>
+<td>孙进程</td>
+<td><code>12</code></td>
+</tr>
+</tbody></table>
+<p>每个写入者都应经过：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">写只读 COW 页 → usertrap → vmfault</span><br><span class="line">→ 分配新页 → 复制 → 修改自己的 PTE → 重试写入</span><br></pre></td></tr></table></figure>
+
+<p>父进程同样参与写入，所以它也能检查我们是否正确清除了<strong>父进程</strong>的写权限。</p>
+<p>有两个源码细节值得看清。<code>pause(1)</code> 是给其他进程运行的机会，并不保证孙进程一定已经结束。另外，源码中孙进程检查完成后也执行 <code>exit(-1)</code>，父进程使用的是 <code>wait(0)</code>，没有核对子进程退出码。因此这里应重点观察内容检查和 <code>wrong content</code> 输出，不能把它理解成所有后代都通过退出状态严格汇总结果。</p>
+<p><code>main()</code> 连续运行三遍，也让分配、复制、回收反复发生，增加暴露泄漏和引用计数问题的机会。</p>
+<p><strong>3．<code>filetest()</code>——内核通过 <code>copyout()</code> 写用户缓冲区时，是否正确复制</strong></p>
+<p>这个测试使用全局缓冲区：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> junk1[<span class="number">4096</span>];</span><br><span class="line"><span class="type">int</span> fds[<span class="number">2</span>];</span><br><span class="line"><span class="type">char</span> junk2[<span class="number">4096</span>];</span><br><span class="line"><span class="type">char</span> buf[<span class="number">4096</span>];</span><br><span class="line"><span class="type">char</span> junk3[<span class="number">4096</span>];</span><br></pre></td></tr></table></figure>
+
+<p>这些大数组把关键对象隔开，减少它们落在同一页、因其他写入而提前触发 COW 的干扰。</p>
+<p>父进程先放入一个标记：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">buf[<span class="number">0</span>] = <span class="number">99</span>;</span><br></pre></td></tr></table></figure>
+
+<p>然后进行四轮，每轮建立管道并创建子进程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++) &#123;</span><br><span class="line">  pipe(fds);</span><br><span class="line">  <span class="type">int</span> pid = fork();</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>父进程向本轮管道写入整数 <code>i</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">write(fds[<span class="number">1</span>], &amp;i, <span class="keyword">sizeof</span>(i));</span><br></pre></td></tr></table></figure>
+
+<p><code>fds[1]</code> 是管道写端，<code>&amp;i</code> 是数据来源。四轮分别发送整数 <code>0、1、2、3</code>。</p>
+<p>子进程从读端把数据接收到 <code>buf</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">pause(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (read(fds[<span class="number">0</span>], buf, <span class="keyword">sizeof</span>(i)) != <span class="keyword">sizeof</span>(i)) &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;error: read failed\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">pause(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> j = *(<span class="type">int</span> *)buf;</span><br><span class="line"><span class="keyword">if</span> (j != i) &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;error: read the wrong value %d; expected %d\n&quot;</span>, j, i);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">exit</span>(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p><code>*(int *)buf</code> 把缓冲区开头的字节按一个整数读出来。子进程应收到本轮的 <code>i</code>。</p>
+<p>这次对用户内存的写入发生在内核里：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">read → sys_read → fileread → piperead → copyout</span><br></pre></td></tr></table></figure>
+
+<p><code>copyout()</code> 必须先为 COW 缓冲区建立私有页，再复制管道数据。否则可能出现两种失败：</p>
+<ul>
+<li>父进程共享页被改，父进程的 <code>buf[0]</code> 不再是 <code>99</code>。</li>
+<li>不同子进程仍共用同一页，相互覆盖，某个子进程读到其他轮写入的值。</li>
+</ul>
+<p>两次 <code>pause(1)</code> 给其他进程更多运行机会，增加错误共享被观察到的机会。</p>
+<p>父进程最后等待四个子进程，并核对退出码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> xstatus = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++) &#123;</span><br><span class="line">  wait(&amp;xstatus);</span><br><span class="line">  <span class="keyword">if</span> (xstatus != <span class="number">0</span>)</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (buf[<span class="number">0</span>] != <span class="number">99</span>) &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;error: child overwrote parent\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里既检查子进程是否正确收到了数据，也检查父进程的原始数据有没有被污染。<code>wait(&amp;xstatus)</code> 本身还需要内核向用户变量写入退出码，也会经过用户内存复制路径。</p>
+<p><strong>4．<code>forkforktest()</code>——大量共享与退出交错时，引用计数能不能保持正确</strong></p>
+<p>先申请 256 页，约 1 MB，并把每个字节填成 <code>27</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> sz = <span class="number">256</span> * <span class="number">4096</span>;</span><br><span class="line"><span class="type">char</span> *p = sbrk(sz);</span><br><span class="line"><span class="built_in">memset</span>(p, <span class="number">27</span>, sz);</span><br></pre></td></tr></table></figure>
+
+<p>随后执行 100 轮。每轮父进程创建三个子进程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> iter = <span class="number">0</span>; iter &lt; <span class="number">100</span>; iter++) &#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> nc = <span class="number">0</span>; nc &lt; <span class="number">3</span>; nc++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (fork() == <span class="number">0</span>) &#123;</span><br><span class="line">      pause(<span class="number">2</span>);</span><br><span class="line">      fork();</span><br><span class="line">      fork();</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> nc = <span class="number">0</span>; nc &lt; <span class="number">3</span>; nc++) &#123;</span><br><span class="line">    <span class="type">int</span> st;</span><br><span class="line">    wait(&amp;st);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>子进程里的两次 <code>fork()</code> 会继续增加后代。第一次执行后有两个进程，这两个进程都会执行第二次，因此在两次调用都成功时，一条子分支会形成四个执行者，随后都执行 <code>exit(0)</code>。</p>
+<p>结果就是大量操作交错：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">新建共享映射 → 引用计数加一</span><br><span class="line">进程写栈等页面 → COW 复制，旧页引用减一</span><br><span class="line">进程被回收   → 剩余映射的引用计数减一</span><br></pre></td></tr></table></figure>
+
+<p>原父进程一直保留最初那 1 MB。最后它检查每页的首字节：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">pause(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; sz; i += <span class="number">4096</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (p[i] != <span class="number">27</span>) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;error: parent&#x27;s memory was modified!\n&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果计数少加了一次，或者并发加减丢失更新，页面可能在父进程仍持有时被误认为已经无人使用，提前进入空闲链表。随后被重新分配、填充或修改，父进程就可能读到不再是 <code>27</code> 的数据。</p>
+<p>所以它重点检查的是<strong>共享页在复杂生命周期中的存活与回收</strong>。锁和引用计数是否正确，会直接影响这个测试。</p>
 
     </div>
 
@@ -1380,7 +1838,10 @@
     <a href="/2026/10/05/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="prev" title="计算机网络">
       <i class="fa fa-chevron-left"></i> 计算机网络
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2026/11/09/CTF/CVE-2018-19518/" rel="next" title="CVE-2018-19518 复现">
+      CVE-2018-19518 复现 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
