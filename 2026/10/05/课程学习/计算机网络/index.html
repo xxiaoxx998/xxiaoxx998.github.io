@@ -19,17 +19,31 @@
     var CONFIG = {"hostname":"ducklinger.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="计算机网络：前两章复习笔记 依据上传的《计算机网络（第8版）》第 1、2 章及本次讲解整理。重点是原理、公式、易错点；教材中的历史统计数据、产品性能和标准版本不作为现状引用。 **公式格式：**采用普通文本，不依赖数学插件。log₂(x) 是以 2 为底的对数；10^(-3) 表示 10 的负三次方；· 表示向量内积。 **复习顺序：**先看“一页速览”建立框架，再读章节重点；做题时查“公式索引”">
+  <meta name="description" content="计算机网络第一章 概述第二章 物理层2.1  物理层接口的特性 机械特性接口形状，引脚排布等 电气特性规定高低电平电压范围 功能特性规定每条线功能是什么，区分时钟信号、发送信号和接收信号等 过程特性规定通信过程中应该按照什么顺序执行操作  2.2 数据通信系统2.2.1 组成 源系统（发送端）源点：产生要传输数据的设备 例如：  你在键盘上输入文字 手机摄像头拍摄照片 麦克风采集声音 传感器采集温">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机网络">
 <meta property="og:url" content="https://ducklinger.top/2026/10/05/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/index.html">
 <meta property="og:site_name" content="Ducklinger">
-<meta property="og:description" content="计算机网络：前两章复习笔记 依据上传的《计算机网络（第8版）》第 1、2 章及本次讲解整理。重点是原理、公式、易错点；教材中的历史统计数据、产品性能和标准版本不作为现状引用。 **公式格式：**采用普通文本，不依赖数学插件。log₂(x) 是以 2 为底的对数；10^(-3) 表示 10 的负三次方；· 表示向量内积。 **复习顺序：**先看“一页速览”建立框架，再读章节重点；做题时查“公式索引”">
+<meta property="og:description" content="计算机网络第一章 概述第二章 物理层2.1  物理层接口的特性 机械特性接口形状，引脚排布等 电气特性规定高低电平电压范围 功能特性规定每条线功能是什么，区分时钟信号、发送信号和接收信号等 过程特性规定通信过程中应该按照什么顺序执行操作  2.2 数据通信系统2.2.1 组成 源系统（发送端）源点：产生要传输数据的设备 例如：  你在键盘上输入文字 手机摄像头拍摄照片 麦克风采集声音 传感器采集温">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ducklinger.top/images/CNW1.png">
+<meta property="og:image" content="https://ducklinger.top/images/CNW2.jpg">
+<meta property="og:image" content="https://ducklinger.top/images/CNW3.jpg">
+<meta property="og:image" content="https://ducklinger.top/images/CNW4.jpg">
+<meta property="og:image" content="https://ducklinger.top/images/CNW5.jpg">
+<meta property="og:image" content="https://ducklinger.top/images/CNW6.jpg">
+<meta property="og:image" content="https://ducklinger.top/images/CNW2.png">
+<meta property="og:image" content="https://ducklinger.top/images/CNW3.png">
+<meta property="og:image" content="https://ducklinger.top/images/CNW4.png">
+<meta property="og:image" content="https://ducklinger.top/images/CNW5.png">
+<meta property="og:image" content="https://ducklinger.top/images/CNW6.png">
+<meta property="og:image" content="https://ducklinger.top/images/CNW7.png">
+<meta property="og:image" content="https://ducklinger.top/images/CNW8.png">
 <meta property="article:published_time" content="2026-10-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-10-05T06:20:38.723Z">
+<meta property="article:modified_time" content="2026-11-25T03:06:01.119Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ducklinger.top/images/CNW1.png">
 
 <link rel="canonical" href="https://ducklinger.top/2026/10/05/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
 
@@ -192,10 +206,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2026-10-05 00:00:00 / 修改时间：14:20:38" itemprop="dateCreated datePublished" datetime="2026-10-05T00:00:00+08:00">2026-10-05</time>
+              <time title="创建时间：2026-10-05 00:00:00" itemprop="dateCreated datePublished" datetime="2026-10-05T00:00:00+08:00">2026-10-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-11-25 11:06:01" itemprop="dateModified" datetime="2026-11-25T11:06:01+08:00">2026-11-25</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -224,1077 +244,794 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="计算机网络：前两章复习笔记"><a href="#计算机网络：前两章复习笔记" class="headerlink" title="计算机网络：前两章复习笔记"></a>计算机网络：前两章复习笔记</h1><blockquote>
-<p>依据上传的《计算机网络（第8版）》第 1、2 章及本次讲解整理。重点是原理、公式、易错点；教材中的历史统计数据、产品性能和标准版本不作为现状引用。</p>
-<p>**公式格式：**采用普通文本，不依赖数学插件。<code>log₂(x)</code> 是以 2 为底的对数；<code>10^(-3)</code> 表示 10 的负三次方；<code>·</code> 表示向量内积。</p>
-<p>**复习顺序：**先看“一页速览”建立框架，再读章节重点；做题时查“公式索引”，理解卡住时看各节的“理解模型”。</p>
-</blockquote>
-<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
-<li><a href="#%E4%B8%80%E9%A1%B5%E9%80%9F%E8%A7%88">一页速览</a></li>
-<li><a href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%E6%A6%82%E8%BF%B0">第一章：概述</a></li>
-<li><a href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%E7%89%A9%E7%90%86%E5%B1%82">第二章：物理层</a></li>
-<li><a href="#%E5%85%AC%E5%BC%8F%E7%B4%A2%E5%BC%95%E4%B8%8E%E8%AE%A1%E7%AE%97%E6%A3%80%E6%9F%A5">公式索引与计算检查</a></li>
-<li><a href="#%E6%9C%AC%E6%AC%A1%E5%AD%A6%E4%B9%A0%E7%9A%84%E9%87%8D%E7%82%B9%E7%BA%A0%E9%94%99">本次学习的重点纠错</a></li>
-<li><a href="#%E5%BF%AB%E9%80%9F%E8%87%AA%E6%A3%80">快速自检</a></li>
+        <h1 id="计算机网络"><a href="#计算机网络" class="headerlink" title="计算机网络"></a>计算机网络</h1><h2 id="第一章-概述"><a href="#第一章-概述" class="headerlink" title="第一章 概述"></a>第一章 概述</h2><h2 id="第二章-物理层"><a href="#第二章-物理层" class="headerlink" title="第二章 物理层"></a>第二章 物理层</h2><h3 id="2-1-物理层接口的特性"><a href="#2-1-物理层接口的特性" class="headerlink" title="2.1  物理层接口的特性"></a>2.1  物理层接口的特性</h3><ol>
+<li>机械特性<br>接口形状，引脚排布等</li>
+<li>电气特性<br>规定高低电平电压范围</li>
+<li>功能特性<br>规定每条线功能是什么，区分时钟信号、发送信号和接收信号等</li>
+<li>过程特性<br>规定通信过程中应该按照什么顺序执行操作</li>
 </ol>
-<h2 id="一页速览"><a href="#一页速览" class="headerlink" title="一页速览"></a>一页速览</h2><p><strong>第一章解决“整个网络怎样协作”，第二章解决“最底层怎样把比特传出去”。</strong></p>
-<table>
-<thead>
-<tr>
-<th>主线</th>
-<th>必须抓住的结论</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>网络与互联网</td>
-<td>网络连接设备；互联网把许多网络互连。Web 只是互联网应用之一</td>
-</tr>
-<tr>
-<td>边缘与核心</td>
-<td>端系统运行应用、产生和使用数据；中间网络提供连接与转发</td>
-</tr>
-<tr>
-<td>通信角色</td>
-<td>客户请求服务，服务器提供服务；角色首先针对进程，不由机器档次决定</td>
-</tr>
-<tr>
-<td>分组交换</td>
-<td>报文拆成分组，逐个存储转发；共享灵活，可流水线传输，但可能排队、丢包</td>
-</tr>
-<tr>
-<td>性能</td>
-<td>带宽是能力，吞吐量是实际量；发送时延与传播时延必须分开</td>
-</tr>
-<tr>
-<td>分层</td>
-<td>应用业务 → 进程传送 → 跨网络传送 → 当前链路交付 → 比特传送</td>
-</tr>
-<tr>
-<td>信号表示</td>
-<td>数据是信息的表示；信号是承载数据的物理表现</td>
-</tr>
-<tr>
-<td>码元与比特</td>
-<td>一个码元可对应多个比特；比特率不一定等于波特率</td>
-</tr>
-<tr>
-<td>编码与调制</td>
-<td>编码设计信号表示和同步线索；带通调制利用载波适应信道</td>
-</tr>
-<tr>
-<td>容量限制</td>
-<td>奈氏准则关注带宽与无码间串扰；香农公式还考虑噪声</td>
-</tr>
-<tr>
-<td>媒体与复用</td>
-<td>媒体决定传播条件；复用让多路通信有规则地共享资源</td>
-</tr>
-<tr>
-<td>接入</td>
-<td>ADSL 利用电话铜线，HFC 混合光纤和同轴，FTTx 将光纤延伸至不同位置</td>
-</tr>
-</tbody></table>
-<p><strong>最重要的区别：</strong></p>
+<h3 id="2-2-数据通信系统"><a href="#2-2-数据通信系统" class="headerlink" title="2.2 数据通信系统"></a>2.2 数据通信系统</h3><h4 id="2-2-1-组成"><a href="#2-2-1-组成" class="headerlink" title="2.2.1 组成"></a>2.2.1 组成</h4><ol>
+<li><p>源系统（发送端）<br><strong>源点</strong>：产生要传输数据的设备</p>
+<p>例如：</p>
 <ul>
-<li>**bit&#x2F;s：**每秒发送多少数据；**m&#x2F;s：**信号每秒传播多远。</li>
-<li>**网络层：**跨网络送向哪里；**链路层：**当前一段怎样交付帧；**物理层：**怎样传送比特。</li>
-<li>**协议：**对等层遵守的规则；**服务：**下层提供给上层的能力。</li>
-<li>**“相互重叠”不一定等于“码间串扰”：**关键是在判决时刻是否受到其他码元干扰。</li>
+<li>你在键盘上输入文字</li>
+<li>手机摄像头拍摄照片</li>
+<li>麦克风采集声音</li>
+<li>传感器采集温度</li>
 </ul>
-<h2 id="第一章：概述"><a href="#第一章：概述" class="headerlink" title="第一章：概述"></a>第一章：概述</h2><h3 id="1-1-网络的作用与基本组成"><a href="#1-1-网络的作用与基本组成" class="headerlink" title="1.1 网络的作用与基本组成"></a>1.1 网络的作用与基本组成</h3><p>网络支持<strong>连通性与资源共享</strong>：交换消息、访问文件、数据库、远程计算资源等。</p>
+<p><strong>发送器</strong>：负责将源点产生的数据转换为适合在传输系统中传输的信号<br>如果要通过传统模拟电话线路传输，就需要调制解调器将数字数据转换成适合线路传输的模拟信号。</p>
+</li>
+<li><p>传输系统（传输网络）它可以非常简单：</p>
 <ul>
-<li>**节点：**网络中的设备，如计算机、交换机、路由器。</li>
-<li>**链路：**节点之间的连接。</li>
-<li>**主机&#x2F;端系统：**运行应用、作为通信端点的设备，如电脑、手机、服务器。</li>
-<li>**路由器：**连接不同网络，转发分组。</li>
+<li>一根网线</li>
+<li>一段光纤</li>
+<li>一条无线通信链路</li>
 </ul>
-<p>**有物理连接不等于能通信。**双方还必须遵守信号表示、数据格式和行为顺序等规则。</p>
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>互连网 internet</td>
-<td>多个网络互连形成的系统，一般概念</td>
-</tr>
-<tr>
-<td>互联网 Internet</td>
-<td>全球性特定互连网，以 TCP&#x2F;IP 协议族为基础</td>
-</tr>
-<tr>
-<td>万维网 Web</td>
-<td>互联网支持的应用系统之一，不等于整个互联网</td>
-</tr>
-</tbody></table>
-<p>**理解模型：**同一局域网可以在未接入互联网时正常通信。局域网内部通信通常由交换机、无线接入点等支持，不一定经过路由功能。</p>
-<h3 id="1-2-互联网结构、发展与标准化【了解】"><a href="#1-2-互联网结构、发展与标准化【了解】" class="headerlink" title="1.2 互联网结构、发展与标准化【了解】"></a>1.2 互联网结构、发展与标准化【了解】</h3><p>教材概括的发展主线：</p>
+<p>也可以非常复杂：</p>
+<ul>
+<li>由多个路由器组成的网络</li>
+<li>运营商的通信网络</li>
+<li>跨越多个国家的互联网骨干网络</li>
+</ul>
+</li>
+<li><p>目的系统（接收端）<br><strong>接收器</strong>：接收器负责接收传输系统传来的信号，并将其转换为目的设备能够处理的信息<br><strong>终点</strong>：终点就是最终接收并处理数据的设备</p>
+</li>
+</ol>
+<h4 id="2-2-2-消息、数据和信号的区别"><a href="#2-2-2-消息、数据和信号的区别" class="headerlink" title="2.2.2 消息、数据和信号的区别"></a>2.2.2 <strong>消息、数据和信号的区别</strong></h4><p>息、数据、信号是三个不同层次的概念。</p>
+<ul>
+<li>消息：传递什么内容。</li>
+<li>数据：如何表示这些内容。</li>
+<li>信号：如何通过物理介质传输这些数据。</li>
+</ul>
+<h4 id="2-2-3-模拟信号和数字信号"><a href="#2-2-3-模拟信号和数字信号" class="headerlink" title="2.2.3 模拟信号和数字信号"></a>2.2.3 模拟信号和数字信号</h4><p>模拟信号的参数取值是连续的：人的声音通过麦克风转换成的模拟电信号等</p>
+<p>数字信号的参数取值是离散的：使用高低电平表示二进制的 0 和 1等</p>
+<p><strong>码元</strong>：使用时域波形表示数字信号时，代表不同离散数值的基本波形称为码元（Symbol）一个码元不一定只能表示一个比特，如果采用多进制编码，一个码元可以代表多个比特</p>
+<h4 id="2-2-4-信道"><a href="#2-2-4-信道" class="headerlink" title="2.2.4 信道"></a>2.2.4 信道</h4><p>信道一般用于表示向某一个方向传送信息的媒体，信道和通信电路不是同一个概念一条通信电路往往包含：</p>
+<ul>
+<li>一条发送信道</li>
+<li>一条接收信道</li>
+</ul>
+<p>因此有三种基本通信方式</p>
 <ol>
-<li>从 ARPANET 单个分组交换网络，走向网络互连。</li>
-<li>形成主干网、地区网、校园网等三级结构。</li>
-<li>形成多层次 ISP 互连的互联网。</li>
+<li>单向通信：单工通信 Simplex，例如：广播</li>
+<li>双向交替通信：半双工通信 Half-Duplex，例如：对讲机</li>
+<li>双向同时通信：全双工通信 Full-Duplex，例如：传统电话</li>
+</ol>
+<p>这里的信道是按信息传输方向划分的逻辑概念，具体物理实现不一定需要两根独立的线路，比如广播就不依靠独立的线路</p>
+<h4 id="2-2-5-基带信号和带通信号"><a href="#2-2-5-基带信号和带通信号" class="headerlink" title="2.2.5 基带信号和带通信号"></a>2.2.5 基带信号和带通信号</h4><p>计算机产生的是数字比特流。</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10110010</span><br></pre></td></tr></table></figure>
+
+<p>这种由信源产生、未经频谱搬移的原始信号，教材称为基带信号（Baseband Signal）。</p>
+<p>因为基带信号通常包含较多低频分量，甚至包含直流分量。</p>
+<p>而很多信道无法直接传输这些低频分量或直流分量。</p>
+<p>所以我们需要对基带信号进行调制。</p>
+<p><strong>基带调制</strong>：对基带信号的波形进行变换，使其适应信道的特性，变换后的信号仍然是基带信号，由于这种过程通常是将一种数字信号转换成另一种数字信号，因此也称为编码<br><strong>带通调制</strong>：将基带信号加载到高频载波上，使信号的频率范围移动到适合信道传输的频段</p>
+<p><img src="/../../images/CNW1.png"></p>
+<h4 id="2-2-6-常用的数字信号编码方式"><a href="#2-2-6-常用的数字信号编码方式" class="headerlink" title="2.2.6 常用的数字信号编码方式"></a>2.2.6 常用的数字信号编码方式</h4><p><img src="/../../images/CNW2.jpg"></p>
+<ol>
+<li><p>不归零制 NRZ<br>每个比特周期内，信号保持对应电平，不需要在每一位结束时返回零电平<br>当连续发送很多相同的比特时，信号可能长时间没有跳变，缺乏自同步能力</p>
+</li>
+<li><p>归零制 RZ</p>
+</li>
+</ol>
+<p>   每个比特周期中，信号都会返回零电平，看前半段</p>
+<ol start="3">
+<li><p>曼彻斯特编码 Manchester<br>每一个比特周期的中间都一定发生一次电平跳变，看中间跳变方向</p>
+</li>
+<li><p>差分曼彻斯特编码<br>   它不直接通过中间跳变方向区分 0 和 1，而是通过每一位开始边界是否发生跳变来表示数据，看起始位置是否存在跳变</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>编码方式</th>
+<th>主要特征</th>
+<th>自同步能力</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NRZ</td>
+<td>正负电平表示 1、0</td>
+<td>较弱</td>
+</tr>
+<tr>
+<td>RZ</td>
+<td>每位返回零电平</td>
+<td>有一定帮助</td>
+</tr>
+<tr>
+<td>Manchester</td>
+<td>每位中间必有跳变</td>
+<td>有</td>
+</tr>
+<tr>
+<td>Differential Manchester</td>
+<td>中间必有跳变，边界变化表示数据</td>
+<td>有</td>
+</tr>
+</tbody></table>
+<p>这里最重要的区别是：</p>
+<p>曼彻斯特编码通过中间跳变的方向表示数据；差分曼彻斯特编码通过位开始边界是否跳变表示数据。</p>
+<h4 id="2-2-7-基本的带通调制方法"><a href="#2-2-7-基本的带通调制方法" class="headerlink" title="2.2.7 基本的带通调制方法"></a>2.2.7 基本的带通调制方法</h4><p>带通调制主要有三种基本方式：</p>
+<ol>
+<li><p>调幅 AM。<br><img src="/../../images/CNW3.jpg"></p>
+</li>
+<li><p>调频 FM。<br><img src="/../../images/CNW4.jpg"></p>
+</li>
+<li><p>调相 PM。<br><img src="/../../images/CNW5.jpg"></p>
+</li>
+<li><p>正交振幅调制 QAM</p>
+<p>它通过同时利用振幅和相位的变化来表示不同的数据状态。</p>
+<p>相比单纯调幅、调频或调相，它能够使用更多不同的信号状态。</p>
+<p>这就为提高数据传输速率提供了条件。</p>
+</li>
+</ol>
+<h4 id="2-2-8-信道的极限容量"><a href="#2-2-8-信道的极限容量" class="headerlink" title="2.2.8 信道的极限容量"></a>2.2.8 信道的极限容量</h4><p><strong>码间串扰</strong>：当信道带宽有限时，信号中的高频分量会受到衰减，原本边界清晰的数字脉冲会逐渐变得模糊，如果相邻码元的波形相互重叠，就可能造成码间串扰</p>
+<p><strong>奈氏准则</strong>：在带宽为 W Hz 的理想低通信道中，如果不考虑噪声影响，码元传输的最高速率为 2W 码元&#x2F;秒</p>
+<p><code>Rs.max = 2W</code></p>
+<p>其中：</p>
+<ul>
+<li>(Rs)：码元传输速率，单位 Baud（波特）。</li>
+<li>(W)：信道带宽，单位 Hz。</li>
+</ul>
+<p>这里计算的是码元速率，不一定等于比特率。</p>
+<p><strong>一个码元能携带多少比特</strong></p>
+<p>将奈氏准则的码元速率换算成比特率。一般来说，如果有 V 种不同的信号状态，每个码元可以携带：</p>
+<p><code>Rb.max = 2W log_2  V</code></p>
+<p><strong>信噪比（SNR）</strong></p>
+<p>信号状态越多，接收端越难准确区分它们。</p>
+<p>因此，我们还必须考虑噪声。</p>
+<p><code>SNR = S/N</code></p>
+<p>其中：信噪比越高，说明信号相对于噪声越强，通常越容易正确识别。</p>
+<ul>
+<li>(S)：信号平均功率。</li>
+<li>(N)：噪声平均功率。</li>
+</ul>
+<p>通信中经常使用 dB（分贝）表示信噪比:</p>
+<p><strong><code>SNR(dB) = 10 lg (S/N)</code></strong></p>
+<p><strong>香农公式</strong>：它考虑了信道带宽和信噪比对数据传输速率的限制</p>
+<p><strong><code>C = W log_2 (1 + S/N)</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>含义</th>
+<th>单位</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C</td>
+<td>信道极限信息传输速率</td>
+<td>bit&#x2F;s</td>
+</tr>
+<tr>
+<td>W</td>
+<td>信道带宽</td>
+<td>Hz</td>
+</tr>
+<tr>
+<td>S</td>
+<td>信号平均功率</td>
+<td>功率单位</td>
+</tr>
+<tr>
+<td>N</td>
+<td>噪声平均功率</td>
+<td>功率单位</td>
+</tr>
+<tr>
+<td>S&#x2F;N</td>
+<td>信噪比</td>
+<td>无单位</td>
+</tr>
+</tbody></table>
+<p>这里有一个特别容易犯的错误：</p>
+<p>公式中的 S&#x2F;N 必须使用普通比值，不能直接把 dB 代入。</p>
+<ul>
+<li>奈氏准则：带宽决定码元速率上限。</li>
+<li>香农公式：带宽和信噪比共同决定信息传输速率上限。</li>
+</ul>
+<h3 id="2-3-传输媒体"><a href="#2-3-传输媒体" class="headerlink" title="2.3 传输媒体"></a>2.3 传输媒体</h3><h4 id="2-3-1-导引型传输媒体"><a href="#2-3-1-导引型传输媒体" class="headerlink" title="2.3.1 导引型传输媒体"></a>2.3.1 导引型传输媒体</h4><p>主要包括：</p>
+<ol>
+<li><p>双绞线<br>两根导线按照一定规则相互缠绕，形成一对双绞线，两根导线传输的是一对相关的电信号，<strong>接收端主要检测两根导线之间的电压差，而不是单独检测某根导线的电压</strong>。两根线上受到的相似干扰可以在差分接收时得到抑制</p>
+<p>UTP：非屏蔽双绞线<br>STP：屏蔽双绞线，减少外部电磁干扰，但成本和安装要求通常更高</p>
+</li>
+<li><p>同轴电缆<br>从内向外主要包括四部分：</p>
+<ol>
+<li>内导体：负责传输电信号</li>
+<li>绝缘层：隔离内外导体</li>
+<li>外导体屏蔽层：提供回流路径，同时起到屏蔽作用</li>
+<li>保护外套：保护内部结构</li>
+</ol>
+</li>
+<li><p>光纤<br>利用光信号代替电信号传输数据</p>
+<p>光纤使用光信号传输，具有明显优势。</p>
+<p>例如：</p>
+<ul>
+<li>传输带宽大。</li>
+<li>通信容量大。</li>
+<li>抗电磁干扰能力强。</li>
+<li>适合远距离传输。</li>
+<li>保密性相对较好，不容易受到普通电磁窃听方式影响。</li>
+</ul>
+<p>分类</p>
+<ul>
+<li>多模光纤（Multimode Fiber）。<br>多模光纤中的不同传播模式可能走不同的路径，同一个光脉冲到达接收端的时间可能不同-&gt;<strong>模态色散</strong></li>
+<li>单模光纤（Single-mode Fiber）。</li>
+</ul>
+</li>
+</ol>
+<h4 id="2-3-2-非导引型传输媒体"><a href="#2-3-2-非导引型传输媒体" class="headerlink" title="2.3.2 非导引型传输媒体"></a>2.3.2 非导引型传输媒体</h4><p>非导引型传输媒体不需要使用固定的有形导体引导信号传播，而是通过自由空间传输电磁波。</p>
+<ol>
+<li>无线电波</li>
+<li>微波</li>
+<li>卫星通信</li>
+<li>红外线和激光</li>
+</ol>
+<h3 id="2-4-信道复用技术"><a href="#2-4-信道复用技术" class="headerlink" title="2.4 信道复用技术"></a>2.4 信道复用技术</h3><p>复用器（Multiplexer）：将多个用户的数据组合起来，通过共享线路发送。</p>
+<p>分用器（Demultiplexer）：在接收端将数据分离，还原成各个用户的数据流。</p>
+<h4 id="2-4-1-频分复用FDM"><a href="#2-4-1-频分复用FDM" class="headerlink" title="2.4.1 频分复用FDM"></a>2.4.1 频分复用FDM</h4><p>保护频带：实际信号并不是理想的，频谱可能存在扩展和相邻信道干扰，如果两个用户的频带完全紧挨着，可能发生相互干扰</p>
+<h4 id="2-4-2-时分复用TDM"><a href="#2-4-2-时分复用TDM" class="headerlink" title="2.4.2 时分复用TDM"></a>2.4.2 时分复用TDM</h4><p>同步时分复用 STDM</p>
+<p>统计时分复用 STDM</p>
+<h4 id="2-4-3-波分复用WDM"><a href="#2-4-3-波分复用WDM" class="headerlink" title="2.4.3 波分复用WDM"></a>2.4.3 波分复用WDM</h4><p>密集波分复用 DWDM</p>
+<p>EDFA（Erbium-Doped Fiber Amplifier），掺铒光纤放大器。 <strong>EDFA 可以直接对光信号进行放大，不需要先进行光电转换再进行电光转换</strong></p>
+<h4 id="2-4-4-码分复用"><a href="#2-4-4-码分复用" class="headerlink" title="2.4.4 码分复用"></a>2.4.4 码分复用</h4><p>每个用户分配一个不同的、具有良好相关性的<strong>码序列</strong></p>
+<p>一个用户的码序列与另一个用户的码序列内积为零</p>
+<p>例如：</p>
+<p>A 的比特1 -&gt; S &#x3D;  (1,-1,1,-1)</p>
+<p>B 的比特1 -&gt; T &#x3D; (1,1,-1,-1)</p>
+<p>叠加信号 R &#x3D; S+T</p>
+<p>区分信号A: S &#x3D; R * S &#x2F;  (码片数量 &#x3D; 4)&#x3D; (S + T)  S  &#x2F; 4&#x3D; S * S &#x2F;4 </p>
+<h3 id="2-5-数字传输系统"><a href="#2-5-数字传输系统" class="headerlink" title="2.5 数字传输系统"></a>2.5 数字传输系统</h3><p>数字通信相对于模拟通信，在传输质量和经济性方面具有明显优势<strong>目前长途干线大都采用时分复用 PCM 的数字传输方式。</strong></p>
+<ul>
+<li>准同步：各设备使用相互独立但精度较高的时钟，存在微小频率偏差。</li>
+<li>同步：各设备按照统一的时钟基准工作。</li>
+</ul>
+<p><strong>SONET：同步光纤网</strong></p>
+<ol>
+<li>建立统一的数字传输速率等级。</li>
+<li>实现同步传输。</li>
+<li>适应光纤高速、大容量传输。</li>
+</ol>
+<p><strong>基础速率</strong>：51.840Mbit&#x2F;s  这个基础等级有两个不同的名称：</p>
+<ul>
+<li>STS-1：针对电信号，称为第一级同步传送信号。</li>
+<li>OC-1：针对光信号，称为第一级光载波。</li>
+</ul>
+<p> <strong>SONET 速率按照整数倍增长（采用了分级复用的设计思想）</strong></p>
+<p><strong>SDH：同步数字体系</strong></p>
+<p>SONET 是美国提出的同步光纤传输标准，SDH 是国际电信联盟在此基础上制定的国际同步数字传输体系</p>
+<h3 id="2-6-宽带接入技术"><a href="#2-6-宽带接入技术" class="headerlink" title="2.6 宽带接入技术"></a><strong>2.6 宽带接入技术</strong></h3><h4 id="2-6-1-ADSL-技术（非对称数字用户线）"><a href="#2-6-1-ADSL-技术（非对称数字用户线）" class="headerlink" title="2.6.1 ADSL 技术（非对称数字用户线）"></a><strong>2.6.1 ADSL 技术（非对称数字用户线）</strong></h4><p>ADSL 是利用数字技术改造现有模拟电话用户线，使其能够承载宽带数字业务的一种接入技术</p>
+<p>对于普通家庭用户而言，通常下载的数据量远远大于上传的数据量。所以 ADSL 将更多的带宽分配给下行通信，<strong>即上下行通道带宽分配不一样</strong></p>
+<p><strong>ADSL 能够同时打电话和上网</strong>：不同频率的信号分配给不同用途</p>
+<p><strong>ADSL 的核心技术：DMT 调制（离散多音调制技术）</strong>：</p>
+<p><strong>将一个较宽的频带划分为多个较窄的子信道，利用多个不同频率的载波并行传输数据</strong></p>
+<p>假设一条电话铜线的传输质量不是特别好。</p>
+<p>不同频率的信号受到干扰的程度可能不同。</p>
+<p>例如：</p>
+<ul>
+<li>低频部分传输质量很好。</li>
+<li>中频部分受到一定干扰。</li>
+<li>高频部分受到严重干扰。</li>
+</ul>
+<p>如果整个频带采用统一的传输方式，就可能无法充分利用质量较好的频率资源。</p>
+<p>DMT 的解决方案是：</p>
+<p>把整个频带划分为很多较小的子信道，每个子信道可以根据实际情况独立调制</p>
+<h4 id="2-6-2-ADSL-接入网络的组成"><a href="#2-6-2-ADSL-接入网络的组成" class="headerlink" title="2.6.2 ADSL 接入网络的组成"></a><strong>2.6.2 ADSL 接入网络的组成</strong></h4><p><img src="/../../images/CNW6.jpg"></p>
+<p><strong>DSLAM：数字用户线接入复用器</strong>：汇聚多个用户的 ADSL 接入线路，并将用户数据集中转发到运营商网络。</p>
+<p><strong>ATU：ADSL 调制解调器</strong></p>
+<ul>
+<li>ATU-C：运营商侧的 ADSL 调制解调设备。</li>
+<li>ATU-R：家庭侧的 ADSL 调制解调设备。</li>
+</ul>
+<p><strong>Splitter：电话分离器</strong></p>
+<h4 id="2-6-3-光纤同轴混合网（HFC-网）"><a href="#2-6-3-光纤同轴混合网（HFC-网）" class="headerlink" title="2.6.3 光纤同轴混合网（HFC 网）"></a><strong>2.6.3 光纤同轴混合网（HFC 网）</strong></h4><p>同时提供电视、电话和互联网数据交互等功能</p>
+<p>核心：<strong>将光纤和同轴电缆结合起来，构建宽带接入网络。</strong></p>
+<p><strong>HFC 用光纤承担长距离主干传输，用同轴电缆完成最后一段用户接入</strong>：可以减少放大器数量（光线抗干扰能力强，损耗小）</p>
+<p>双端通信的实现方式：</p>
+<p><strong>HFC 使用频分复用的思想，将上行和下行安排在不同的频率范围内</strong></p>
+<ul>
+<li><p>上行：用户家庭 → 同轴电缆 → 光纤节点 → 光纤 → 头端</p>
+</li>
+<li><p>下行：头端 → 光纤 → 光纤节点 → 同轴电缆 → 用户家庭</p>
+</li>
+</ul>
+<p><strong>HFC如何接入互联网</strong>：</p>
+<ol>
+<li>机顶盒（Set-top Box）<br>早期电视机主要接收模拟电视信号，现在有线电视网络传输的是数字电视信号，在同轴电缆和电视机之间连接一个机顶盒，<strong>负责将数字电视信号转换成电视机能够处理的信号</strong></li>
+<li>电缆调制解调器（Cable Modem）<br><strong>实现计算机数字数据与 HFC 网络传输信号之间的转换，使用户能够通过有线电视网络接入互联网。</strong></li>
+</ol>
+<h2 id="3-数据链路层"><a href="#3-数据链路层" class="headerlink" title="3. 数据链路层"></a><strong>3. 数据链路层</strong></h2><h3 id="3-1-数据链路层的基本概念"><a href="#3-1-数据链路层的基本概念" class="headerlink" title="3.1 数据链路层的基本概念"></a>3.1 数据链路层的基本概念</h3><p><strong>链路</strong>：物理线路</p>
+<p><strong>数据链路</strong>：链路+必要的通信协议</p>
+<p><strong>帧</strong>：<strong>将网络层交下来的 IP 数据报添加首部和尾部，封装成帧</strong></p>
+<ul>
+<li>首部：包含控制信息，例如地址、类型等。</li>
+<li>数据部分：通常承载网络层交下来的 IP 数据报。</li>
+<li>尾部：可能包含差错检测信息，例如 CRC 校验序列。</li>
+</ul>
+<p><strong>为什么每经过一个路由器，都需要重新处理数据链路层</strong></p>
+<p>第一步：主机 A 将 IP 数据报封装成帧，发送给 R1。</p>
+<p>第二步：R1 收到帧，检查并去掉数据链路层首部和尾部，取出 IP 数据报。</p>
+<p>第三步：R1 根据 IP 地址决定下一跳，再使用下一条链路对应的数据链路层协议重新封装成帧。</p>
+<p>第四步：R2 重复这个过程。</p>
+<p>第五步：最终到达主机 B。</p>
+<p>这里产生了一个非常重要的结论：</p>
+<p><strong>IP 数据报可以在整个通信过程中保持端到端的逻辑传输，而数据链路层的帧是逐段传输的，每经过一个路由器，都可能重新封装。</strong></p>
+<p>所以不同链路可以使用不同的数据链路层协议</p>
+<h3 id="3-2-数据链路层的三个基本问题"><a href="#3-2-数据链路层的三个基本问题" class="headerlink" title="3.2 数据链路层的三个基本问题"></a>3.2 <strong>数据链路层的三个基本问题</strong></h3><h4 id="3-2-1-封装成帧"><a href="#3-2-1-封装成帧" class="headerlink" title="3.2.1  封装成帧"></a><strong>3.2.1  封装成帧</strong></h4><p><strong>让接收方识别帧的开始和结束</strong></p>
+<p>教材介绍了一种使用特殊控制字符的方法</p>
+<p><code>SOH ABCDEF EOT</code></p>
+<p>接收方读取到 SOH，就知道一帧开始了。</p>
+<p>读取到 EOT，就知道这一帧结束了。</p>
+<p><strong>最大传送单元 MTU</strong>：表示数据链路层协议所允许的帧中数据部分的最大长度，是数据部分的最大长度，不是整个帧的最大长度，如果 IP 数据报超过 MTU，就需要根据网络层的相关机制进行处理，例如分片或其他适当处理</p>
+<h4 id="3-2-2-透明传输"><a href="#3-2-2-透明传输" class="headerlink" title="**3.2.2  **透明传输"></a>**3.2.2  **透明传输</h4><p><strong>保证数据中出现特殊控制字符时，不会破坏帧的边界识别</strong></p>
+<p><strong>如果数据中出现与帧边界控制字符相同的特殊字符，就在它前面插入一个转义字符 ESC(包括自己)</strong></p>
+<p>接收方读取时：</p>
+<ol>
+<li>看到 SOH，知道一帧开始。</li>
+<li>看到 ESC，知道下一个字符是被转义的数据。</li>
+<li>因此不会把后面的 EOT 当成真正的帧结束标志。</li>
+<li>继续读取，直到遇到没有被转义的 EOT。</li>
+</ol>
+<h4 id="3-2-3-差错检测"><a href="#3-2-3-差错检测" class="headerlink" title="3.2.3 差错检测"></a><strong>3.2.3 差错检测</strong></h4><p><strong>CRC 循环冗余检验</strong></p>
+<p>CRC 是一种计算校验码的方法，FCS 是添加到帧中的校验字段</p>
+<p>计算原理：</p>
+<p>使用教材中的例子。</p>
+<p>假设：</p>
+<p>原始数据：</p>
+<p><code>M=101001</code></p>
+<p>生成多项式对应的二进制除数：</p>
+<p><code>P=1101</code></p>
+<p>由于 P 有 4 位，因此它的最高次数为 3。</p>
+<p>所以需要在原始数据后面补 3 个 0。</p>
+<p><code>M′=101001000</code></p>
+<p>接下来：</p>
+<p>用补零后的数据除以生成多项式，采用模 2 除法。</p>
+<p><code>101001000÷1101</code></p>
+<p>得到余数：</p>
+<p><code>R=001</code></p>
+<p>因此，发送方需要将余数附加到原始数据后面：</p>
+<p><code>T=M+R</code></p>
+<p><code>T=101001001</code></p>
+<p>这里的加号表示拼接，不是普通算术加法。</p>
+<p>这就是最终发送的数据。</p>
+<p>检验方法：</p>
+<p>发送方发送：</p>
+<p><code>T=101001001</code></p>
+<p>接收方收到数据后，使用同一个生成多项式：</p>
+<p><code>P=1101</code></p>
+<p>进行模 2 除法。</p>
+<p>如果：</p>
+<p><code>T÷P</code></p>
+<p>余数为 0，那么说明没有检测到传输差错。</p>
+<p>如果余数不为 0，则说明检测到了差错。</p>
+<p><strong>没有比特错误，不代表没有传输错误</strong>所以还需要可靠传输</p>
+<h3 id="3-3-点对点协议PPP"><a href="#3-3-点对点协议PPP" class="headerlink" title="3.3 点对点协议PPP"></a>3.3 点对点协议PPP</h3><p>PPP 主要用于两个节点之间的点对点通信，这条连接需要遵循统一的通信规则</p>
+<h4 id="3-3-1-特点"><a href="#3-3-1-特点" class="headerlink" title="3.3.1 特点"></a>3.3.1 特点</h4><ol>
+<li>简单<br>不需要复杂的可靠传输机制，如果接收方收到一个 CRC 校验错误的帧，<strong>直接丢弃</strong><br>因为 PPP 主要用于点对点全双工链路，设计目标是尽量简化协议，如果上层需要可靠传输，可以由上层协议实现</li>
+<li>封装成帧<br>PPP 必须规定特殊的帧定界符</li>
+<li>透明性</li>
+<li>支持多种网络层协议<br>假设同一条点对点链路上，需要传输不同类型的网络层数据，PPP 可以通过协议字段识别不同类型的数据，并交给相应的网络层协议处理</li>
+<li>支持多种类型的链路</li>
+<li>差错检测<br>PPP 使用 CRC 进行差错检测。如果发现帧出现差错，就将其丢弃</li>
+<li>检测连接状态<br>PPP 能够检测链路是否处于正常工作状态</li>
+<li>最大传送单元 MTU</li>
+<li>网络层地址协商</li>
+<li>数据压缩协商</li>
+</ol>
+<h4 id="3-3-2-组成部分"><a href="#3-3-2-组成部分" class="headerlink" title="3.3.2 组成部分"></a>3.3.2 组成部分</h4><p><strong>1. 封装方法</strong></p>
+<p>规定如何将网络层数据封装到 PPP 帧中。</p>
+<p><strong>2. LCP：链路控制协议</strong></p>
+<p>负责建立、配置和测试数据链路连接。</p>
+<p>LCP 负责先把通信链路准备好</p>
+<p><strong>3. NCP：网络控制协议</strong></p>
+<p>负责配置和管理不同网络层协议。</p>
+<p>例如：</p>
+<p>如果 PPP 链路需要承载 IP 数据，那么就需要使用对应的网络控制协议 IPCP。</p>
+<h4 id="3-3-3-帧格式"><a href="#3-3-3-帧格式" class="headerlink" title="3.3.3. 帧格式"></a>3.3.3. 帧格式</h4><p><img src="/../../images/CNW2.png"></p>
+<ol>
+<li>标志字段</li>
+<li>地址字段<br>PPP 是点对点协议，两端之间只有两个通信实体，因此这个地址字段实际上没有真正的寻址作用</li>
+<li>控制字段 （固定值 <code>0x03=00000011</code>）<br>表示无编号帧</li>
+<li>协议字段<br>用来说明信息字段中承载的是什么类型的数据，从而交给谁处理，IP、LCP等</li>
+<li>信息字段（长度可变）<br>教材规定，默认 MTU 为 1500 字节<br>存放真正需要传输的数据，例如：<ul>
+<li>IP 数据报</li>
+<li>LCP 控制数据</li>
+<li>NCP 控制数据</li>
+</ul>
+</li>
+<li>帧检测序列 FCS</li>
+<li>结束标志 0x7E</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>协议字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0x0021</td>
+<td>IP 数据报</td>
+</tr>
+<tr>
+<td>0xC021</td>
+<td>LCP 数据</td>
+</tr>
+<tr>
+<td>0x8021</td>
+<td>NCP 数据（IPCP）</td>
+</tr>
+</tbody></table>
+<p><strong>基本过程</strong>：</p>
+<p>假设计算机 A 要通过 PPP 向计算机 B 发送一个 IP 数据报。</p>
+<p>那么：</p>
+<ol>
+<li>先在 IP 数据报前添加 PPP 帧首部。</li>
+<li>Protocol 字段填写 0x0021，表示承载的是 IP 数据。</li>
+<li>信息字段存放 IP 数据报。</li>
+<li>计算 CRC，生成 FCS。</li>
+<li>在帧首尾添加 0x7E。</li>
+<li>通过物理链路发送。</li>
+</ol>
+<p>接收端按照相反的过程处理：</p>
+<ol>
+<li>识别帧边界。</li>
+<li>检查 FCS。</li>
+<li>根据 Protocol 字段判断数据类型。</li>
+<li>将 IP 数据报交给 IP 层处理。</li>
+</ol>
+<h5 id="异步传输：字符填充法"><a href="#异步传输：字符填充法" class="headerlink" title="异步传输：字符填充法"></a>异步传输：字符填充法</h5><p>异步传输通常以字节为单位进行数据传输</p>
+<p>异步传输是面向字节的，转义后的第一个字节是7D第二个字节，是原字符与 0x20 异或后的结果，例如：</p>
+<p>信息字段出现 0x7E：</p>
+<p>替换为：<code>0x7D, 0x5E</code></p>
+<h5 id="同步传输：零比特填充法"><a href="#同步传输：零比特填充法" class="headerlink" title="同步传输：零比特填充法"></a>同步传输：零比特填充法</h5><p>同步传输以连续的比特流进行传输，不需要为每个字节单独添加起始位和停止位</p>
+<p>这种方法面向比特</p>
+<p><strong>发送方扫描信息字段，每遇到连续五个 1，就立即插入一个 0</strong></p>
+<p>接收方如果发现连续五个 1 后面紧跟一个 0，就删除这个 0</p>
+<p>因为 PPP 的帧边界标志：01111110中间存在连续六个 1，而通过零比特填充，可以保证数据字段中不会直接出现这种完整的标志序列</p>
+<h4 id="3-3-4-PPP协议的工作状态、"><a href="#3-3-4-PPP协议的工作状态、" class="headerlink" title="3.3.4 PPP协议的工作状态、"></a>3.3.4 PPP协议的工作状态、</h4><p><strong>PPP 工作状态转换</strong></p>
+<ol>
+<li><p><strong>链路静止（Link Dead）</strong></p>
+<p>尚未建立物理连接。</p>
+<p>你还没有点击宽带连接按钮，电脑与运营商之间尚未建立相应的物理连接</p>
+</li>
+<li><p><strong>链路建立（Link Establish）</strong></p>
+<p>物理连接建立后，通过 LCP 协商链路参数。</p>
+<p>你点击了宽带连接按钮，调制解调器开始呼叫运营商的接入设备，当运营商检测到调制解调器发出的载波信号后，就建立物理连接，<strong>物理连接建立，不代表 PPP 链路已经配置完成，接下来需要 LCP 工作</strong>，LCP 会发送配置请求，运营商检查之后，如果接受，就返回 Configure-Ack，如果不接受某个参数值，可以返回 Configure-Nak，如果某个配置选项无法识别或不支持，可以返回 Configure-Reject，<strong>LCP 配置完成，只代表数据链路层的链路参数已经协商好，并不意味着 IP 地址已经配置完成</strong></p>
+</li>
+<li><p><strong>鉴别（Authenticate）</strong></p>
+<p>如果需要身份验证，双方进行身份鉴别。</p>
+</li>
+<li><p><strong>网络层协议（Network-Layer Protocol）</strong></p>
+<p>通过 NCP 配置网络层协议，例如 IPCP 配置 IP 参数。IPCP 可以协商 IP 层相关参数，例如 IP 地址，NCP 不只是 IPCP，还可以用于其他网络层协议的配置</p>
+</li>
+<li><p><strong>数据传输</strong></p>
+<p>链路配置完成，开始传输网络层数据。</p>
+</li>
+<li><p><strong>链路终止（Link Terminate）</strong></p>
+<p>双方释放链路，最终返回链路静止状态。</p>
+</li>
+</ol>
+<h3 id="3-4-使用广播信道的数据链路层"><a href="#3-4-使用广播信道的数据链路层" class="headerlink" title="3.4 使用广播信道的数据链路层"></a>3.4 使用广播信道的数据链路层</h3><h4 id="3-4-1-局域网"><a href="#3-4-1-局域网" class="headerlink" title="3.4.1 局域网"></a>3.4.1 局域网</h4><p><strong>网络通常为一个单位所拥有，而且地理范围和站点数目有限。</strong></p>
+<p><strong>局域网拓扑结构</strong>：</p>
+<ol>
+<li><p><strong>星型网</strong>：所有计算机连接到中央设备，例如交换机<br>优点：结构清晰，容易管理</p>
+<p>缺点：中心设备发生故障可能影响整个网络</p>
+</li>
+<li><p><strong>环形网</strong>：每个节点与相邻节点连接，形成闭合环路</p>
+<p>数据可以沿环路传输</p>
+</li>
+<li><p><strong>总线网</strong>：所有计算机共享一条总线</p>
+<p>一个节点发送的数据可以被总线上其他节点接收</p>
+</li>
+</ol>
+<p><strong>局域网的数据链路层为什么划分为两个子层</strong>？</p>
+<p>例如一个公司使用两种局域网，它们的物理传输介质、访问方式可能不同，网络层是否需要针对每一种局域网技术分别设计一套接口？显然不方便</p>
+<p>网络层 -&gt; LLC（逻辑链路控制子层） -&gt; MAC （媒体接入控制子层）-&gt; 物理层</p>
+<ol>
+<li>LLC<br>它主要负责向网络层提供统一的服务接口，<strong>LLC 子层与具体的传输媒体和 MAC 子层实现相对独立</strong>，上层网络层不需要关心底层究竟采用哪种具体的局域网技术，只需要通过 LLC 提供的接口使用数据链路层服务即可</li>
+<li>MAC<br>控制多个节点如何访问共享信道、处理 MAC 地址、按照相应的 MAC 协议发送和接收帧，解决数据发送冲突的问题</li>
 </ol>
 <ul>
-<li>**ISP：**互联网服务提供商，提供接入或网络互连服务。</li>
-<li>**IXP：**互联网交换点，帮助不同网络交换流量。</li>
-<li>互联网由许多组织共同建设和运营，不是单一组织拥有的“一台中央机器”。</li>
-<li>标准化使不同厂商、不同网络能够互通；<strong>RFC 文档不全部都是互联网标准</strong>。</li>
-<li>教材给出的我国重要历史节点：<strong>1994 年 4 月 20 日正式接入互联网</strong>。</li>
+<li>LLC 负责提供相对统一的上层接口。</li>
+<li>MAC 负责处理具体的媒体访问问题。</li>
 </ul>
-<h3 id="1-3-边缘、核心与应用通信方式【重点】"><a href="#1-3-边缘、核心与应用通信方式【重点】" class="headerlink" title="1.3 边缘、核心与应用通信方式【重点】"></a>1.3 边缘、核心与应用通信方式【重点】</h3><table>
-<thead>
-<tr>
-<th>部分</th>
-<th>主要工作</th>
-<th>例子</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>边缘</td>
-<td>运行应用，产生和使用数据</td>
-<td>浏览器所在电脑、网站服务器</td>
-</tr>
-<tr>
-<td>核心</td>
-<td>提供网络互连和分组转发</td>
-<td>中间网络及路由器</td>
-</tr>
-</tbody></table>
-<p>**“边缘”按功能划分，不表示规模小或不重要。**大型网站服务器仍是应用通信的端系统。</p>
-<p>严格地说，应用通信发生在<strong>不同主机上的进程之间</strong>。数据既要到正确主机，也要交给正确应用进程。</p>
-<table>
-<thead>
-<tr>
-<th>方式</th>
-<th>角色关系</th>
-<th>易错点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>C&#x2F;S</td>
-<td>客户请求服务，服务器提供服务</td>
-<td>双方都可收发数据；服务器不只向客户发送</td>
-</tr>
-<tr>
-<td>P2P</td>
-<td>参与者既可请求，也可提供资源</td>
-<td>对等是应用角色关系，不等于两台机器物理直连</td>
-</tr>
-</tbody></table>
-<p>一台电脑可运行多个程序，同时承载客户和服务器角色。</p>
-<h3 id="1-4-三种交换方式【重点】"><a href="#1-4-三种交换方式【重点】" class="headerlink" title="1.4 三种交换方式【重点】"></a>1.4 三种交换方式【重点】</h3><p>交换的核心问题：<strong>怎样分配通信资源，让数据经过中间网络到达目的地？</strong></p>
-<table>
-<thead>
-<tr>
-<th>方式</th>
-<th>基本过程</th>
-<th>优点</th>
-<th>主要代价</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>电路交换</td>
-<td>建立连接、预留资源 → 传送 → 释放</td>
-<td>连接建立后有相对稳定的传输条件</td>
-<td>无数据时预留资源可能闲置</td>
-</tr>
-<tr>
-<td>报文交换</td>
-<td>整个报文收齐后再向下一站转发</td>
-<td>无须端到端预留专用资源</td>
-<td>大报文需要较多存储，后续链路启动较晚</td>
-</tr>
-<tr>
-<td>分组交换</td>
-<td>报文拆小，每个分组分别存储转发</td>
-<td>共享灵活，可流水线传输</td>
-<td>首部开销、排队、丢包；普通分组服务不保证固定带宽</td>
-</tr>
-</tbody></table>
-<p>**存储转发：**在本教材模型中，中间节点先收齐当前转发单位，再发送。报文交换的单位是整个报文，分组交换的单位是一个分组。</p>
-<p>**TCP 连接不等于电路交换连接：**TCP 维护端点协议状态，通常不沿途预留专用电路。</p>
-<h4 id="理解模型：流水线为什么缩短时间？"><a href="#理解模型：流水线为什么缩短时间？" class="headerlink" title="理解模型：流水线为什么缩短时间？"></a>理解模型：流水线为什么缩短时间？</h4><p>总数据 6 Mbit，两条链路均为 2 Mbit&#x2F;s，忽略其他时延和首部开销。</p>
+<p>这样就能够让网络层和不同的局域网底层技术相对独立。</p>
+<p><strong>适配器的作用（网络接口卡、网卡、网络适配器）</strong></p>
 <ul>
-<li>报文交换：每条链路发送整份数据需要 3 s，总计 <strong>6 s</strong>。</li>
-<li>拆成 3 个等长分组：每个分组在一条链路上发送需要 1 s。</li>
+<li>计算机连接局域网的硬件接口</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th>时间</th>
-<th>第一条链路</th>
-<th>第二条链路</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0～1 s</td>
-<td>分组 1</td>
-<td>等待</td>
-</tr>
-<tr>
-<td>1～2 s</td>
-<td>分组 2</td>
-<td>分组 1</td>
-</tr>
-<tr>
-<td>2～3 s</td>
-<td>分组 3</td>
-<td>分组 2</td>
-</tr>
-<tr>
-<td>3～4 s</td>
-<td>结束</td>
-<td>分组 3</td>
-</tr>
-</tbody></table>
-<p>分组交换用 <strong>4 s</strong> 完成。<strong>不是链路变快，而是不同链路能够重叠工作。</strong></p>
-<p>等速链路、等长分组、无额外时延时：设总报文长 <code>L</code>，链路数 <code>h</code>，分组数 <code>n</code>，链路速率 <code>R</code>：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">报文交换时间 = h × L / R</span><br><span class="line">分组交换时间 = (h + n − 1) × L / (n × R)</span><br></pre></td></tr></table></figure>
-
-<p>分组过小会增加首部和处理开销，<strong>不是越小越好</strong>。</p>
-<h3 id="1-5-网络分类【识记】"><a href="#1-5-网络分类【识记】" class="headerlink" title="1.5 网络分类【识记】"></a>1.5 网络分类【识记】</h3><table>
-<thead>
-<tr>
-<th>分类角度</th>
-<th>类型</th>
-<th>理解</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>作用范围</td>
-<td>PAN、LAN、MAN、WAN</td>
-<td>个人附近、局部区域、城市、跨地区；范围不是绝对硬边界</td>
-</tr>
-<tr>
-<td>使用者</td>
-<td>公用网、专用网</td>
-<td>面向符合条件的公众使用，或面向特定组织业务</td>
-</tr>
-<tr>
-<td>接入功能</td>
-<td>接入网 AN</td>
-<td>将用户端系统接入 ISP 的网络设施</td>
-</tr>
-</tbody></table>
-<p>局域网不等于互联网，专用网也不等于一种特定传输媒体。</p>
-<h3 id="1-6-网络性能【重点】"><a href="#1-6-网络性能【重点】" class="headerlink" title="1.6 网络性能【重点】"></a>1.6 网络性能【重点】</h3><h4 id="能力与实际量"><a href="#能力与实际量" class="headerlink" title="能力与实际量"></a>能力与实际量</h4><table>
-<thead>
-<tr>
-<th>指标</th>
-<th>含义</th>
-<th>单位&#x2F;关键点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>速率</td>
-<td>数据发送速率</td>
-<td>bit&#x2F;s；标称速率不等于实际吞吐量</td>
-</tr>
-<tr>
-<td>带宽</td>
-<td>本章语境中的最高数据传送能力</td>
-<td>bit&#x2F;s；物理层频率带宽用 Hz</td>
-</tr>
-<tr>
-<td>吞吐量</td>
-<td>单位时间实际通过的数量</td>
-<td>通常 bit&#x2F;s，应明确测量范围</td>
-</tr>
-<tr>
-<td>利用率</td>
-<td>观察期内资源被使用的比例</td>
-<td>无量纲或百分比</td>
-</tr>
-</tbody></table>
-<p>**瓶颈模型：**路径依次经过 100、20、100 Mbit&#x2F;s 链路，其他条件理想时，持续吞吐量受 20 Mbit&#x2F;s 链路限制。缓冲区只能暂时容纳积压，不能提高输出能力。</p>
-<h4 id="四种时延"><a href="#四种时延" class="headerlink" title="四种时延"></a>四种时延</h4><table>
-<thead>
-<tr>
-<th>时延</th>
-<th>做什么</th>
-<th>计算&#x2F;影响因素</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>发送时延</td>
-<td>把整个分组送入链路</td>
-<td><code>t_s=L/R</code></td>
-</tr>
-<tr>
-<td>传播时延</td>
-<td>信号走完链路</td>
-<td><code>t_p=d/v</code></td>
-</tr>
-<tr>
-<td>处理时延</td>
-<td>分析首部、检查、查表等</td>
-<td>设备和处理任务</td>
-</tr>
-<tr>
-<td>排队时延</td>
-<td>等待处理或发送</td>
-<td>到达流量、负载、调度</td>
-</tr>
-</tbody></table>
-<p>沿途总时延需累计相关节点与链路上的各项时延。单链路、忽略处理和排队时：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">收齐时间 = L / R + d / v</span><br></pre></td></tr></table></figure>
-
-<p>**理解模型：入口与走廊。**发送速率像入口每秒放行多少人；传播速率像人在走廊中走多快。入口变宽，不会使人在同一走廊中自动走得更快。</p>
-<table>
-<thead>
-<tr>
-<th>改变条件</th>
-<th>发送时延</th>
-<th>传播时延</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>分组长度增大</td>
-<td>增大</td>
-<td>不因此改变</td>
-</tr>
-<tr>
-<td>发送速率增大</td>
-<td>减小</td>
-<td>不因此改变</td>
-</tr>
-<tr>
-<td>链路距离增大</td>
-<td>不因此改变</td>
-<td>增大</td>
-</tr>
-</tbody></table>
-<p>**收发可以同时进行。**若发送需 2 ms、传播需 3 ms：开头约在 3 ms 到达，最后部分在 5 ms 到达。</p>
-<h4 id="RTT、时延带宽积与等待"><a href="#RTT、时延带宽积与等待" class="headerlink" title="RTT、时延带宽积与等待"></a>RTT、时延带宽积与等待</h4><ul>
-<li>**RTT：**一次往返交互的时间。实际 RTT 可包含传播、排队、处理及相关发送时间；不普遍等于两倍传播时延。</li>
-<li><strong>本教材的链路时延带宽积：</strong><code>B t_p</code>，单位 bit，表示按带宽连续发送时的在途数据量，不是路由器缓冲容量。</li>
-<li>**<code>B × RTT</code>：**描述一个往返时间内可发送的数据量，与未确认数据和窗口设计有关；不要与单程传播带宽积混淆。</li>
-</ul>
-<p>**停止等待模型：**每发一份数据，必须等其确认才发下一份。设发完后等待时间为 <code>T_w</code>，忽略确认发送和其他开销：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">有效数据率 = L / (t_s + T_w)</span><br><span class="line">利用率 U = t_s / (t_s + T_w)</span><br><span class="line">有效数据率 = R × U</span><br></pre></td></tr></table></figure>
-
-<p>例：发送 1 ms、等待 20 ms，<code>U=1/21</code>；速率翻倍后，发送 0.5 ms，<code>U=1/41</code>。</p>
-<p>**提高发送速率后，有效速率可略增，利用率却下降。**原因是分母基数（链路能力）增大，而等待限制仍存在。</p>
-<p>对于随机、突发流量，负载接近容量时，排队时延往往明显上升。教材简化模型：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">D = D_0 / (1 − U)</span><br></pre></td></tr></table></figure>
-
-<p>这是有条件的趋势模型，不是任何网络的通用精确公式，也不能据此认为高利用率必然有严重排队。</p>
-<h4 id="非性能特征【了解】"><a href="#非性能特征【了解】" class="headerlink" title="非性能特征【了解】"></a>非性能特征【了解】</h4><p>费用、质量、标准化、可靠性、可扩展性与可升级性、易管理和维护。评价网络不能只看速率。</p>
-<h3 id="1-7-网络体系结构【重点】"><a href="#1-7-网络体系结构【重点】" class="headerlink" title="1.7 网络体系结构【重点】"></a>1.7 网络体系结构【重点】</h3><p>**分层的目的：**拆分复杂任务，复用通用能力；在服务与接口兼容的前提下，允许下层实现变化，便于标准化、实现和维护。</p>
-<table>
-<thead>
-<tr>
-<th>五层</th>
-<th>主要任务</th>
-<th>常见信息&#x2F;例子</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>应用层</td>
-<td>表达和处理具体网络业务</td>
-<td>HTTP、DNS；应用报文</td>
-</tr>
-<tr>
-<td>运输层</td>
-<td>为进程提供通用传送服务</td>
-<td>TCP、UDP；端口</td>
-</tr>
-<tr>
-<td>网络层</td>
-<td>跨网络的主机间分组传送</td>
-<td>IP、目的 IP 地址、路由与转发</td>
-</tr>
-<tr>
-<td>数据链路层</td>
-<td>当前链路范围内组织、交付帧</td>
-<td>帧边界、链路控制、差错检测</td>
-</tr>
-<tr>
-<td>物理层</td>
-<td>利用信号传送比特</td>
-<td>信号表示、定时、接口特性</td>
-</tr>
-</tbody></table>
-<p>**理解模型：**访问网页时，HTTP 说明请求的业务含义；运输层服务应用进程；IP 帮助跨网络前进；链路层解决当前一段；物理层实际传送比特。</p>
-<h4 id="协议、服务、实体和接口"><a href="#协议、服务、实体和接口" class="headerlink" title="协议、服务、实体和接口"></a>协议、服务、实体和接口</h4><ul>
-<li>**协议：**对等实体间通信的规则，包含语法（格式）、语义（含义和动作）、同步（顺序与时序）。</li>
-<li>**服务：**本层向上层提供的能力。协议是逻辑上的“水平关系”，服务是“垂直关系”。</li>
-<li>**实体：**参与发送、接收和处理的硬件或软件过程。</li>
-<li>**SAP：**服务访问点，相邻层交互的逻辑接口点，不要直接等同物理插口。</li>
-<li>**体系结构：**层次及协议的集合，是抽象的功能组织；实现是具体软硬件。</li>
-</ul>
-<p>**HTTP 是规则，不是被添加到数据中的一件物品。**应说“按照协议构造报文、添加控制信息”。</p>
-<h4 id="封装与解封装"><a href="#封装与解封装" class="headerlink" title="封装与解封装"></a>封装与解封装</h4><p>简化的 TCP&#x2F;IP 封装过程（忽略分段等细节）：</p>
-<table>
-<thead>
-<tr>
-<th>层次</th>
-<th>基本结构</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>应用层</td>
-<td>应用报文</td>
-</tr>
-<tr>
-<td>运输层</td>
-<td>TCP 首部 + 应用数据</td>
-</tr>
-<tr>
-<td>网络层</td>
-<td>IP 首部 + TCP 报文段</td>
-</tr>
-<tr>
-<td>数据链路层</td>
-<td>帧首部 + IP 数据报 + 必要的帧尾</td>
-</tr>
-<tr>
-<td>物理层</td>
-<td>用信号传送上述比特</td>
-</tr>
-</tbody></table>
+<p>主要作用</p>
+<ol>
+<li><strong>数据转换</strong>：计算机内部通常通过总线与适配器交换数据，而网络介质上传输的是串行比特流，因此适配器需要完成串行传输和并行传输之间的转换</li>
+<li><strong>帧的封装与解封装</strong>：<br>发送时，计算机将数据交给网卡，网卡按照相应的数据链路层协议封装成帧<br>接收时，网卡接收帧，进行相应的检查和处理，再将数据交给计算机。</li>
+<li><strong>差错检测</strong>：网卡可以检查接收到的帧的 FCS，发现差错后丢弃错误帧。</li>
+<li><strong>缓存数据</strong>：适配器具有自己的存储器，可以暂存发送和接收的数据。</li>
+<li><strong>处理 MAC 地址</strong>：网卡具有 MAC 地址，用于在局域网中标识网络接口。</li>
+</ol>
+<p><strong>适配器主要实现数据链路层和物理层的功能</strong></p>
+<h4 id="3-4-2-CSMA-CD协议"><a href="#3-4-2-CSMA-CD协议" class="headerlink" title="3.4.2 CSMA&#x2F;CD协议"></a>3.4.2 CSMA&#x2F;CD协议</h4><p><strong>Carrier Sense Multiple Access with Collision Detection</strong>载波监听多点接入 &#x2F; 碰撞检测</p>
+<p><strong>让多个计算机能够合理地使用共享信道</strong>，这就是 CSMA&#x2F;CD 的设计目的</p>
+<p>**CS：Carrier Sense（载波监听）**发送数据之前，先监听信道是否空闲</p>
+<p>**MA：Multiple Access（多点接入）**多个计算机可以连接到同一条共享信道</p>
+<p>**CD：Collision Detection（碰撞检测）**发送数据的同时监听信道，检测是否发生碰撞</p>
+<p>核心步骤：<strong>先听后发，边听边发，冲突停止，延迟重发。</strong></p>
+<ol>
+<li>发送方准备发送数据之前，先监听总线<br>信道空闲：立即发送<br>信道忙碌：继续监听，等待信道变为空闲</li>
+<li>边听边发：防止信号传播时延造成的误认为空闲，从而双方都发送数据</li>
+<li>冲突停止：立即停止发送原始数据，发送人为干扰信号-&gt;让其他相关节点也能够检测到碰撞</li>
+<li>延迟重发：发生碰撞之后，不能立即重新发送，需要采用随机退避机制，避免无限重发<br><strong>二进制指数退避算法</strong></li>
+</ol>
+<p><strong>争用期</strong>：<strong>在发送数据之后的一段时间内，仍然存在发生碰撞的可能性</strong> 2*传播时延</p>
+<p><strong>以太网规定最小帧长</strong>：**发送一帧数据所需要的时间，至少要大于等于争用期。**避免发送方误认为数据已经发送成功</p>
+<p>基本计算公式：<code>L = 2 * 传播时延 * 数据发送速率</code></p>
+<p>经典以太网最小帧长 64Byte</p>
+<p><strong>物理层的传播时延，会影响数据链路层的最小帧长。</strong></p>
+<p><strong>二进制指数退避算法</strong>：</p>
+<p><strong>碰撞次数越多，可选择的随机等待范围就越大</strong></p>
+<p>n ：碰撞次数</p>
+<p><code>k = min (n, 10) </code></p>
+<p><code>r = {0, 1, ..., 2^k - 1}</code></p>
+<p><code>T = r * 争用期</code></p>
+<h3 id="3-5-使用集线器的星形拓扑以太网"><a href="#3-5-使用集线器的星形拓扑以太网" class="headerlink" title="3.5 使用集线器的星形拓扑以太网"></a>3.5 <strong>使用集线器的星形拓扑以太网</strong></h3><p>使用双绞线的星形拓扑</p>
+<p><strong>10BASE-T</strong>&#x3D;10Mb&#x2F;s 基带<strong>双绞线</strong>以太网</p>
+<p><strong>10BASE-F</strong> F-&gt;<strong>光纤</strong></p>
+<h4 id="3-5-1-集线器"><a href="#3-5-1-集线器" class="headerlink" title="3.5.1 集线器"></a>3.5.1 集线器</h4><p><strong>集线器本质上是一个多端口中继器，工作在物理层</strong></p>
+<ol>
+<li><strong>物理上是星形，逻辑上是总线形</strong>，所以使用集线器的以太网依旧需要CSMA&#x2F;CD协议</li>
+<li>集线器有多个端口，每个端口通过 RJ-45 插头和双绞线连接计算机</li>
+<li>集线器工作在物理层，只负责简单地转发比特，<strong>碰撞检测和处理需要由各个站点的网络适配器完成</strong></li>
+<li><strong>集线器使用专门芯片改善信号传输</strong></li>
+</ol>
+<p><strong>集线器的可靠性和可管理性</strong></p>
+<p>集线器可以拓展实现一些功能</p>
+<p>教材还提到了模块化机箱式智能集线器：</p>
 <ul>
-<li>**首部&#x2F;数据是相对概念：**TCP 首部对 TCP 有控制意义，对 IP 则属于承载的数据。</li>
-<li>普通路由器接收帧后处理到 IP 层，作转发决定，再按下一段链路重新封装；通常无须理解网页。</li>
-<li>链路层封装会逐段变化，IP 首部某些字段也会更新；不要认为整份分组逐位保持不变。</li>
-<li>对等层“通信”是逻辑描述，实际信息仍通过下层传送。</li>
+<li>各模块可以独立实现网络功能。</li>
+<li>模块支持热插拔。</li>
+<li>故障时可以更换模块。</li>
+<li>指示灯可以显示网络故障情况。</li>
 </ul>
-<p>术语补充：<strong>PDU</strong> 是本层协议数据单元；<strong>SDU</strong> 是服务接口交付的数据。二者不保证一一对应，可能发生分段或合并。</p>
-<h4 id="三种层次模型【识记】"><a href="#三种层次模型【识记】" class="headerlink" title="三种层次模型【识记】"></a>三种层次模型【识记】</h4><ul>
-<li>**OSI 七层（自下而上）：**物理、数据链路、网络、运输、会话、表示、应用。</li>
-<li>**TCP&#x2F;IP 四层：**网络接口、网际、运输、应用。</li>
-<li>**教材五层：**物理、数据链路、网络、运输、应用。</li>
-</ul>
-<p>它们是不同划分方式，实际技术不必严格符合一个教学模型。TCP&#x2F;IP 通常指协议族，不仅是两个协议。</p>
-<h2 id="第二章：物理层"><a href="#第二章：物理层" class="headerlink" title="第二章：物理层"></a>第二章：物理层</h2><h3 id="2-1-物理层的任务与接口特性"><a href="#2-1-物理层的任务与接口特性" class="headerlink" title="2.1 物理层的任务与接口特性"></a>2.1 物理层的任务与接口特性</h3><p>**任务：**规定怎样在媒体上传送比特，尽量向上屏蔽不同媒体和通信手段的差异。传输媒体本身不等于物理层协议。</p>
-<table>
-<thead>
-<tr>
-<th>特性</th>
-<th>要回答的问题</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>机械</td>
-<td>接头形状、尺寸、引脚排列等</td>
-</tr>
-<tr>
-<td>电气</td>
-<td>电压范围等电气条件</td>
-</tr>
-<tr>
-<td>功能</td>
-<td>信号或引脚承担什么功能</td>
-</tr>
-<tr>
-<td>过程</td>
-<td>信号和操作按什么顺序发生</td>
-</tr>
-</tbody></table>
-<p>**位同步 ≠ 帧同步：**前者找准比特&#x2F;码元判决时刻，后者识别完整帧的边界。</p>
-<h3 id="2-2-数据通信基础【重点】"><a href="#2-2-数据通信基础【重点】" class="headerlink" title="2.2 数据通信基础【重点】"></a>2.2 数据通信基础【重点】</h3><h4 id="系统、数据、信号与方向"><a href="#系统、数据、信号与方向" class="headerlink" title="系统、数据、信号与方向"></a>系统、数据、信号与方向</h4><p>系统模型：源点产生数据 → 发送器生成信号 → 传输系统 → 接收器恢复数据 → 终点使用数据。</p>
-<table>
-<thead>
-<tr>
-<th>概念</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>数据</td>
-<td>信息的一种表示，如字符对应的比特序列</td>
-</tr>
-<tr>
-<td>信号</td>
-<td>数据的电气、电磁等物理表现</td>
-</tr>
-<tr>
-<td>模拟信号</td>
-<td>表示信息的参数连续取值</td>
-</tr>
-<tr>
-<td>数字信号</td>
-<td>用可区分的离散状态表示信息，不必只有两种状态</td>
-</tr>
-<tr>
-<td>信道</td>
-<td>按方向等规则讨论的信息传送通道，不简单等于一根物理线</td>
-</tr>
-</tbody></table>
-<p>数字数据可以通过连续载波的数字调制传送。数据类型与信号形式不要机械绑定。</p>
-<table>
-<thead>
-<tr>
-<th>通信方式</th>
-<th>方向关系</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>单工</td>
-<td>单向传送</td>
-</tr>
-<tr>
-<td>半双工</td>
-<td>双向交替</td>
-</tr>
-<tr>
-<td>全双工</td>
-<td>双向同时</td>
-</tr>
-</tbody></table>
-<p>**上行：**用户到网络；**下行：**网络到用户。能双向交换应用消息，不代表每段底层链路都全双工。</p>
-<h4 id="码元、波特率、比特率"><a href="#码元、波特率、比特率" class="headerlink" title="码元、波特率、比特率"></a>码元、波特率、比特率</h4><ul>
-<li>**码元：**按规定时长传送的一个基本信号单位。</li>
-<li>**码元速率 <code>R_s</code>：**每秒码元数，单位 Baud。</li>
-<li>**比特率 <code>R_b</code>：**每秒传送的数据比特数，单位 bit&#x2F;s。</li>
-</ul>
-<p>若每码元有 <code>M=2^k</code> 种可区分状态，采用直接映射且不考虑编码冗余：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">每码元比特数 k = log₂(M)</span><br><span class="line">比特率 R_b = 码元速率 R_s × log₂(M)</span><br></pre></td></tr></table></figure>
-
-<table>
-<thead>
-<tr>
-<th>状态数 <code>M</code></th>
-<th align="right">每码元比特数</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>2</td>
-<td align="right">1</td>
-</tr>
-<tr>
-<td>4</td>
-<td align="right">2</td>
-</tr>
-<tr>
-<td>8</td>
-<td align="right">3</td>
-</tr>
-<tr>
-<td>16</td>
-<td align="right">4</td>
-</tr>
-</tbody></table>
-<p>例：1200 Baud、8 种状态 → <strong>3600 bit&#x2F;s</strong>。连续码元可处于相同状态，码元数不等于跳变次数。</p>
-<h4 id="编码与调制"><a href="#编码与调制" class="headerlink" title="编码与调制"></a>编码与调制</h4><p>**编码的作用：**安排数据对应的波形，并考虑定时、频谱等要求。长串相同电平不利于从信号本身持续恢复时钟。</p>
-<table>
-<thead>
-<tr>
-<th>编码</th>
-<th>本教材的基本规则</th>
-<th>重点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>不归零 NRZ</td>
-<td>正电平为 1，负电平为 0，位内不特意回零</td>
-<td>简单，但长串相同比特缺少定时线索</td>
-</tr>
-<tr>
-<td>归零 RZ</td>
-<td>正&#x2F;负脉冲表示 1&#x2F;0，随后回零电平</td>
-<td>增加波形变化，通常需要更多带宽</td>
-</tr>
-<tr>
-<td>曼彻斯特</td>
-<td>位中心低→高为 0，高→低为 1</td>
-<td>中心跳变方向表示数据，并提供同步线索</td>
-</tr>
-<tr>
-<td>差分曼彻斯特</td>
-<td>位开始有跳变为 0，无跳变为 1；位中心总跳变</td>
-<td>开始处是否跳变表示数据，中心变化用于同步</td>
-</tr>
-</tbody></table>
-<p><strong>0&#x2F;1 约定可能反过来，做题以题目为准。</strong>“归零”指零电平，不是数据 0。</p>
-<p>**理解模型：**普通曼彻斯特看“中心跳向哪边”；差分曼彻斯特看“开始有没有跳”。不要混用判据。</p>
-<p>**带通调制：**利用载波，把数据映射到适合信道的信号形式。</p>
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th>改变的载波特征</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>调幅 &#x2F; 数字幅移键控</td>
-<td>振幅</td>
-</tr>
-<tr>
-<td>调频 &#x2F; 数字频移键控</td>
-<td>频率</td>
-</tr>
-<tr>
-<td>调相 &#x2F; 数字相移键控</td>
-<td>相位</td>
-</tr>
-<tr>
-<td>QAM</td>
-<td>振幅与相位组合</td>
-</tr>
-</tbody></table>
-<p>码元状态不一定是不同电平，也可以是不同相位等信号特征。</p>
-<h3 id="2-3-信道极限容量【重点】"><a href="#2-3-信道极限容量【重点】" class="headerlink" title="2.3 信道极限容量【重点】"></a>2.3 信道极限容量【重点】</h3><h4 id="奈氏准则：带宽与无码间串扰"><a href="#奈氏准则：带宽与无码间串扰" class="headerlink" title="奈氏准则：带宽与无码间串扰"></a>奈氏准则：带宽与无码间串扰</h4><p>理想低通信道、忽略噪声、逐码元无码间串扰模型，带宽为 <code>W</code> Hz：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">最高码元速率 = 2 × W（Baud）</span><br></pre></td></tr></table></figure>
-
-<p>若每码元使用 <code>M</code> 种状态，直接映射时：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">最高比特率 = 2 × W × log₂(M)（bit/s）</span><br></pre></td></tr></table></figure>
-
-<p><strong>为什么有“2”？——理想脉冲零点模型。</strong></p>
-<p>带宽为 <code>W</code> 的理想 sinc 脉冲可以写成：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p(t) = sin(2 × π × W × t) / (2 × π × W × t)</span><br></pre></td></tr></table></figure>
-
-<p>其中心值为 1，其他零点在 <code>t=n/(2W)</code>（非零整数 <code>n</code>）。将码元中心按 <code>T=1/(2W)</code> 间隔排列，判决当前码元时，其他脉冲恰好为零，因此可以无码间串扰。</p>
-<p>**波形可以重叠，判决点不能被其他码元干扰。**这个构造说明 <code>2W</code> 可以达到；其上限性质来自完整的奈氏频域条件，不能仅凭“正弦波有两个半周期”作为一般证明。</p>
-<h4 id="香农公式：加入噪声限制"><a href="#香农公式：加入噪声限制" class="headerlink" title="香农公式：加入噪声限制"></a>香农公式：加入噪声限制</h4><p>带限高斯白噪声信道模型：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">信道容量 C = W × log₂(1 + S/N)（bit/s）</span><br></pre></td></tr></table></figure>
-
-<p><code>S/N</code> 是信号与噪声的平均功率比。速率低于容量时，理论上可通过适当编码使错误概率任意小；不是承诺实际有限传输绝对零错误。</p>
-<p>信噪比的分贝表示：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">信噪比 γ_dB = 10 × log₁₀(S/N)</span><br><span class="line">功率比 S/N = 10^(γ_dB / 10)</span><br></pre></td></tr></table></figure>
-
-<table>
-<thead>
-<tr>
-<th>dB</th>
-<th align="right">功率比 <code>S/N</code></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0</td>
-<td align="right">1</td>
-</tr>
-<tr>
-<td>10</td>
-<td align="right">10</td>
-</tr>
-<tr>
-<td>20</td>
-<td align="right">100</td>
-</tr>
-<tr>
-<td>30</td>
-<td align="right">1000</td>
-</tr>
-</tbody></table>
-<p>**不能把 dB 值直接代入香农公式。**0 dB 表示信号与噪声功率相等。</p>
-<h4 id="两种限制怎样一起看？"><a href="#两种限制怎样一起看？" class="headerlink" title="两种限制怎样一起看？"></a>两种限制怎样一起看？</h4><p>例：<code>W=4000</code> Hz，<code>S/N=63</code>：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C = 4000 × log₂(64) = 4000 × 6 = 24000 bit/s = 24 kbit/s</span><br></pre></td></tr></table></figure>
-
-<table>
-<thead>
-<tr>
-<th>每码元状态数</th>
-<th align="right">奈氏上界</th>
-<th align="right">香农容量</th>
-<th>较严格限制</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>4</td>
-<td align="right">16 kbit&#x2F;s</td>
-<td align="right">24 kbit&#x2F;s</td>
-<td>奈氏</td>
-</tr>
-<tr>
-<td>16</td>
-<td align="right">32 kbit&#x2F;s</td>
-<td align="right">24 kbit&#x2F;s</td>
-<td>香农</td>
-</tr>
-</tbody></table>
-<p>**只在两种模型条件都适用时，取较小值作为不能超过的上界；不保证实际方案能达到该值。**增加状态数不能突破既定带宽、信噪比下的容量。</p>
-<h3 id="2-4-传输媒体"><a href="#2-4-传输媒体" class="headerlink" title="2.4 传输媒体"></a>2.4 传输媒体</h3><blockquote>
-<p>对应教材 2.3 节。本笔记把“容量”单列为上一节，便于复习。</p>
-</blockquote>
-<table>
-<thead>
-<tr>
-<th>媒体</th>
-<th>原理&#x2F;结构</th>
-<th>主要特点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>双绞线</td>
-<td>两根绝缘铜线绞合，配合差分传送</td>
-<td>绞合改善抗干扰和串扰；成本、施工较方便，仍受距离与线路质量限制</td>
-</tr>
-<tr>
-<td>同轴电缆</td>
-<td>中心导体、绝缘层、外导体屏蔽、保护层</td>
-<td>有屏蔽结构，常见于教材介绍的有线电视网络</td>
-</tr>
-<tr>
-<td>光纤</td>
-<td>光信号在纤芯、包层形成的导波结构中传播</td>
-<td>容量高、合适波段损耗低、不受普通电磁干扰；仍有损耗与色散</td>
-</tr>
-<tr>
-<td>无线</td>
-<td>信号在空间传播</td>
-<td>便于移动和跨越难布线区域；受障碍、干扰、多径等影响</td>
-</tr>
-</tbody></table>
-<p>导引型：双绞线、同轴、光纤；非导引型：无线电、微波、红外等空间传送。</p>
-<p>**理解模型：双绞线抗干扰。**绞合使两根线受到更接近的外部影响；差分接收比较两线差值，有助于抑制共同干扰。</p>
-<p><strong>理解模型：光纤脉冲展宽。</strong></p>
+<h3 id="3-6-以太网的信道利用率"><a href="#3-6-以太网的信道利用率" class="headerlink" title="3.6 以太网的信道利用率"></a>3.6 以太网的信道利用率</h3><p>有效发送帧的时间：<code>T0</code></p>
+<p>整个信道被占用的时间：<code>T0+τ</code></p>
+<p>信道利用率：<code>S = T0/（T0 + τ）=  1 / (1 + a)</code></p>
+<p><code>a = T0 / τ</code></p>
+<p>所以<strong>以太网的参数 a 应当尽可能小</strong></p>
+<p>有两个方向：</p>
+<ol>
+<li>减小传播时延 τ。</li>
+<li>增大帧发送时间 T0。</li>
+</ol>
+<p>联系实际：</p>
 <ul>
-<li>多模光纤：多个空间模式可具有不同传播时间，形成模间色散，脉冲展宽。</li>
-<li>单模光纤：避免模间色散，适合较长距离高速传送；不等于完全没有其他色散。</li>
-<li>发送过密时，展宽可能干扰后续码元的判决。</li>
-<li>单模不等于只能承载一路业务，仍可使用波分复用。</li>
+<li>缩短以太网的传输距离，可以减小传播时延。</li>
+<li>在传输速率固定时，增加帧长度，可以增大帧发送时间。</li>
 </ul>
-<p>**无线多径：**同一信号经不同路径、不同延迟到达，叠加后可能增强、减弱或失真。</p>
-<p>**卫星时延模型：**同步轨道卫星距地面约 36,000 km，地面→卫星→地面粗算传播时间为 <code>72000/300000 ≈ 0.24</code> s；这是单程两段路径的估算，不含其他时延。不同轨道不能一概而论。</p>
-<h3 id="2-5-信道复用【重点】"><a href="#2-5-信道复用【重点】" class="headerlink" title="2.5 信道复用【重点】"></a>2.5 信道复用【重点】</h3><blockquote>
-<p>对应教材 2.4 节。</p>
-</blockquote>
-<p><strong>复用器合并，分用器分离；必须有规则让接收方知道每路信号的归属。</strong></p>
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th>区分依据</th>
-<th>核心特点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>FDM 频分</td>
-<td>不同频带</td>
-<td>同时发送，占用不同频率资源；可能需保护频带</td>
-</tr>
-<tr>
-<td>TDM 时分</td>
-<td>固定时隙位置</td>
-<td>固定周期轮流；无数据时对应时隙可能空闲</td>
-</tr>
-<tr>
-<td>STDM 统计时分</td>
-<td>动态时隙与标识</td>
-<td>跳过空闲输入，提高资源使用灵活性；需标识、缓冲与调度</td>
-</tr>
-<tr>
-<td>WDM 波分</td>
-<td>不同光波长</td>
-<td>光领域的频分复用，一根光纤承载多路波长</td>
-</tr>
-<tr>
-<td>CDM&#x2F;CDMA 码分</td>
-<td>不同码序列的相关性</td>
-<td>可同时间、同频带传送，用码匹配提取目标数据</td>
-</tr>
-</tbody></table>
-<p>例：8 Mbit&#x2F;s 线路平均给四路固定时隙，每路 2 Mbit&#x2F;s。只有 A 有数据时，普通固定 TDM 不自动把全部能力给 A；STDM 可以安排更多发送机会，但存在开销。</p>
-<p>**统计共享不创造容量：**如果总到达速率持续超过输出能力，缓冲会积压甚至溢出。</p>
-<p>TDM 的复用帧不直接等同于数据链路层帧。FDM&#x2F;FDMA、TDM&#x2F;TDMA：复用强调资源组织，多址强调多个用户接入。</p>
-<h4 id="CDMA-的小模型【难点】"><a href="#CDMA-的小模型【难点】" class="headerlink" title="CDMA 的小模型【难点】"></a>CDMA 的小模型【难点】</h4><p>每个数据比特扩展为 <code>m</code> 个码片。用户发 1 时发送自己的码序列，发 0 时发送反码；无发送在理想模型中为零贡献。</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">A = (1, 1, −1, −1)</span><br><span class="line">B = (1, −1, 1, −1)</span><br></pre></td></tr></table></figure>
-
-<p>两码正交：<code>A · B=0</code>；自内积为 4。</p>
-<p>若 A 发 1，B 发 0：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">X = A − B = (0, 2, −2, 0)</span><br></pre></td></tr></table></figure>
-
-<p>接收端匹配：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(X · A) / 4 = +1 → A 发送数据 1</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(X · B) / 4 = −1 → B 发送数据 0</span><br></pre></td></tr></table></figure>
-
-<p>**理解模型：**用 A 的码匹配，自身贡献保留，其他正交码贡献抵消。码仅仅不同不够，还需要适当相关性。</p>
+<p>这也解释了为什么以太网的连线长度会受到限制，以及为什么帧不能无限短</p>
+<h3 id="3-7-以太网的-MAC-层"><a href="#3-7-以太网的-MAC-层" class="headerlink" title="3.7 以太网的 MAC 层"></a><strong>3.7 以太网的 MAC 层</strong></h3><p><strong>MAC 地址标识的是网络接口，而不是整个计算机。</strong></p>
+<h4 id="3-7-1-MAC-地址结构"><a href="#3-7-1-MAC-地址结构" class="headerlink" title="3.7.1 MAC 地址结构"></a>3.7.1 <strong>MAC 地址结构</strong></h4><p><img src="/../../images/CNW3.png"></p>
 <ul>
-<li>内积：对应位置相乘，再求和；规范化内积再除以 <code>m</code>。</li>
-<li>判决：理想等幅模型下，<code>+1</code> 为数据 1，<code>-1</code> 为数据 0，0 为无相应贡献。</li>
-<li>码片速率为 <code>m</code> 倍数据比特率；扩展的是信号表示，不是应用信息量。</li>
-<li>精确分离依赖同步等条件；实际需考虑功率差、多径和噪声，不能说任何条件下互不干扰。</li>
+<li>MAC 地址中的两个特殊标志位，位于 MAC 地址第一个字节的最低两个有效位表示全球地址和本地地址，MAC 地址并不一定永远由厂商固定决定，也可以由软件进行本地配置</li>
 </ul>
-<h3 id="2-6-数字传输系统【了解】"><a href="#2-6-数字传输系统【了解】" class="headerlink" title="2.6 数字传输系统【了解】"></a>2.6 数字传输系统【了解】</h3><blockquote>
-<p>对应教材 2.5 节。</p>
-</blockquote>
+<h4 id="3-7-2-MAC地址的三种类型"><a href="#3-7-2-MAC地址的三种类型" class="headerlink" title="3.7.2 MAC地址的三种类型"></a>3.7.2 MAC地址的三种类型</h4><ol>
+<li>单播地址：一对一</li>
+<li>广播地址：<strong>ARP 协议在不知道目标 IP 对应的 MAC 地址时，可以发送广播请求</strong><br><strong>FF-FF-FF-FF-FF-FF</strong></li>
+<li>多播地址</li>
+</ol>
+<p><strong>混杂模式</strong></p>
+<p>正常情况下如果目的地址不是自己的地址，也不是自己需要接收的广播或多播地址，通常就会丢弃，混杂模式下，<strong>网卡会将接收到的各种数据帧交给上层处理，而不只是接收目的 MAC 地址匹配自身的帧</strong>，例如wireshark流量分析</p>
+<h4 id="3-7-3-以太网-MAC-帧的格式"><a href="#3-7-3-以太网-MAC-帧的格式" class="headerlink" title="3.7.3 以太网 MAC 帧的格式"></a>3.7.3 以太网 MAC 帧的格式</h4><p><img src="/../../images/CNW4.png"></p>
+<p><strong>类型字段</strong>：<strong>标识数据字段中封装的上层协议类型</strong></p>
+<p><strong>DIX Ethernet V2 和 IEEE 802.3</strong>区别</p>
+<p>DIX第三个字段使用类型字段指明上层协议类型，<strong>直接指明类型字段</strong></p>
+<p>IEEE第三个字段是长度字段，表示数据字段长度，后续通过LLC等信息识别上层协议，<strong>借助LLC子层等相关信息识别协议</strong></p>
+<h3 id="3-8-扩展的以太网"><a href="#3-8-扩展的以太网" class="headerlink" title="3.8 扩展的以太网"></a>3.8 扩展的以太网</h3><h4 id="3-8-1-物理层的扩展"><a href="#3-8-1-物理层的扩展" class="headerlink" title="3.8.1 物理层的扩展"></a>3.8.1 物理层的扩展</h4><ol>
+<li>使用中继器</li>
+</ol>
+<p><strong>中继器</strong>：中继器工作在物理层，因为它只处理物理信号，不理解数据链路层的帧结构</p>
+<p><strong>中继器连接的两个网段属于同一个网络</strong>，因为中继器只负责信号再生，不会解析数据帧，也不会进行网络层寻址，<strong>中继器不能隔离碰撞域</strong></p>
+<ol start="2">
+<li>使用光纤</li>
+</ol>
+<p>需要使用两端的光线调制解调器实现光电信号的转换</p>
+<p>光纤链路虽然改变了物理传输介质，但并没有因此自动隔离两个网段的碰撞域</p>
+<p><strong>物理层扩展只能扩大网络的物理覆盖范围，不能真正实现不同网络之间的逻辑隔离。</strong></p>
+<h4 id="3-8-2-数据链路层扩展以太网"><a href="#3-8-2-数据链路层扩展以太网" class="headerlink" title="3.8.2 数据链路层扩展以太网"></a>3.8.2 数据链路层扩展以太网</h4><p>能够真正理解以太网帧，并根据目的 MAC 地址决定数据应该发送到哪里</p>
+<p>核心设备：</p>
 <ul>
-<li>**再生思想：**正确判决后重新生成数字信号，减少噪声、失真沿途累积；误判不会自动被修复。</li>
-<li>模拟业务可经采样、量化、编码转为数字数据，再利用统一传输设施。</li>
-<li>**SONET、SDH：**组织数字传输的标准体系，规定同步、速率等级和帧结构，便于复用、互通与管理。</li>
+<li>网桥（Bridge）<br><strong>网桥能够识别 MAC 帧，并根据 MAC 地址决定是否转发数据帧</strong></li>
+<li>以太网交换机（Ethernet Switch）<br><strong>以太网交换机本质上是一个多端口网桥</strong></li>
 </ul>
-<table>
-<thead>
-<tr>
-<th>等级</th>
-<th align="right">线路速率</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>SONET STS-1 &#x2F; OC-1</td>
-<td align="right">51.84 Mbit&#x2F;s</td>
-</tr>
-<tr>
-<td>SDH STM-1</td>
-<td align="right">155.52 Mbit&#x2F;s</td>
-</tr>
-<tr>
-<td>SDH STM-4</td>
-<td align="right">622.08 Mbit&#x2F;s</td>
-</tr>
-</tbody></table>
-<p>线路速率包括系统开销，不全是用户有效数据率。</p>
-<h3 id="2-7-宽带接入【重点理解，名称识记】"><a href="#2-7-宽带接入【重点理解，名称识记】" class="headerlink" title="2.7 宽带接入【重点理解，名称识记】"></a>2.7 宽带接入【重点理解，名称识记】</h3><blockquote>
-<p>对应教材 2.6 节。</p>
-</blockquote>
-<p>**接入网解决用户如何连接 ISP。**电脑到家庭 Wi-Fi 的连接，与家庭到 ISP 的接入是不同部分。</p>
-<table>
-<thead>
-<tr>
-<th>技术</th>
-<th>利用什么设施</th>
-<th>原理与限制</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>ADSL</td>
-<td>电话用户铜线</td>
-<td>电话与数据分配不同频率资源；DMT 使用多个子信道；上&#x2F;下行非对称，速率受距离与线路质量影响</td>
-</tr>
-<tr>
-<td>HFC</td>
-<td>光纤与同轴混合网络</td>
-<td>较远段使用光纤，近用户段用同轴；相应接入段由多个用户共享</td>
-</tr>
-<tr>
-<td>FTTx</td>
-<td>光纤延伸到不同位置</td>
-<td>H&#x3D;家庭，B&#x3D;建筑物，C&#x3D;路边；终止位置决定剩余连接方式</td>
-</tr>
-</tbody></table>
-<p>ADSL 的某段用户铜线专用，不等于端到端网络不共享。FTTH 也不等于每户独占全程光纤容量。</p>
-<h4 id="PON：把光纤与复用组合起来"><a href="#PON：把光纤与复用组合起来" class="headerlink" title="PON：把光纤与复用组合起来"></a>PON：把光纤与复用组合起来</h4><ul>
-<li>**OLT：**运营商侧光线路终端。</li>
-<li>**ODN：**光配线网络，包含光纤、分光器等。</li>
-<li>**ONU：**用户侧光网络单元。</li>
-<li>**无源：**中间配线部分不依赖有源供电设备；两端设备仍需电源。</li>
-</ul>
-<p>典型共享 PON：</p>
-<table>
-<thead>
-<tr>
-<th>方向</th>
-<th>组织方式</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>下行</td>
-<td>OLT 数据经分光器送向多个 ONU，按标识等规则处理归属</td>
-</tr>
-<tr>
-<td>上行</td>
-<td>ONU 共享路径，OLT 安排发送时段，避免随意同时发送造成冲突</td>
-</tr>
-<tr>
-<td>双向分离</td>
-<td>可使用不同波长分离上、下行</td>
-</tr>
-</tbody></table>
-<p>**理解模型：**PON 将光传送、分光、标识和时间调度组合起来。接入光纤只是获得连接，不意味着随时独占共享资源。</p>
-<h2 id="公式索引与计算检查"><a href="#公式索引与计算检查" class="headerlink" title="公式索引与计算检查"></a>公式索引与计算检查</h2><table>
-<thead>
-<tr>
-<th>用途</th>
-<th>公式</th>
-<th>最容易遗漏的条件</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>发送时延</td>
-<td><code>L/R</code></td>
-<td><code>L</code> 用 bit，<code>R</code> 用 bit&#x2F;s</td>
-</tr>
-<tr>
-<td>传播时延</td>
-<td><code>d/v</code></td>
-<td>距离与速度单位一致</td>
-</tr>
-<tr>
-<td>单链路收齐时间</td>
-<td><code>L/R+d/v</code></td>
-<td>忽略处理、排队等</td>
-</tr>
-<tr>
-<td>等长分组流水线</td>
-<td><code>(h + n − 1) × L / (n × R)</code></td>
-<td>等速链路、等长分组、无其他开销</td>
-</tr>
-<tr>
-<td>链路时延带宽积</td>
-<td><code>Bt_p</code></td>
-<td>单程传播时间；结果为 bit</td>
-</tr>
-<tr>
-<td>停止等待有效速率</td>
-<td><code>L/(t_s+T_w)</code></td>
-<td><code>T_w</code> 明确为发完后的等待时间</td>
-</tr>
-<tr>
-<td>停止等待利用率</td>
-<td><code>t_s/(t_s+T_w)</code></td>
-<td>不等于吞吐量本身</td>
-</tr>
-<tr>
-<td>码元与比特率</td>
-<td><code>R_b = R_s × log₂(M)</code></td>
-<td>直接映射，不含额外编码冗余</td>
-</tr>
-<tr>
-<td>奈氏最高码元速率</td>
-<td><code>2W</code></td>
-<td>理想低通、无码间串扰模型</td>
-</tr>
-<tr>
-<td>奈氏比特率上界</td>
-<td><code>2 × W × log₂(M)</code></td>
-<td>状态数与模型条件</td>
-</tr>
-<tr>
-<td>香农容量</td>
-<td><code>W × log₂(1 + S/N)</code></td>
-<td><code>W</code> 为 Hz，<code>S/N</code> 为功率比</td>
-</tr>
-<tr>
-<td>分贝换成功率比</td>
-<td><code>S/N = 10^(γ_dB / 10)</code></td>
-<td>先转换，再代入香农公式</td>
-</tr>
-<tr>
-<td>CDMA 规范化内积</td>
-<td><code>Σ(X_i × A_i) / m</code></td>
-<td>按对应位置相乘；对齐与模型假设</td>
-</tr>
-</tbody></table>
-<p><strong>单位检查：</strong></p>
+<p>特点：</p>
+<ol>
+<li><strong>每个端口都是一个独立的碰撞域</strong>，交换机能够隔离碰撞域</li>
+<li><strong>交换机可以实现全双工通信</strong></li>
+<li><strong>交换机可以同时进行多对通信</strong><br>假设有一台具有10个端口的交换机，每个端口的传输速率为10 Mb&#x2F;s，在集线器环境下，10台计算机共享10 Mb&#x2F;s的带宽，而交换机环境下，每台计算机都可以获得独立的10 Mb&#x2F;s链路，减缓总能力可到达100Mb&#x2F;s</li>
+<li><strong>交换机采用存储转发方式</strong><br>存储转发：有转发延时，但能发现错误帧<br>直通交换：延时小，但是错误帧也会转发</li>
+</ol>
+<h6 id="以太网的自学习功能"><a href="#以太网的自学习功能" class="headerlink" title="以太网的自学习功能"></a><strong>以太网的自学习功能</strong></h6><p>通过交换表，<strong>记录每次源MAC地址是谁发的</strong>，把地址和对应计算机端口联系起来，表是由交换机自动学习建立的</p>
+<p>例子：</p>
+<p>A发送数据帧包含</p>
 <ul>
-<li><code>1 B=8 bit</code>；<code>1 ms=10^(-3) s</code>；<code>1 km=10^3 m</code>。</li>
-<li>数据率中的 k、M、G 通常按 <code>10^3、10^6、10^9</code> 换算。</li>
-<li>文件大小要看约定；教材部分题目按 <code>2^(20)</code> 字节计算“MB”，不要不加判断地套用。</li>
-<li><code>log₂(4)=2</code>，<code>log₂(8)=3</code>，<code>log₂(16)=4</code>，<code>log₂(32)=5</code>，<code>log₂(64)=6</code>。</li>
+<li>源MAC地址</li>
+<li>目的MAC地址</li>
 </ul>
-<h2 id="本次学习的重点纠错"><a href="#本次学习的重点纠错" class="headerlink" title="本次学习的重点纠错"></a>本次学习的重点纠错</h2><table>
+<p>交换机把源MAC地址和A端口对应，<strong>交换机是通过源 MAC 地址学习设备位置的，而不是通过目的 MAC 地址学习</strong></p>
+<p>在查询目的地址，如果不在表中就进行泛洪（将这个帧转发到除接收端口之外的其他端口），等到B回复A的时候，交换机再记录下B的MAC地址</p>
+<p><strong>交换机使用 CAM（Content Addressable Memory），即内容寻址存储器</strong></p>
+<p><strong>给定内容，直接查找与之匹配的存储项</strong>，可以用于快速查找交换表</p>
+<p>假设 A 向局域网发送一个广播帧。</p>
+<p>交换机1收到广播帧后：</p>
+<ul>
+<li>从连接交换机2的端口转发。</li>
+<li>从其他需要转发的端口转发。</li>
+</ul>
+<p>交换机2收到之后，也会将广播帧转发到其他端口。</p>
+<p>由于两台交换机之间存在环路，广播帧可能再次回到交换机1。</p>
+<p>交换机1又会继续转发。</p>
+<p><strong>网络环路问题：使用STP（生成树协议）在逻辑上解决环的生成，使整个交换网络形成一棵无环路的树。</strong></p>
+<h4 id="3-8-3-虚拟局域网-VLAN"><a href="#3-8-3-虚拟局域网-VLAN" class="headerlink" title="3.8.3 虚拟局域网 VLAN"></a>3.8.3 虚拟局域网 VLAN</h4><p>即使交换机可以根据 MAC 地址定向转发单播帧，遇到广播帧时，它仍然需要向同一个广播域中的其他端口转发，我们还希望不同部门之间保持一定程度的网络隔离。由于物理上建立成本和管理不方便，于是提出VLAN</p>
+<p><strong>VLAN 是由局域网网段构成的、与物理位置无关的逻辑组。每一个 VLAN 都是一个独立的广播域。</strong></p>
+<p><strong>VLAN 可以在同一套物理网络设备上，划分出多个逻辑局域网</strong></p>
+<h6 id="交换机如何区分不同-VLAN？"><a href="#交换机如何区分不同-VLAN？" class="headerlink" title="交换机如何区分不同 VLAN？"></a><strong>交换机如何区分不同 VLAN？</strong></h6><p>假设两台交换机之间只有一根网线，但这根网线需要同时传输 VLAN 10、VLAN 20、VLAN 30 的数据，交换机收到帧后，如何知道它属于哪个 VLAN？</p>
+<p><strong>在以太网帧中添加 VLAN 标签。</strong></p>
+<p><img src="/../../images/CNW5.png"></p>
+<p>因此，传统最大长度为1518字节的以太网 MAC 帧，添加标签后，最大长度变<code>1518 + 4</code></p>
+<p>VLAN标签具体字段 &#x3D; TPID（2字节 标识802.1Q 标签） + TCI（2字节</p>
+<p>包含优先级等控制信息和 VLAN ID）</p>
+<p><strong>VLAN ID 不是 MAC 地址，它只是用来标识帧属于哪个逻辑局域网</strong></p>
+<h6 id="Access-和-Trunk：交换机端口如何工作？"><a href="#Access-和-Trunk：交换机端口如何工作？" class="headerlink" title="Access 和 Trunk：交换机端口如何工作？"></a><strong>Access 和 Trunk：交换机端口如何工作？</strong></h6><p>Access 端口通常用于连接终端设备，交换机收到帧之后，根据端口配置判断所属VLAN，向普通终端设备发送时，Access 端口通常发送不带 VLAN 标签的以太网帧</p>
+<p>Trunk 端口通常用于连接交换机，<strong>允许多个 VLAN 的数据帧共用一条物理链路传输</strong></p>
+<p><img src="/../../images/CNW6.png"></p>
+<p>A-&gt;C:<strong>同一个 VLAN 可以跨越多台交换机。</strong></p>
+<ol>
+<li>A 将普通以太网帧发送给 S1。</li>
+<li>S1 根据接入端口判断它属于 VLAN 10。</li>
+<li>S1 通过 Trunk 发送时，在帧中携带 VLAN 10 标签。</li>
+<li>S2 收到帧，根据 VLAN 标签判断它属于 VLAN 10。</li>
+<li>S2 将该帧转发到 C 对应的 Access 端口，通常移除标签后交给 C。</li>
+</ol>
+<p>A-&gt;D:这时就不能像同 VLAN 通信那样，单纯依靠普通二层交换机进行转发，因为 VLAN 10 和 VLAN 20 是两个独立的广播域，普通二层交换机不会直接在不同 VLAN 之间转发帧，如果希望它们通信，就需要引入网络层转发设备，这种方式叫做<strong>VLAN 间路由（Inter-VLAN Routing）。</strong></p>
+<ul>
+<li><strong>总结：集线器不能隔离碰撞域、交换机能够隔离碰撞域、VLAN可以划分广播域</strong></li>
+</ul>
+<h3 id="3-9-高速以太网"><a href="#3-9-高速以太网" class="headerlink" title="3.9 高速以太网"></a>3.9 高速以太网</h3><p><img src="/../../images/CNW7.png"></p>
+<h4 id="3-9-1-100BASE-T-以太网"><a href="#3-9-1-100BASE-T-以太网" class="headerlink" title="3.9.1 100BASE-T 以太网"></a>3.9.1 100BASE-T 以太网</h4><p>100BASE-T 又称快速以太网（Fast Ethernet） </p>
+<p><strong>快速以太网尽可能保持与传统以太网的兼容性</strong></p>
+<p>具体来说：</p>
+<ul>
+<li>仍然采用以太网 MAC 帧格式。</li>
+<li>保留原来的 MAC 地址结构。</li>
+<li>保留 CSMA&#x2F;CD 协议的半双工工作方式。</li>
+<li>全双工方式下不需要 CSMA&#x2F;CD。</li>
+</ul>
+<p>速率提高10倍，发送相同大小的帧所需要的时间缩短为原来的十分之一，如果仍然使用 CSMA&#x2F;CD，就必须保证碰撞能够在发送结束前被检测到，因此，提高传输速率的同时，也需要考虑传播距离和碰撞检测时间之间的关系，因此受传输距离限制</p>
+<p>不过在实际交换式全双工以太网中，不再依赖 CSMA&#x2F;CD，因此不受这一碰撞检测条件的限制</p>
+<h4 id="3-9-2-吉比特以太网"><a href="#3-9-2-吉比特以太网" class="headerlink" title="3.9.2  吉比特以太网"></a>3.9.2  吉比特以太网</h4><p>每秒可以传输10亿比特 1Gb&#x2F;s</p>
+<p>四个主要特点：</p>
+<ol>
+<li>允许全双工和半双工两种工作方式。</li>
+<li>使用 IEEE 802.3 标准规定的帧格式。</li>
+<li>半双工方式使用 CSMA&#x2F;CD，全双工方式不使用 CSMA&#x2F;CD。</li>
+<li>在全双工方式下，可以使用交换机实现高速通信。</li>
+</ol>
+<p>速率更快所以争用期会大大减少，在帧后添加载波延伸比特，使发送过程持续足够长的时间，载波延伸以达到碰撞检测的功能</p>
+<p><strong>分组突发</strong>：每个短帧都必须进行载波延伸，会产生很多额外开销，第一个短帧使用载波延伸满足最小占用时间要求，之后可以连续发送多个短帧，而不必为每一个短帧都单独进行完整的载波延伸。</p>
+<h4 id="3-9-3-10吉比特以太网及更高速的以太网"><a href="#3-9-3-10吉比特以太网及更高速的以太网" class="headerlink" title="3.9.3 10吉比特以太网及更高速的以太网"></a>3.9.3 10吉比特以太网及更高速的以太网</h4><p>主要特点：</p>
+<ol>
+<li>与传统以太网使用相同的 MAC 帧格式。</li>
+<li>只支持全双工通信。</li>
+<li>不再使用 CSMA&#x2F;CD 协议。</li>
+<li>主要通过光纤或高速铜缆传输。</li>
+</ol>
+<p><strong>10吉比特以太网不再支持半双工，也就不再需要 CSMA&#x2F;CD。</strong></p>
+<h4 id="3-9-4-使用以太网进行宽带接入"><a href="#3-9-4-使用以太网进行宽带接入" class="headerlink" title="3.9.4 使用以太网进行宽带接入"></a>3.9.4 使用以太网进行宽带接入</h4><h5 id="FTTB：光纤到楼"><a href="#FTTB：光纤到楼" class="headerlink" title="FTTB：光纤到楼"></a><strong>FTTB：光纤到楼</strong></h5><p>理解这个过程：</p>
+<ol>
+<li>运营商通过光纤将网络接入大楼。</li>
+<li>大楼内部通过 ONU 等设备完成光电转换和网络接入。</li>
+<li>再通过以太网交换机将网络分发给各个用户。</li>
+<li>用户通过网线连接到交换机提供的网络接口。</li>
+</ol>
+<h5 id="FTTH：光纤到户"><a href="#FTTH：光纤到户" class="headerlink" title="FTTH：光纤到户"></a><strong>FTTH：光纤到户</strong></h5><table>
 <thead>
 <tr>
-<th>容易混淆的说法</th>
-<th>正确判断</th>
+<th>比较</th>
+<th>FTTB</th>
+<th>FTTH</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>同一局域网通信必须经过路由器</td>
-<td>不一定；可由交换机、接入点等支持</td>
+<td>光纤到达位置</td>
+<td>大楼</td>
+<td>用户家庭</td>
 </tr>
 <tr>
-<td>Wi-Fi 换有线主要是网络层改变</td>
-<td>媒体与链路技术主要涉及物理层、链路层；IP 配置也可能随环境改变</td>
+<td>用户最后一段接入</td>
+<td>通常使用双绞线</td>
+<td>使用光纤</td>
 </tr>
 <tr>
-<td>帧如何交付属于物理层</td>
-<td>帧级组织与交付主要是链路层；其比特通过信号传送属于物理层</td>
-</tr>
-<tr>
-<td>分组排队意味着整个路由器停了</td>
-<td>是相关分组等待，其他处理和接口可继续工作</td>
-</tr>
-<tr>
-<td>丢包就是应用数据永久损失</td>
-<td>可靠协议可能重传，但有时间和流量代价</td>
-</tr>
-<tr>
-<td>带宽翻倍，时延必然减半</td>
-<td>仅直接缩短发送时延；传播、处理、排队要分别分析</td>
-</tr>
-<tr>
-<td>提速后停止等待利用率会略增</td>
-<td>同样数据、等待不变时，利用率下降，有效速率可略增</td>
-</tr>
-<tr>
-<td>差分曼彻斯特中心跳变能判断 0&#x2F;1</td>
-<td>中心总跳变；本教材规定开始有跳变为 0，无跳变为 1</td>
-</tr>
-<tr>
-<td><code>log₂(64)=64</code></td>
-<td>应为 6，因为 <code>2^6=64</code></td>
-</tr>
-<tr>
-<td><code>W=4000</code>、<code>S/N=63</code>，香农容量 64k</td>
-<td>应为 <code>4000 × 6=24</code> kbit&#x2F;s</td>
-</tr>
-<tr>
-<td>状态数增大就能无限提速</td>
-<td>更难可靠区分，仍受噪声和容量限制</td>
-</tr>
-<tr>
-<td>单模光纤只能传一路数据</td>
-<td>“模”是空间传播模式，仍可通过波分等方式承载多路</td>
-</tr>
-<tr>
-<td>光纤到户意味着独占全部容量</td>
-<td>典型 PON 仍共享资源并进行调度</td>
+<td>光网络终端</td>
+<td>通常位于楼内</td>
+<td>通常位于用户家中</td>
 </tr>
 </tbody></table>
-<h2 id="快速自检"><a href="#快速自检" class="headerlink" title="快速自检"></a>快速自检</h2><p>复习时先遮住答案，尝试用一句话解释。</p>
-<table>
-<thead>
-<tr>
-<th>问题</th>
-<th>答案要点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>为什么分组交换能缩短整份报文的传送时间？</td>
-<td>小分组使后续链路更早启动，形成流水线</td>
-</tr>
-<tr>
-<td>2000 B、8 Mbit&#x2F;s、600 km、传播速度 <code>2 × 10^8</code> m&#x2F;s，单链路收齐多久？</td>
-<td>发送 2 ms + 传播 3 ms &#x3D; 5 ms</td>
-</tr>
-<tr>
-<td>上题发送速率改为 80 Mbit&#x2F;s 呢？</td>
-<td>0.2 ms + 3 ms &#x3D; 3.2 ms</td>
-</tr>
-<tr>
-<td>20 Mbit&#x2F;s、传播 10 ms，时延带宽积？</td>
-<td><code>2 × 10^5</code> bit，连续满速发送的单程在途量</td>
-</tr>
-<tr>
-<td>1200 Baud、8 种状态，比特率？</td>
-<td>3600 bit&#x2F;s</td>
-</tr>
-<tr>
-<td>差分曼彻斯特开始无跳变、中心有跳变？</td>
-<td>按本教材规则为数据 1</td>
-</tr>
-<tr>
-<td>4000 Hz、4 种状态，奈氏上界？</td>
-<td>8000 Baud、16000 bit&#x2F;s</td>
-</tr>
-<tr>
-<td>4000 Hz、功率比 63，香农容量？</td>
-<td>24000 bit&#x2F;s；状态数改为 16 后香农限制更严格</td>
-</tr>
-<tr>
-<td>统计时分为什么要标识？</td>
-<td>固定时隙归属不再成立，必须说明数据属于谁</td>
-</tr>
-<tr>
-<td>CDMA 中两码正交有什么作用？</td>
-<td>匹配目标码时，其他码的理想贡献抵消</td>
-</tr>
-<tr>
-<td>下载慢一定是家中线路问题吗？</td>
-<td>还可能是服务器、沿途瓶颈、共享竞争、拥塞或协议等待</td>
-</tr>
-</tbody></table>
-<h2 id="资料说明"><a href="#资料说明" class="headerlink" title="资料说明"></a>资料说明</h2><ul>
-<li>主要依据：上传教材第 1 章《概述》、第 2 章《物理层》（书内页码 1—69），结合本次讲解与纠错。</li>
-<li>本笔记将容量、媒体等主题单独编号，<strong>小节编号不完全对应教材</strong>；相关位置已注明。</li>
-<li>奈氏脉冲理解补充：<a target="_blank" rel="noopener" href="https://ocw.mit.edu/courses/6-450-principles-of-digital-communications-i-fall-2006/5f9666b5e49cd75306f0c6006f101e75_skW0oXoAU0M.pdf">MIT 通信课程：无码间串扰与理想奈氏脉冲</a>。</li>
-<li>本笔记中的数值示例均采用所注明的简化条件；实际网络性能还需要结合具体系统分析。</li>
+<h5 id="PPPoE"><a href="#PPPoE" class="headerlink" title="PPPoE"></a>PPPoE</h5><p>用户计算机-&gt;以太网-&gt;PPPoE-&gt;PPP-&gt;运营商网络</p>
+<p>PPPoE 将 PPP 帧封装在以太网帧中，使用户能够利用以太网接入方式完成类似传统 PPP 拨号的认证和连接管理</p>
+<h2 id="4-网络层"><a href="#4-网络层" class="headerlink" title="4. 网络层"></a>4. 网络层</h2><h3 id="4-1-网络层提供的两种服务"><a href="#4-1-网络层提供的两种服务" class="headerlink" title="4.1 网络层提供的两种服务"></a>4.1 网络层提供的两种服务</h3><p>网络层向上提供服务，运输层使用这些服务完成主机之间的数据通信</p>
+<ol>
+<li>面向连接的虚电路服务（Virtual Circuit）。</li>
+<li>无连接的数据报服务（Datagram）。</li>
+</ol>
+<h4 id="4-1-1-虚电路服务"><a href="#4-1-1-虚电路服务" class="headerlink" title="4.1.1 虚电路服务"></a>4.1.1 虚电路服务</h4><p><strong>在真正传输数据之前，先建立一条逻辑上的通信路径，然后沿着这条路径传输数据</strong></p>
+<p>A在网络1，B在网络4，中间经过路由器1，2，3</p>
+<ol>
+<li><p><strong>建立连接</strong><br>A 想与 B 通信，首先向网络发送建立连接的请求，网络选择一条路径 A-&gt;1-&gt;2-&gt;3-&gt;B<br>沿途的路由器需要建立相应的虚电路状态信息例如R1</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">入接口：A侧接口</span><br><span class="line">虚电路号：10</span><br><span class="line">出接口：R2侧接口</span><br><span class="line">下一段虚电路号：25</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p><strong>数据传输</strong><br>连接建立之后，A 就可以发送数据了，每个分组不需要每次都重新决定一条完整的路径，<strong>而是根据虚电路标识找到对应的转发状态</strong></p>
+</li>
+<li><p><strong>释放连接</strong><br>数据传输完成后，A 通知网络释放虚电路，沿途路由器删除相应的连接状态。</p>
+</li>
+</ol>
+<p><strong>特点</strong>：</p>
+<p><strong>虚电路并不意味着独占物理链路</strong>，多个虚电路仍然可以共享同一条物理传输线路</p>
+<h4 id="4-1-2-无线连接的数据服务"><a href="#4-1-2-无线连接的数据服务" class="headerlink" title="4.1.2 无线连接的数据服务"></a>4.1.2 无线连接的数据服务</h4><p><strong>每一个分组独立发送，每个路由器根据分组中的目的地址，独立决定下一步应该往哪里转发</strong></p>
+<p>A 想向 B 发送数据，假设 A 将数据拆成三个分组：1，2，3，这三个分组都<strong>包含目的主机 B 的 IP 地址</strong>，但它们可以分别选择不同的传输路径</p>
+<p>路由器收到分组后：</p>
+<ol>
+<li>读取目的 IP 地址。</li>
+<li>查询路由转发表。</li>
+<li>找到下一跳。</li>
+<li>转发给下一台路由器。</li>
+</ol>
+<p>不需要提前建立一条专门的虚电路。</p>
+<p><strong>不保证数据按照发送顺序到达</strong></p>
+<h4 id="为什么互联网最终采用数据报服务？"><a href="#为什么互联网最终采用数据报服务？" class="headerlink" title="为什么互联网最终采用数据报服务？"></a><strong>为什么互联网最终采用数据报服务？</strong></h4><ol>
+<li><strong>网络核心更加简单</strong><br>减少网络状态管理的负担，不需要每次通信都建立虚电路</li>
+<li><strong>更加灵活</strong><br>虚电路中途可能无法继续使用</li>
+<li><strong>可靠性由端系统负责</strong><br>网络层提供尽可能简单的基本传输服务，复杂的可靠性控制可以由端系统实现</li>
+</ol>
+<hr>
+<h3 id="4-2-网络层的两个层面"><a href="#4-2-网络层的两个层面" class="headerlink" title="4.2 网络层的两个层面"></a><strong>4.2 网络层的两个层面</strong></h3><p>手机 → 路由器A → 路由器B → 路由器C → 服务器</p>
+<ul>
+<li>路由器 A 如何知道应该把数据交给 B？</li>
+<li>谁决定 A、B、C 这条传输路径？</li>
+<li>如果 B 出现故障，谁负责重新计算路径？</li>
+<li>路由器收到数据后，谁负责真正把数据转发出去？</li>
 </ul>
+<h4 id="4-2-1-数据平面：负责转发数据"><a href="#4-2-1-数据平面：负责转发数据" class="headerlink" title="4.2.1 数据平面：负责转发数据"></a>4.2.1 数据平面：负责转发数据</h4><p>数据平面主要负责在一台路由器内部，将分组从输入接口转移到合适的输出接口，<strong>数据平面不负责决定整个互联网应该如何规划路线，它负责按照已有的转发规则执行转发</strong></p>
+<ol>
+<li>读取目的 IP 地址。</li>
+<li>查询自己的转发表。</li>
+<li>找到对应的输出接口。</li>
+<li>将数据报转发到下一跳。</li>
+</ol>
+<h4 id="4-2-2-控制平面：负责路由选择"><a href="#4-2-2-控制平面：负责路由选择" class="headerlink" title="4.2.2 控制平面：负责路由选择"></a>4.2.2 控制平面：负责路由选择</h4><p>控制平面负责网络范围内的路由选择，计算数据应该经过哪些路由器才能到达目的网络，并生成或更新路由信息，<strong>选择下一跳</strong></p>
+<ul>
+<li>路由选择：决定应该走哪条路。</li>
+<li>分组转发：按照确定的规则，把分组送到下一跳</li>
+</ul>
+<h4 id="二者是如何组织起来的？"><a href="#二者是如何组织起来的？" class="headerlink" title="二者是如何组织起来的？"></a>二者是如何组织起来的？</h4><p><strong>传统网络架构</strong>：分布式控制平面</p>
+<p>每一台路由器同时具备数据平面和控制平面，路由器之间交换网络信息，各自计算路由，并更新自己的转发表。</p>
+<p><strong>SDN</strong>：软件定义网络</p>
+<p><strong>将网络的控制平面与数据平面分离</strong></p>
+<ul>
+<li>SDN 控制器负责集中管理网络控制逻辑。</li>
+<li>交换机主要根据控制器下发的流表规则进行转发。</li>
+<li>控制器可以统一调整整个网络的转发策略。</li>
+</ul>
+<p><strong>通过控制器统一下发相应的转发规则</strong></p>
+<hr>
+<h3 id="4-3-网际协议IP"><a href="#4-3-网际协议IP" class="headerlink" title="4.3 网际协议IP"></a>4.3 网际协议IP</h3><p>不同网络可能采用不同的物理传输模式、帧格式和地址体系，比如以太网使用 MAC 地址识别链路上的设备，而不同类型的网络可能采用不同的链路层地址机制。因此，我们需要一种统一的网络层协议。</p>
+<p><strong>在不同类型的物理网络之上，建立统一的逻辑通信体系。</strong></p>
+<p><img src="/../../images/CNW8.png"></p>
+<p>底层网络可以完全不同，但是只要它们都能够承载 IP 数据报，就可以通过路由器实现互连</p>
+<p><strong>虚拟互联网</strong>：虽然底层实际由许多不同类型的物理网络组成，但是通过统一的 IP 协议，从网络层的角度看，它们形成了一个统一的逻辑网络</p>
 
     </div>
 

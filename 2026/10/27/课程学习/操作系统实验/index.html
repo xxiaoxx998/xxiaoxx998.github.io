@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://ducklinger.top/images/oslab3.png">
 <meta property="og:image" content="https://ducklinger.top/images/oslab4.png">
 <meta property="article:published_time" content="2026-10-26T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-11-08T10:45:09.077Z">
+<meta property="article:modified_time" content="2026-11-15T07:54:25.627Z">
 <meta property="article:author" content="Ducklinger">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://ducklinger.top/....%5Cimages%5Coslab1.png">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-11-08 18:45:09" itemprop="dateModified" datetime="2026-11-08T18:45:09+08:00">2026-11-08</time>
+                <time title="修改时间：2026-11-15 15:54:25" itemprop="dateModified" datetime="2026-11-15T15:54:25+08:00">2026-11-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1795,6 +1795,422 @@
 
 <p>如果计数少加了一次，或者并发加减丢失更新，页面可能在父进程仍持有时被误认为已经无人使用，提前进入空闲链表。随后被重新分配、填充或修改，父进程就可能读到不再是 <code>27</code> 的数据。</p>
 <p>所以它重点检查的是<strong>共享页在复杂生命周期中的存活与回收</strong>。锁和引用计数是否正确，会直接影响这个测试。</p>
+<h2 id="OSLab7-锁机制"><a href="#OSLab7-锁机制" class="headerlink" title="OSLab7 -锁机制"></a>OSLab7 -锁机制</h2><h3 id="1-锁竞争"><a href="#1-锁竞争" class="headerlink" title="1. 锁竞争"></a>1. 锁竞争</h3><p>原来的分配器只有一个全局结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">  struct spinlock lock;</span><br><span class="line">  struct run *freelist;</span><br><span class="line">&#125; kmem;</span><br></pre></td></tr></table></figure>
+
+<p><code>freelist</code> 指向空闲物理页链表。申请页面时，从链表头取下一页：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">r = kmem.freelist;</span><br><span class="line"><span class="keyword">if</span>(r)</span><br><span class="line">  kmem.freelist = r-&gt;next;</span><br></pre></td></tr></table></figure>
+
+<p>假设 CPU 0 和 CPU 1 同时执行，都可能读到同一个链表头，于是<strong>同一物理页被分配给两个使用者</strong>。因此，这两步必须放在锁保护的临界区内。</p>
+<p>全局锁保证了正确性，但所有 CPU 分配和释放页面，都要竞争这同一把锁。一个 CPU 正在修改链表时，其他 CPU 只能在 <code>acquire()</code> 内不断循环尝试，产生自旋开销。此次优化的目标就是：<strong>让不同 CPU 平时操作不同链表，减少必须排队的情况。</strong></p>
+<h3 id="2-代码编写"><a href="#2-代码编写" class="headerlink" title="2. 代码编写"></a>2. 代码编写</h3><p>在 <a href="/home/xyz/xv6-lab3/kernel/kalloc.c">kernel&#x2F;kalloc.c</a> 中，核心结构改成：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> NPAGES ((PHYSTOP - KERNBASE) / PGSIZE)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PAGE_IDX(pa) (((uint64)(pa) - KERNBASE) / PGSIZE)</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> refs[NPAGES];</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">spinlock</span> <span class="title">lock</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">freelist</span>;</span></span><br><span class="line">&#125; kmem[NCPU];</span><br></pre></td></tr></table></figure>
+
+<p><code>kmem[0]</code> 保存 CPU 0 的空闲链表和锁，<code>kmem[1]</code> 保存 CPU 1 的，以此类推。<code>NCPU</code> 是内核支持的 CPU 数量上限，实际启动几个 CPU 由 QEMU 参数决定。</p>
+<p><code>refs[]</code> 仍然按<strong>物理页</strong>编号。假设物理页地址是 <code>pa</code>，<code>PAGE_IDX(pa)</code> 就把它转换成数组下标。它与 <code>kmem[]</code> 的下标含义不同：</p>
+<table>
+<thead>
+<tr>
+<th>数据</th>
+<th>按什么编号</th>
+<th>记录什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>kmem[i]</code></td>
+<td>CPU 编号</td>
+<td>CPU <code>i</code> 管理的空闲页</td>
+</tr>
+<tr>
+<td><code>refs[j]</code></td>
+<td>物理页编号</td>
+<td>物理页 <code>j</code> 的引用计数</td>
+</tr>
+</tbody></table>
+<p><strong>页面放在哪个 CPU 的空闲链表中，不代表这个页面永远属于该 CPU。</strong> 其他 CPU 可以窃取它；将来释放时，也可以归入释放操作所在 CPU 的链表。</p>
+<p>另外，空闲链表的节点直接存放在空闲页里：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">run</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">next</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>页面空闲时，其开头用于保存 <code>next</code>；分配出去后，整个页面交给使用者。因此不需要另外申请内存来保存链表节点。</p>
+<ol>
+<li><p><strong>初始化：先初始化所有锁，再把可用页面加入空闲链表。</strong></p>
+<p><code>kinit()</code> 的关键逻辑是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kinit</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; NCPU; i++)</span><br><span class="line">    initlock(&amp;kmem[i].lock, <span class="string">&quot;kmem&quot;</span>);</span><br><span class="line"></span><br><span class="line">  freerange(end, (<span class="type">void</span> *)PHYSTOP);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所有锁都要先初始化，因为后面的页面分配可能访问任意 CPU 的链表。锁名以 <code>&quot;kmem&quot;</code> 命名，也便于识别内存分配器的锁。</p>
+<p><code>freerange()</code> 将内核占用区域之后的物理内存，逐页交给 <code>kfree()</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">p = (<span class="type">char</span> *)PGROUNDUP((uint64)pa_start);</span><br><span class="line"><span class="keyword">for</span>(; p + PGSIZE &lt;= (<span class="type">char</span> *)pa_end; p += PGSIZE) &#123;</span><br><span class="line">  __atomic_store_n(&amp;refs[PAGE_IDX(p)], <span class="number">1</span>, __ATOMIC_SEQ_CST);</span><br><span class="line">  kfree(p);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为什么初始化空闲页时，先把引用计数设为 <code>1</code>？因为 <code>kfree()</code> 的规则是<strong>先减引用计数，减到零才回收页面</strong>。这里人为建立一次初始引用，再调用统一的释放流程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">refs = <span class="number">1</span> → kfree() → refs = <span class="number">0</span> → 加入空闲链表</span><br></pre></td></tr></table></figure>
+
+<p>xv6 启动时由 CPU 0 执行 <code>kinit()</code>，所以这些页面最初通常集中在 CPU 0 的链表中。其他 CPU 后续通过窃取获取页面，不要求启动时平均分配。</p>
+</li>
+<li><p><strong>为什么引用计数需要改成原子操作？</strong></p>
+<p>之前 <code>refs[]</code> 和空闲链表一起由全局 <code>kmem.lock</code> 保护。现在锁拆开了，CPU 0 持有 <code>kmem[0].lock</code>，CPU 1 持有 <code>kmem[1].lock</code>，两者完全可以同时执行。</p>
+<p>但 COW 允许父子进程共享同一物理页，父子进程又可能运行在不同 CPU 上，因此两个 CPU 仍可能同时修改<strong>同一个 <code>refs[j]</code></strong>。每 CPU 的链表锁无法互相排斥这些修改。</p>
+<p>例如某页引用计数为 <code>2</code>，父子进程同时释放。如果使用普通的 <code>refs[j]--</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CPU <span class="number">0</span> 读到 <span class="number">2</span>，准备写入 <span class="number">1</span></span><br><span class="line">CPU <span class="number">1</span> 读到 <span class="number">2</span>，准备写入 <span class="number">1</span></span><br><span class="line">最后结果为 <span class="number">1</span>，但实际上两个引用都已经释放</span><br></pre></td></tr></table></figure>
+
+<p>这会造成页面无法回收。原子减法保证“读旧值、减一、写回”是一次不可分割的操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> old = __atomic_fetch_sub(&amp;refs[idx], <span class="number">1</span>, __ATOMIC_SEQ_CST);</span><br></pre></td></tr></table></figure>
+
+<p>这里返回的是<strong>修改前的值</strong>。两个 CPU 分别会得到 <code>old == 2</code> 和 <code>old == 1</code>，最终计数正确变成零。</p>
+<p>我们使用的几个函数可以这样理解：</p>
+<table>
+<thead>
+<tr>
+<th>写法</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>__atomic_store_n(&amp;refs[i], 1, ...)</code></td>
+<td>原子地把计数设为 <code>1</code></td>
+</tr>
+<tr>
+<td><code>__atomic_fetch_add(&amp;refs[i], 1, ...)</code></td>
+<td>原子加一，返回加之前的值</td>
+</tr>
+<tr>
+<td><code>__atomic_fetch_sub(&amp;refs[i], 1, ...)</code></td>
+<td>原子减一，返回减之前的值</td>
+</tr>
+<tr>
+<td><code>__atomic_load_n(&amp;value, ...)</code></td>
+<td>原子读取</td>
+</tr>
+</tbody></table>
+<p><code>__ATOMIC_SEQ_CST</code> 提供较强的内存顺序保证，让相关原子操作按一致的顺序被观察到。<strong>它不会把整个函数变成原子操作，也不是禁止所有代码重排。</strong> 链表的多步修改仍需要自旋锁保护。</p>
+</li>
+<li><p><strong><code>kfree()</code>：先减少引用，最后一个引用释放时才回收页面。</strong></p>
+<p>现在的关键逻辑是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kfree</span><span class="params">(<span class="type">void</span> *pa)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">r</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(((uint64)pa % PGSIZE) != <span class="number">0</span> ||</span><br><span class="line">     (<span class="type">char</span> *)pa &lt; end ||</span><br><span class="line">     (uint64)pa &gt;= PHYSTOP)</span><br><span class="line">    panic(<span class="string">&quot;kfree&quot;</span>);</span><br><span class="line"></span><br><span class="line">  uint64 idx = PAGE_IDX(pa);</span><br><span class="line">  <span class="type">int</span> old = __atomic_fetch_sub(&amp;refs[idx], <span class="number">1</span>, __ATOMIC_SEQ_CST);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(old &lt; <span class="number">1</span>)</span><br><span class="line">    panic(<span class="string">&quot;kfree: bad reference count&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(old &gt; <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">memset</span>(pa, <span class="number">1</span>, PGSIZE);</span><br><span class="line">  r = (<span class="keyword">struct</span> run *)pa;</span><br><span class="line"></span><br><span class="line">  push_off();</span><br><span class="line">  <span class="type">int</span> id = cpuid();</span><br><span class="line">  acquire(&amp;kmem[id].lock);</span><br><span class="line">  r-&gt;next = kmem[id].freelist;</span><br><span class="line">  kmem[id].freelist = r;</span><br><span class="line">  release(&amp;kmem[id].lock);</span><br><span class="line">  pop_off();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>前面的地址检查保证页面对齐，并且位于允许回收的物理内存范围内。随后根据减法之前的计数决定怎么处理：</p>
+<ul>
+<li><code>old &gt; 1</code>：减完仍有引用，只减少计数，页面继续由其他使用者持有。</li>
+<li><code>old == 1</code>：减完变成零，可以真正回收。</li>
+<li><code>old &lt; 1</code>：说明引用计数已经不合法，可能发生重复释放，直接 <code>panic()</code>。</li>
+</ul>
+<p><code>memset(pa, 1, PGSIZE)</code> 用垃圾值覆盖页面，帮助暴露释放后仍访问旧内存的问题。<strong>必须等引用归零后才能执行，否则会破坏其他进程仍在使用的共享数据。</strong></p>
+<p>最后两条链表操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">r-&gt;next = kmem[id].freelist;</span><br><span class="line">kmem[id].freelist = r;</span><br></pre></td></tr></table></figure>
+
+<p>是标准的头插法：让回收页指向原来的头，再让它成为新头。页面进入的是<strong>当前 CPU</strong> 的链表，并不追踪它最初从哪个 CPU 分配。</p>
+</li>
+<li><p><strong><code>kalloc()</code>：先取本地页面，本地没有再窃取。</strong></p>
+<p>对照我们实现的单页窃取版本：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> *</span><br><span class="line"><span class="title function_">kalloc</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">r</span>;</span></span><br><span class="line"></span><br><span class="line">  push_off();</span><br><span class="line">  <span class="type">int</span> id = cpuid();</span><br><span class="line"></span><br><span class="line">  acquire(&amp;kmem[id].lock);</span><br><span class="line">  r = kmem[id].freelist;</span><br><span class="line">  <span class="keyword">if</span>(r)</span><br><span class="line">    kmem[id].freelist = r-&gt;next;</span><br><span class="line">  release(&amp;kmem[id].lock);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(r == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; NCPU; i++) &#123;</span><br><span class="line">      <span class="keyword">if</span>(i == id)</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">      acquire(&amp;kmem[i].lock);</span><br><span class="line">      r = kmem[i].freelist;</span><br><span class="line">      <span class="keyword">if</span>(r)</span><br><span class="line">        kmem[i].freelist = r-&gt;next;</span><br><span class="line">      release(&amp;kmem[i].lock);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span>(r)</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(r)</span><br><span class="line">    __atomic_store_n(&amp;refs[PAGE_IDX(r)], <span class="number">1</span>, __ATOMIC_SEQ_CST);</span><br><span class="line"></span><br><span class="line">  pop_off();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(r)</span><br><span class="line">    <span class="built_in">memset</span>((<span class="type">char</span> *)r, <span class="number">5</span>, PGSIZE);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (<span class="type">void</span> *)r;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第一段从本 CPU 的链表头摘下一页。其他 CPU 通常操作各自的链表，因此常见路径可以并行运行。</p>
+<p>如果本地链表为空，遍历其他 CPU 的链表，找到页面就摘下一页并停止查找。<strong>本地没有空闲页，不等于整个系统没有空闲页</strong>，这就是必须支持窃取的原因。这里偷到的一页直接返回给调用者，没有先加入本地链表。</p>
+<p>拿到页面后，把引用计数设成 <code>1</code>，表示已经分配给一个使用者。用 <code>5</code> 填充页面，是为了帮助暴露使用者没有初始化内存的问题；需要零页的调用者还会自行清零。没有拿到页面时返回 <code>0</code>，由上层处理分配失败。</p>
+<p>这里有三个关键细节：</p>
+<p><strong>第一，为什么使用 <code>push_off()</code>？</strong> 它关闭当前 CPU 的中断，避免在取得 <code>cpuid()</code> 后，进程因时钟中断被切走，并在另一个 CPU 上继续执行，却还使用旧 CPU 编号。<code>pop_off()</code> 与之配对，恢复之前的中断状态。<code>acquire()</code> 内部也会调用 <code>push_off()</code>，但 xv6 支持嵌套计数，成对调用即可。</p>
+<p><strong>第二，为什么每 CPU 的链表仍然需要锁？</strong> 因为其他 CPU 可以来窃取页面。即使当前 CPU 关了中断，也阻止不了另一个 CPU 访问这条链表。关中断和自旋锁各自解决不同的问题。</p>
+<p><strong>第三，为什么先释放本地锁，再去拿其他锁？</strong> 如果 CPU 0 拿着锁 0 等锁 1，而 CPU 1 拿着锁 1 等锁 0，就会死锁。我们的代码在任意时刻只持有一把空闲链表锁，避免这种循环等待。</p>
+</li>
+<li><p><strong>与上次 COW 实验怎样配合？</strong></p>
+<p>新增共享引用的函数仍然是 <code>kaddref()</code>，只是从全局锁保护改成原子操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">kaddref</span><span class="params">(<span class="type">void</span> *pa)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 idx = PAGE_IDX(pa);</span><br><span class="line">  <span class="type">int</span> old = __atomic_fetch_add(&amp;refs[idx], <span class="number">1</span>, __ATOMIC_SEQ_CST);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(old &lt; <span class="number">1</span>)</span><br><span class="line">    panic(<span class="string">&quot;kaddref: bad reference count&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它增加的是物理页的引用数，不是 CPU 数量。一个 CPU 上的多个进程也可能共享页面。</p>
+<p>与之前 COW 的调用关系如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">fork()</span><br><span class="line">  → uvmcopy() 共享父进程物理页</span><br><span class="line">  → kaddref() 增加引用</span><br><span class="line"></span><br><span class="line">进程写 COW 页</span><br><span class="line">  → vmfault()</span><br><span class="line">  → kalloc() 分配私有页面，引用计数初始化为 <span class="number">1</span></span><br><span class="line">  → 复制数据并修改页表</span><br><span class="line">  → kfree(旧页) 减少旧共享页的引用</span><br><span class="line"></span><br><span class="line">进程退出或取消映射</span><br><span class="line">  → uvmunmap()</span><br><span class="line">  → kfree()</span><br><span class="line">  → 最后一个引用消失时，页面进入当前 CPU 的空闲链表</span><br></pre></td></tr></table></figure>
+
+<p>因此，上次 COW 的“共享、写时复制、引用归零回收”规则继续保留；这次改变的是底层空闲页的组织方式，以及引用计数的并发保护方式。</p>
+<p>之前用于统计空闲内存的 <code>freemem()</code> 也要改成遍历所有 CPU：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; NCPU; i++) &#123;</span><br><span class="line">  acquire(&amp;kmem[i].lock);</span><br><span class="line">  <span class="keyword">for</span>(r = kmem[i].freelist; r; r = r-&gt;next)</span><br><span class="line">    pages++;</span><br><span class="line">  release(&amp;kmem[i].lock);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> pages * PGSIZE;</span><br></pre></td></tr></table></figure>
+
+<p>每条链表都在对应锁的保护下遍历。但这些链表不是同时统计的，因此在其他 CPU 持续分配内存时，它是一个动态统计值，不是整个系统同一瞬间的精确快照。</p>
+</li>
+<li><p><strong>怎样知道锁竞争确实减少了？给自旋锁增加计数。</strong></p>
+<p>在 <a href="/home/xyz/xv6-lab3/kernel/spinlock.h">kernel&#x2F;spinlock.h</a> 中，我们给锁增加：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int n;       // acquire() 调用次数</span><br><span class="line">int nts;     // 尝试获取锁失败的次数</span><br></pre></td></tr></table></figure>
+
+<p>并在 <code>initlock()</code> 中初始化为零。在 <a href="/home/xyz/xv6-lab3/kernel/spinlock.c">kernel&#x2F;spinlock.c</a> 的 <code>acquire()</code> 中：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">__atomic_fetch_add(&amp;lk-&gt;n, <span class="number">1</span>, __ATOMIC_RELAXED);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>(__sync_lock_test_and_set(&amp;lk-&gt;locked, <span class="number">1</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">  __atomic_fetch_add(&amp;lk-&gt;nts, <span class="number">1</span>, __ATOMIC_RELAXED);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>__sync_lock_test_and_set()</code> 原子地把锁设为 <code>1</code>，并返回旧值：</p>
+<ul>
+<li>旧值是 <code>0</code>：原来没有人持锁，当前 CPU 获取成功。</li>
+<li>旧值是 <code>1</code>：其他 CPU 已持锁，当前尝试失败，需要继续循环。</li>
+</ul>
+<p>所以 <code>nts</code> 增加的位置必须在循环体内。它统计的是<strong>失败的抢锁尝试次数</strong>；一次持续的等待可能产生很多次失败尝试。</p>
+<p>这些计数也可能被多个 CPU 同时更新，因此需要原子加法。不过它们只用于观察性能，不负责保护业务数据，所以使用 <code>__ATOMIC_RELAXED</code>：保证计数更新不可分割，不额外要求它约束周围的数据访问顺序。原有锁的同步屏障仍然保留。</p>
+<p><code>statslock()</code> 再读取各把内存锁的计数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> attempts =</span><br><span class="line">  __atomic_load_n(&amp;kmem[i].lock.n, __ATOMIC_RELAXED);</span><br><span class="line"><span class="type">int</span> failures =</span><br><span class="line">  __atomic_load_n(&amp;kmem[i].lock.nts, __ATOMIC_RELAXED);</span><br><span class="line"></span><br><span class="line">total += failures;</span><br></pre></td></tr></table></figure>
+
+<p>最后输出每把锁的数据及 <code>tot= ...</code>。测试在开始和结束分别读取一次，计算差值。<strong>我们补的是内存分配器锁的统计，不是官方完整框架中的所有锁排名。</strong></p>
+</li>
+<li><p><strong>用户程序怎样读到内核里的统计结果？通过设备文件。</strong></p>
+<p>统计的调用链是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">kalloctest 的 ntas()</span><br><span class="line">  → statistics()</span><br><span class="line">  → open(<span class="string">&quot;statistics&quot;</span>)、read()</span><br><span class="line">  → sys_read() → fileread()</span><br><span class="line">  → devsw[STATS].read</span><br><span class="line">  → statsread()</span><br><span class="line">  → statslock() 生成统计文本</span><br></pre></td></tr></table></figure>
+
+<p>注意：<strong><code>statistics()</code> 是用户态辅助函数，不是新增加的系统调用。</strong> 它复用了 <code>open()</code>、<code>read()</code> 和 <code>close()</code>。</p>
+<p>相关修改分别承担这些职责：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>修改及作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="/home/xyz/xv6-lab3/kernel/file.h">kernel&#x2F;file.h</a></td>
+<td>定义设备主编号 <code>STATS</code></td>
+</tr>
+<tr>
+<td><a href="/home/xyz/xv6-lab3/kernel/stats.c">kernel&#x2F;stats.c</a></td>
+<td>实现统计设备的初始化和读取</td>
+</tr>
+<tr>
+<td><a href="/home/xyz/xv6-lab3/kernel/main.c">kernel&#x2F;main.c</a></td>
+<td>启动时调用 <code>statsinit()</code></td>
+</tr>
+<tr>
+<td><a href="/home/xyz/xv6-lab3/user/init.c">user&#x2F;init.c</a></td>
+<td>创建名为 <code>statistics</code> 的设备节点</td>
+</tr>
+<tr>
+<td><a href="/home/xyz/xv6-lab3/user/statistics.c">user&#x2F;statistics.c</a></td>
+<td>打开设备、读取文本、关闭设备</td>
+</tr>
+<tr>
+<td><a href="/home/xyz/xv6-lab3/kernel/sprintf.c">kernel&#x2F;sprintf.c</a></td>
+<td>提供把统计数据格式化到缓冲区的 <code>snprintf()</code></td>
+</tr>
+<tr>
+<td><a href="/home/xyz/xv6-lab3/kernel/defs.h">kernel&#x2F;defs.h</a></td>
+<td>声明新增的内核函数</td>
+</tr>
+</tbody></table>
+<p><code>statsinit()</code> 注册设备读取函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">devsw[STATS].read = statsread;</span><br><span class="line">devsw[STATS].write = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>init</code> 创建的节点则把文件名与主设备号联系起来：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mknod(<span class="string">&quot;statistics&quot;</span>, STATS, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>因此，打开 <code>&quot;statistics&quot;</code> 后执行 <code>read()</code>，文件系统会根据设备号找到 <code>statsread()</code>，而不是去磁盘上读取普通文件内容。</p>
+<p><code>statsread()</code> 维护一份统计文本和读取偏移：首次读取时生成文本，之后按用户要求分段复制出去。我们还让它在这份文本读完后返回 <code>-1</code> 并重置状态，因为拉取的 <code>statistics()</code> 只在 <code>read()</code> 返回负数时退出循环；若这里返回 <code>0</code>，它的读取偏移不会前进，会一直循环。这是<strong>这套测试接口的约定</strong>，普通文件到达末尾通常返回 <code>0</code>。</p>
+<p>之前出现的 <code>undefined reference to snprintf</code>，就是因为声明已经存在，但链接内核时没有加入实现它的目标文件。<code>printf()</code> 把文本输出到终端，<code>snprintf()</code> 把文本写进缓冲区，统计设备需要后者。</p>
+<p><a href="/home/xyz/xv6-lab3/Makefile">Makefile</a> 对应补齐了三件事：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 内核目标文件列表中加入</span><br><span class="line">$K/stats.o</span><br><span class="line">$K/<span class="built_in">sprintf</span>.o</span><br><span class="line"></span><br><span class="line"># 用户公共库中加入</span><br><span class="line">$U/statistics.o</span><br><span class="line"></span><br><span class="line"># UPROGS 中加入</span><br><span class="line">$U/_kalloctest</span><br></pre></td></tr></table></figure>
+
+<p>它们要放在当前构建实际生效的位置。你的构建使用 <code>LAB_UTIL</code>，只放在 <code>LAB_LOCK</code> 条件块里，文件虽然写在 Makefile 中，也不会参与这次构建。</p>
+</li>
+<li><p><strong>为什么还要补 <code>cpupin()</code>？怎样让绑定真正生效？</strong></p>
+<p><code>test4</code> 要让不同进程分别运行在不同 CPU 上，稳定制造并发分配、释放和窃取场景，所以调用 <code>cpupin(i)</code>。这次需要的是一个真正的系统调用，完整入口包括：</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>新增内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="/home/xyz/xv6-lab3/user/user.h">user&#x2F;user.h</a></td>
+<td><code>int cpupin(int);</code></td>
+</tr>
+<tr>
+<td><a href="/home/xyz/xv6-lab3/user/usys.pl">user&#x2F;usys.pl</a></td>
+<td><code>entry(&quot;cpupin&quot;);</code></td>
+</tr>
+<tr>
+<td><a href="/home/xyz/xv6-lab3/kernel/syscall.h">kernel&#x2F;syscall.h</a></td>
+<td><code>#define SYS_cpupin 30</code></td>
+</tr>
+<tr>
+<td><a href="/home/xyz/xv6-lab3/kernel/syscall.c">kernel&#x2F;syscall.c</a></td>
+<td>声明 <code>sys_cpupin</code> 并加入系统调用表</td>
+</tr>
+</tbody></table>
+<p>用户调用 <code>cpupin(2)</code> 后，生成的入口将编号 <code>30</code> 放入 <code>a7</code>，通过 <code>ecall</code> 进入内核，分发到 <a href="/home/xyz/xv6-lab3/kernel/sysproc.c">kernel&#x2F;sysproc.c</a>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_cpupin</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line">  <span class="type">int</span> cpu;</span><br><span class="line"></span><br><span class="line">  argint(<span class="number">0</span>, &amp;cpu);</span><br><span class="line">  <span class="keyword">if</span>(cpu &lt; <span class="number">0</span> || cpu &gt;= NCPU)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">  acquire(&amp;p-&gt;lock);</span><br><span class="line">  p-&gt;pincpu = &amp;cpus[cpu];</span><br><span class="line">  release(&amp;p-&gt;lock);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>argint()</code> 读取参数，随后把目标 CPU 的地址保存到当前进程。为此，<a href="/home/xyz/xv6-lab3/kernel/proc.h">kernel&#x2F;proc.h</a> 的 <code>struct proc</code> 新增：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cpu</span> *<span class="title">pincpu</span>;</span></span><br></pre></td></tr></table></figure>
+
+<p>在 <a href="/home/xyz/xv6-lab3/kernel/proc.c">kernel&#x2F;proc.c</a> 的 <code>allocproc()</code> 中初始化：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p-&gt;pincpu = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>0</code> 表示不绑定；<code>&amp;cpus[0]</code> 才表示绑定 CPU 0。初始化也能防止进程结构体被重复使用时，残留旧的绑定信息。</p>
+<p><strong>仅保存字段还不够，调度器必须执行这个限制。</strong> 所以在 <code>scheduler()</code> 获取进程锁之后，加入：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(p-&gt;pincpu != <span class="number">0</span> &amp;&amp; p-&gt;pincpu != c) &#123;</span><br><span class="line">  release(&amp;p-&gt;lock);</span><br><span class="line">  <span class="keyword">continue</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>c</code> 是正在执行调度器的 CPU。如果进程指定了其他 CPU，就跳过它；否则继续原来的 <code>RUNNABLE</code> 检查和调度流程。读写 <code>pincpu</code> 都持有 <code>p-&gt;lock</code>，保证并发访问的一致性。</p>
+<p>这个实现先记录绑定要求，<strong>从后续调度开始执行限制</strong>，没有在 <code>sys_cpupin()</code> 内主动立即迁移进程。测试使用 CPU 0～3，因此我们用：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make qemu CPUS=<span class="number">4</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="3-测试代码分析"><a href="#3-测试代码分析" class="headerlink" title="3. 测试代码分析"></a>3. 测试代码分析</h3><p><strong><code>test1</code>、<code>test4</code> 主要检查锁竞争；<code>test2</code>、<code>test3</code> 主要检查内存分配和回收的正确性。</strong> 下面摘取关键代码，省略部分打印语句。</p>
+<ol>
+<li><p><strong>先理解两个辅助函数：怎样测竞争，怎样测可用内存。</strong></p>
+<p><code>ntas()</code> 取得内存分配器锁的失败抢锁次数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">statistics(buf, SZ);</span><br><span class="line">c = <span class="built_in">strchr</span>(buf, <span class="string">&#x27;=&#x27;</span>);</span><br><span class="line">n = atoi(c + <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(print)</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>, buf);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> n;</span><br></pre></td></tr></table></figure>
+
+<p><code>statistics()</code> 把统计文本读入 <code>buf</code>，其中包含：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tot= <span class="number">123</span></span><br></pre></td></tr></table></figure>
+
+<p><code>strchr()</code> 找到 <code>=</code>，<code>c + 2</code> 跳过等号和空格，<code>atoi()</code> 把后面的数字转换成整数。参数 <code>print</code> 仅控制是否打印，<strong>不会清零统计值</strong>。</p>
+<p>因此测试这样计算本轮竞争：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">m = ntas(<span class="number">0</span>);     <span class="comment">// 开始前的累计值</span></span><br><span class="line"><span class="comment">// 执行测试</span></span><br><span class="line">n = ntas(<span class="number">1</span>);     <span class="comment">// 结束后的累计值</span></span><br><span class="line"><span class="comment">// n - m 就是测试期间新增的失败抢锁次数</span></span><br></pre></td></tr></table></figure>
+
+<p>这里测的是抢锁失败次数，不是运行时间，也不是调用 <code>kalloc()</code> 的次数。</p>
+<p>另一个辅助函数是 <code>countfree()</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">countfree</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> n = <span class="number">0</span>;</span><br><span class="line">  uint64 sz0 = (uint64)sbrk(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">    <span class="type">char</span> *a = sbrk(PGSIZE);</span><br><span class="line">    <span class="keyword">if</span>(a == SBRK_ERROR)</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    n += <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  sbrk(-((uint64)sbrk(<span class="number">0</span>) - sz0));</span><br><span class="line">  <span class="keyword">return</span> n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它先记录原来的堆末尾 <code>sz0</code>，然后每次申请一页，直到失败，最后释放自己刚才申请的全部内存。因此它的行为是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">记录原堆大小 → 一页一页申请到失败 → 统计成功次数 → 恢复原堆大小</span><br></pre></td></tr></table></figure>
+
+<p>这里普通 <code>sbrk()</code> 走立即分配路径，成功申请会实际消耗物理页。返回值表示当前进程还能申请多少个用户页，并不是机器的物理页总数；内核、页表和其他进程同样占用内存。</p>
+</li>
+<li><p><strong><code>test1</code>：两个进程频繁申请、释放一页，检查普通场景下的锁竞争。</strong></p>
+<p>测试创建两个子进程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> NCHILD 2</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> N1 100000</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; NCHILD; i++) &#123;</span><br><span class="line">  <span class="type">int</span> pid = fork();</span><br><span class="line">  <span class="keyword">if</span>(pid == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// 子进程执行下面的循环</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每个子进程执行十万次：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">a = sbrk(<span class="number">4096</span>);</span><br><span class="line">*(<span class="type">int</span> *)(a + <span class="number">4</span>) = <span class="number">1</span>;</span><br><span class="line">a1 = sbrk(<span class="number">-4096</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(a1 != a + <span class="number">4096</span>) &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;test1: FAIL wrong sbrk\n&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这三步分别是：申请一页、向页面内写入数据、释放这一页。写入操作确认新申请的地址可以实际访问，不过这里没有读回比较，所以它不是完整的数据内容校验。</p>
+<p><strong>为什么检查 <code>a1 == a + 4096</code>？因为 <code>sbrk()</code> 成功时返回修改前的堆末尾。</strong> 假设原堆末尾为 <code>H</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sbrk(<span class="number">4096</span>)：返回 H，堆末尾变成 H + <span class="number">4096</span></span><br><span class="line">sbrk(<span class="number">-4096</span>)：返回 H + <span class="number">4096</span>，堆末尾恢复成 H</span><br></pre></td></tr></table></figure>
+
+<p>所以 <code>a == H</code>，<code>a1</code> 应当等于 <code>a + 4096</code>。这个判断检查的是堆调整结果，并不要求下一次一定得到同一个物理页。</p>
+<p>内核里会反复经过：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">申请：sbrk → growproc → uvmalloc → kalloc</span><br><span class="line">释放：sbrk → growproc → uvmdealloc → uvmunmap → kfree</span><br></pre></td></tr></table></figure>
+
+<p>如果仍是一条全局链表，两个进程运行在不同 CPU 时，会频繁争抢同一把锁。改成每 CPU 链表后，释放的页进入当前 CPU 链表，下一次申请通常又能从本地取得，因此多数操作可以互不干扰。</p>
+<p>父进程等待两个子进程正常结束，然后判断：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">n = ntas(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">if</span>(n - m &lt; <span class="number">10</span>)</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;test1 OK\n&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>通过条件是新增失败抢锁次数小于 10，并非必须严格等于零。</strong> 允许少量竞争，是因为初始化、窃取和进程调度等过程仍可能发生共享访问。</p>
+</li>
+<li><p><strong><code>test2</code>：把内存压到接近用完，反复检查页面是否还能完整取出和归还。</strong></p>
+<p>首先测一次可申请页数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> free0 = countfree();</span><br></pre></td></tr></table></figure>
+
+<p>然后占用其中的大部分，只留下预期的 128 页容量：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> NPAGES2 128</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> N2 1000</span></span><br><span class="line"></span><br><span class="line">uint64 sz0 = (uint64)sbrk((free0 - NPAGES2) * PGSIZE);</span><br><span class="line">free0 = NPAGES2;</span><br></pre></td></tr></table></figure>
+
+<p>这里 <code>sz0</code> 保存大块申请之前的堆末尾，方便最后恢复。</p>
+<p>接着重复一千次：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; N2; i++) &#123;</span><br><span class="line">  free1 = countfree();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(free1 != free0) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;test2 FAIL: losing pages %d %d\n&quot;</span>, free0, free1);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每次 <code>countfree()</code> 都把剩余内存申请到失败，再全部释放。测试期望每轮仍能申请到 <code>128</code> 页。</p>
+<p><strong>这里为什么能检验窃取？</strong> 空闲页可能分散在不同 CPU 的链表中。当前 CPU 的本地链表用完后，分配器必须继续查找其他链表，才能使用整个系统剩余的空闲页。不能因为本地链表为空，就立即报告内存不足。</p>
+<p>重复运行还会放大页面丢失问题。例如摘链时漏掉一个节点，或释放时没有正确接回链表，后面的某轮就可能从 <code>128</code> 变成 <code>127</code>。</p>
+<p>最后：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sbrk(-((uint64)sbrk(<span class="number">0</span>) - sz0));</span><br></pre></td></tr></table></figure>
+
+<p>释放开头占用的大块内存，恢复测试前的堆大小。</p>
+<p><strong>这个测试主要验证内存紧张时的页面可达性和回收正确性，没有设置锁竞争次数门槛。</strong></p>
+</li>
+<li><p><strong><code>test3</code>：一边频繁创建和销毁进程，一边反复耗尽内存，检查并发正确性。</strong></p>
+<p>测试先记录基准：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> free0 = countfree();</span><br></pre></td></tr></table></figure>
+
+<p>然后创建两个子进程，分工不同：</p>
+<table>
+<thead>
+<tr>
+<th>进程</th>
+<th>工作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>子进程 A</td>
+<td>反复创建孙进程，让孙进程申请一页后退出，再回收孙进程</td>
+</tr>
+<tr>
+<td>子进程 B</td>
+<td>无限循环调用 <code>countfree()</code>，反复申请到内存耗尽，再释放</td>
+</tr>
+</tbody></table>
+<p>子进程 A 的核心代码是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; N3; i++) &#123;</span><br><span class="line">  <span class="type">int</span> cpid = fork();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(cpid &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(cpid == <span class="number">0</span>) &#123;</span><br><span class="line">    sbrk(<span class="number">4096</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> status = <span class="number">0</span>;</span><br><span class="line">  wait(&amp;status);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>N3</code> 是 <code>10000</code>，也就是一万次尝试。因为另一个子进程正在大量占用内存，<code>fork()</code> 可能暂时失败，所以代码选择 <code>continue</code>，并不要求一万个孙进程都创建成功。孙进程里的 <code>sbrk()</code> 也没有逐次检查返回值，重点是持续制造资源分配与回收压力。</p>
+<p>这会同时涉及多类内存操作：创建页表、分配进程相关页面、申请用户页，以及退出后回收资源。你的工程还保留了 COW，所以进程创建和销毁也会频繁修改共享页引用计数。</p>
+<p>子进程 B 的代码则很直接：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">  countfree();</span><br></pre></td></tr></table></figure>
+
+<p>它让系统持续处于“内存刚被大量占用，又被大量释放”的变化中，增加不同 CPU 同时分配、释放和窃取的机会。</p>
+<p>等子进程 A 完成后，父进程停止后台压力进程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wait(&amp;status);</span><br><span class="line">kill(pid);</span><br><span class="line">wait(&amp;status);</span><br></pre></td></tr></table></figure>
+
+<p>父进程中的 <code>pid</code> 最后保存的是子进程 B 的 PID。<code>kill()</code> 发出终止请求，后面的 <code>wait()</code> 等待其退出并回收资源，随后才能重新测量：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> free1 = countfree();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(free0 != free1) &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;test3 FAIL: losing pages %d %d\n&quot;</span>, free0, free1);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>通过条件是压力测试前后的可申请页数一致。</strong> 少了页面，可能是链表丢页、引用计数未正确归零或资源回收遗漏；重复分配、链表损坏等问题也可能表现为运行中崩溃、卡死或数据异常。</p>
+</li>
+<li><p><strong><code>test4</code>：固定 CPU 分工，在大量页面流动时检查锁竞争。</strong></p>
+<p>这个测试创建四个子进程，并分别绑定 CPU：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> NCHILD4 4</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(pid == <span class="number">0</span>) &#123;</span><br><span class="line">  cpupin(i);</span><br><span class="line">  <span class="comment">// 按 i 分配不同任务</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>分工如下：</p>
+<table>
+<thead>
+<tr>
+<th>CPU</th>
+<th>子进程的任务</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CPU 0、1、2</td>
+<td>各进行十万次小块申请和释放</td>
+</tr>
+<tr>
+<td>CPU 3</td>
+<td>持续申请和释放一大块内存</td>
+</tr>
+</tbody></table>
+<p>前三个子进程执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a = (uint64)sbrk(<span class="number">4096</span>);</span><br><span class="line"><span class="keyword">if</span>(a == <span class="number">0xffffffffffffffff</span>)</span><br><span class="line">  <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">*(<span class="type">int</span> *)(a + <span class="number">4</span>) = <span class="number">1</span>;</span><br><span class="line">a1 = (uint64)sbrk(<span class="number">-4096</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(a1 != a + <span class="number">4096</span>)</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p><code>0xffffffffffffffff</code> 是这里将失败返回值 <code>-1</code> 转成 <code>uint64</code> 后的表示。单页申请暂时失败时跳过本次，成功时才执行写入和释放。</p>
+<p>第四个进程反复执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a = (uint64)sbrk(npages * <span class="number">4096</span>);</span><br><span class="line"><span class="keyword">if</span>(a == <span class="number">0xffffffffffffffff</span>)</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">sbrk(-npages * <span class="number">4096</span>);</span><br></pre></td></tr></table></figure>
+
+<p><code>npages</code> 根据测试前测到的可用容量计算：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> npages = countfree();</span><br><span class="line">npages -= (NCHILD4 - <span class="number">1</span>) * <span class="number">100</span>;</span><br></pre></td></tr></table></figure>
+
+<p>也就是预留约 <code>300</code> 页容量，给其他进程和相关操作留下余量。<strong>这不是给 CPU 0、1、2 各划出固定的 100 页，只是减少大块申请的总量。</strong></p>
+<p>为什么这种组合会制造窃取压力？CPU 3 申请大块内存时，本地链表可能不够，需要向其他 CPU 窃取；释放时，大量页面又进入 CPU 3 的链表。其他 CPU 本地页面不足时，再从它那里取页。这样，页面会在不同 CPU 的管理范围之间流动，而三个小任务仍持续进行分配和释放。</p>
+<p>父进程等待三个有限循环的子进程结束，再停止第四个后台进程，最后检查：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">n = ntas(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(n - m &lt; (NCHILD4 - <span class="number">1</span>) * <span class="number">10000</span>)</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;test4 OK\n&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>代入 <code>NCHILD4 == 4</code>，通过条件就是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">新增失败抢锁次数 &lt; <span class="number">30000</span></span><br></pre></td></tr></table></figure>
+
+<p>相比 <code>test1</code>，这里允许更多竞争，因为跨 CPU 窃取本身就需要访问其他 CPU 的链表锁。这个测试检验的是：<strong>在大量页面迁移和并发申请下，锁竞争是否仍然控制在要求范围内。</strong></p>
+</li>
+</ol>
+<p>验收时可以这样对应代码与证据：</p>
+<table>
+<thead>
+<tr>
+<th>测试</th>
+<th>主要对应的实现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>test1</code></td>
+<td>每 CPU 链表是否让常见申请、释放减少竞争</td>
+</tr>
+<tr>
+<td><code>test2</code></td>
+<td>本地链表为空时是否能继续取用其他链表，页面是否丢失</td>
+</tr>
+<tr>
+<td><code>test3</code></td>
+<td>并发分配、释放、进程回收及 COW 引用计数是否配合正确</td>
+</tr>
+<tr>
+<td><code>test4</code></td>
+<td>CPU 绑定后，大块与小块申请混合运行时的锁竞争表现</td>
+</tr>
+</tbody></table>
 
     </div>
 
